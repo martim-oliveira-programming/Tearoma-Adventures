@@ -15,7 +15,7 @@ Player character_creation() {
     for (int i = 0; i < 4; i++) {
         strcpy(main_character.armor[i], "None"); // Now safe
     }
-    printf("The build you choose for your character will give you your initial attributes andpossible weapons/abilities but you can nourish other abilities throughout the story.\n");
+    printf("The build you choose for your character will give you your initial attributes and possible weapons/abilities but you can nourish your other abilities throughout the story.\n");
     usleep(2500);
     printf("Select a build for your character:\n");
     usleep(2500);

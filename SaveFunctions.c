@@ -14,7 +14,6 @@ int file_exists(const char* filename) {
     return 0; // File doesn't exist
 }
 
-
 void save_game(Story story, Player player, NPC* chapter_NPCs) {
     FILE *save_file = fopen("save.txt", "w");
     if (!save_file) {
