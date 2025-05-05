@@ -52,10 +52,8 @@ typedef struct initial_build_attributes{
 typedef struct player {
     // Basic info
     char *name;
-    char *eye_colour;
     char *hair_colour;
     int age;
-    
     // Game attributes
     char *build;
     char **abilities;
@@ -71,9 +69,6 @@ typedef struct player {
     int GOODNESS;
     Attributes stats;  // Contains all build-specific attributes
 } Player;
-
-
-
 
 typedef struct other_characters{
     char *name;
@@ -108,3 +103,4 @@ Player character_creation();
 void get_attributes(Player *main_character);
 
 #endif
+ 
