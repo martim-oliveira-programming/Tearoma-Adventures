@@ -99,6 +99,7 @@ int file_exists(const char* filename);
 //Menu Functions
 int menu_selection();
 int NewGame();
+int Commands();
 int Continue();
 int QuitGame();
 

@@ -23,6 +23,7 @@ GameState menu_selection() {
     char* command = get_input(
         "\nNewGame: Start a new game.\n"
         "Continue: Continue from last save\n"
+        "Commands: Show the game's commands"
         //"Options: Open the options menu\n"
         "QuitGame: Leave the game\n\n"
     );
@@ -33,6 +34,9 @@ GameState menu_selection() {
     
     if (strcmp(command, "NewGame") == 0) {
         result = NewGame();
+    }
+    else if(strcmp(command,"Commands")){
+        result = Commands();
     }
     else if (strcmp(command, "Continue") == 0) {
         result = Continue();
@@ -47,6 +51,13 @@ GameState menu_selection() {
     
     free(command);
     return result;
+}
+
+GameState Commands(){
+    printf("Quit: Quit the game and go to Main Menu. This will NOT save the game. The game saves automatically after each Chapter."
+            "Inventory: Opens the Inventory."
+            );
+    return MENU;
 }
 
 GameState NewGame() {

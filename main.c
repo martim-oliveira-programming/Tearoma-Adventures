@@ -33,7 +33,7 @@ int main() {
                 char *next_action = "";
                 while(current_state == PLAYING) {
                     // Here you would add your actual game logic
-                    next_action = get_input("What will you do next? (Type 'Inventory' to return to menu or 'Quit' to save and quit to the Main Menu): \n");
+                    next_action = get_input("What will you do next? (Type 'Inventory' to open Inventory or 'Quit' to quit to the Main Menu): \n");
                     
                     // Example of game logic
                     if (strcmp(next_action, "Quit") == 0) {
