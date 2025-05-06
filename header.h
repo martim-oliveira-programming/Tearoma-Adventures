@@ -12,17 +12,6 @@ typedef enum{
 }GameState;
 
 typedef enum{
-    ASSASSIN,
-    TANK,
-    MONK,
-    NINJA,
-    MAGE,
-    HEALER,
-    SUMMONER,
-    BALANCED,
-}Builds;
-
-typedef enum{
     Character_Creation,
     Chapter_1,
     Chapter_2,
@@ -38,15 +27,18 @@ typedef struct story{
 
 typedef struct initial_build_attributes{
     char *MOUNT;
-    int armor_points;
+    int DEFENCE;
     int MAX_HP;
     int MAX_MANA;
+    int SUMMONS_STORAGE;
     int MAGIC_POWER;
     int WEAPON_DAMAGE;
     int DAMAGE;
     int SPEED;
     int STEALTH;
+    int WEAPON_USER;
     int DUAL_WILDING;
+    int MAGIC_USER;
 }Attributes;
 
 typedef struct player {

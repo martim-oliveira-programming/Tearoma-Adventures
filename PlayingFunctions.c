@@ -9,7 +9,12 @@ Player character_creation() {
     
     main_character.name = get_input("What is your character's name?\n");
     main_character.hair_colour = get_input("What is your character's hair colour?\n");
-    main_character.age = 13;
+    main_character.age = 15;
+    main_character.RANK = 'E';
+    main_character.items = (char*[]){"", NULL};
+    main_character.LEVEL = 0;
+    main_character.EXP = 0;
+
     
     // Initialize empty armor
     for (int i = 0; i < 4; i++) {
@@ -31,7 +36,11 @@ Player character_creation() {
     );
     
     get_attributes(&main_character);
+    main_character.stats.MAX_HP *= 10;
+    main_character.stats.MAX_MANA *=10;
+    main_character.HP = main_character.stats.MAX_HP;
+    main_character.MANA = main_character.stats.MAX_MANA;
+    main_character.GOODNESS = 0;
     return main_character;
 }
 
- 

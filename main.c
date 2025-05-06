@@ -15,6 +15,7 @@ int main() {
         switch(current_state) {
             
             case MENU:
+                printf("\nWelcome to Tearoma Adventures what whould you like to do?\n");
                 current_state = menu_selection();
                 break;
                 
