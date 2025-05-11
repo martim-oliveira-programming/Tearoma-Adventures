@@ -12,7 +12,6 @@ typedef enum{
 }GameState;
 
 typedef enum{
-    Character_Creation,
     Chapter_1,
     Chapter_2,
     Chapter_3,
@@ -46,14 +45,18 @@ typedef struct player {
     char *name;
     char *hair_colour;
     int age;
+    char *gender;
     // Game attributes
     char *build;
     char **abilities;
     char **items;
+    int *item_ammount;
     char armor[4][20];  // Array for armor slots (helm, chest, legs, boots)
     char *weapon;
     char *weapon_OFF_Hand;
     char RANK;
+    int HUNGER;
+    int Skill_Points;
     int LEVEL;
     int EXP;
     int HP;

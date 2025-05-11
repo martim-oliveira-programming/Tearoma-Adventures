@@ -25,7 +25,7 @@ void save_game(Story story, Player player, NPC* chapter_NPCs) {
             player.name, player.age, story.Chapter, 
             chapter_NPCs[0].name);
     fclose(save_file);
-    printf("Game saved successfully!\n");
+    //printf("Game saved successfully!\n");
 }
 
 int load_save(Story *story, Player *player, NPC *chapter_NPCs) {
@@ -58,7 +58,7 @@ int load_save(Story *story, Player *player, NPC *chapter_NPCs) {
     }
 
     fclose(save_file);
-    printf("Game loaded successfully!\n");
+    //printf("Game loaded successfully!\n");
     return 1;
 }
 

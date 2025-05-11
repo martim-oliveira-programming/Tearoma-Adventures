@@ -17,7 +17,6 @@ char* get_input(char* prompt) {
     choice[strcspn(choice, "\n")] = '\0';
     return choice;
 }
-
 //Base Menu
 GameState menu_selection() {
     char* command = get_input(
@@ -136,5 +135,5 @@ GameState QuitGame(){
     return QUIT; //Quit the game (end program)
 }
 
-//Pause Menu
+//In Game Menu 
  

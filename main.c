@@ -23,7 +23,8 @@ int main() {
                 // Initialize new game if no save exists
                 if (!file_exists("save.txt")) {
                     main_character = character_creation();//Create the player's character
-                    story.Chapter = Character_Creation; //Chapter "0"
+                    story.Chapter = Chapter_1;
+                    story.Path = 0;
                     save_game(story, main_character, chapter_npcs);
                 } else {
                     // Load existing game
@@ -34,7 +35,7 @@ int main() {
                 char *next_action = "";
                 while(current_state == PLAYING) {
                     // Here you would add your actual game logic
-                    next_action = get_input("What will you do next? (Type 'Inventory' to open Inventory or 'Quit' to quit to the Main Menu): \n");
+                    
                     
                     // Example of game logic
                     if (strcmp(next_action, "Quit") == 0) {
@@ -46,11 +47,10 @@ int main() {
                 break;
             }
             case QUIT:
-                printf("Goodbye!\n");
                 break;
         }
     }
-
+    printf("\nGoodbye!\n\n");
     // Cleanup
     if (main_character.name) free(main_character.name);
     if (chapter_npcs[0].name) free(chapter_npcs[0].name);

@@ -14,7 +14,7 @@ void get_attributes(Player *main_character) {
         strcpy(main_character->armor[0], "");
         strcpy(main_character->armor[1], "");
         strcpy(main_character->armor[2], "");
-        strcpy(main_character->armor[3], "");
+        strcpy(main_character->armor[3], ""); 
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
