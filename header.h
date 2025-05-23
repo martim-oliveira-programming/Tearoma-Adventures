@@ -2,6 +2,8 @@
 #define HEADER_H
  
 #define MAX_INPUT 20
+#define TOTAL_ABILITIES 9
+#define TOTAL_ITEMS 5
 
 typedef enum{
     QUIT = -1,
@@ -10,6 +12,15 @@ typedef enum{
     //PAUSE,
     //MISSION_SELECTION
 }GameState;
+
+typedef enum{
+    MAIN_HAND,
+    OFF_HAND,
+    HEAD,
+    CHEST,
+    LEGS,
+    SHOES,
+}Equipable;
 
 typedef enum{
     Chapter_1,
@@ -23,6 +34,13 @@ typedef struct story{
     int Chapter;
     int Path;
 }Story;
+
+typedef enum{
+    NONE,
+    BOOST,
+    SUMMON,
+    Group,
+}EFFECT_TYPE;
 
 typedef struct initial_build_attributes{
     char *MOUNT;
@@ -40,6 +58,24 @@ typedef struct initial_build_attributes{
     int MAGIC_USER;
 }Attributes;
 
+typedef struct player_abilities{
+    int ID;
+    char *NAME;
+    int HEALING;
+    int DAMAGE;
+    int MANA_COST;
+    char *EFFECTS;
+    int EFFECT_TYPE
+}Abilities;
+
+typedef struct items{
+    int ID;
+    char *name;
+    char *effect;
+    int healling;
+    Equipable equipable;
+}Items;
+
 typedef struct player {
     // Basic info
     char *name;
@@ -48,8 +84,8 @@ typedef struct player {
     char *gender;
     // Game attributes
     char *build;
-    char **abilities;
-    char **items;
+    Abilities *abilities;
+    Items *items;
     int *item_ammount;
     char armor[4][20];  // Array for armor slots (helm, chest, legs, boots)
     char *weapon;
@@ -78,6 +114,8 @@ typedef struct other_characters{
     int SPEED;
 }NPC;
 
+
+
 char* get_input(char* input);
 
 //Save Functions
@@ -95,7 +133,12 @@ int QuitGame();
 
 //Build Character Functions
 Player character_creation();
+Player add_inventory(Player main_character, char* item, int amount);
+Player remove_inventory(Player main_character, char* item, int amount);
 void get_attributes(Player *main_character);
+
+//Abilities & Items
+Abilities ALL_abilities[TOTAL_ABILITIES];
 
 #endif
  

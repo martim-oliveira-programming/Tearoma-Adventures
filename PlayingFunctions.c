@@ -47,43 +47,18 @@ Player character_creation() {
     return main_character;
 }
 
-Player add_inventory(Player main_character, char* item, int amount){
-    // Check if the item already exists in the inventory
-    for (int i = 0; main_character.items[i] != NULL; i++) {
-        if (strcmp(main_character.items[i], item) == 0) {
-            main_character.item_ammount[i] += amount;
-            return main_character;
-        }
-    }
-
-    // If the item doesn't exist, add it to the inventory
-    int current_items = 0;
-    while (main_character.items[current_items] != NULL) {
-        current_items++;
-    }
-
-    // Dynamically allocate space for the new item
-    main_character.items = realloc(main_character.items, (current_items + 2) * sizeof(char*));
-    main_character.item_ammount = realloc(main_character.item_ammount, (current_items + 2) * sizeof(int));
-
-    main_character.items[current_items] = strdup(item);
-    main_character.item_ammount[current_items] = amount;
-    main_character.items[current_items + 1] = NULL; // Null-terminate the array
-
-    return main_character;
-}
 
 
 Player play(Player main_character, Story story){
 
-    char *pronoun;
+    char *pronoun ="";
     char *choice;
 
     if (strcmp(main_character.gender,"boy")==0 ){
-        char *pronoun = "he";
+        pronoun = "he";
     }
     else if (strcmp(main_character.gender,"girl")== 0){
-        char *pronoun = "she";
+        pronoun = "she";
     }
 
     switch (story.Chapter)
@@ -137,6 +112,7 @@ Player play(Player main_character, Story story){
     }
 
     }
+    return main_character;
 }
 
 

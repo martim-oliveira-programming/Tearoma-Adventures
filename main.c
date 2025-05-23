@@ -39,6 +39,7 @@ int main() {
                     
                     // Example of game logic
                     if (strcmp(next_action, "Quit") == 0) {
+                        save_game(story,main_character,chapter_npcs);
                         current_state = MENU;
                     }
                     

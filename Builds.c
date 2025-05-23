@@ -8,7 +8,6 @@ void get_attributes(Player *main_character) {
     if (strcmp(main_character->build, "Assassin") == 0) {
         main_character->weapon = "Basic Dagger";
         main_character->weapon_OFF_Hand = "Basic Dagger";
-        main_character->abilities = (char*[]){"Speed Boost", NULL};
         
         // Initialize armor slots
         strcpy(main_character->armor[0], "");
@@ -223,4 +222,34 @@ void get_attributes(Player *main_character) {
             .MAGIC_USER = 1,
         };//Total:60
     }
+}
+
+void apply_ability_effect(Player main_character ,Abilities player_ability){
+    if (player_ability.EFFECT_TYPE == NONE){
+    }
+    else if(player_ability.EFFECT_TYPE == BOOST){
+        char *effect = player_ability.EFFECTS;
+        char *multiplier_str = strtok(effect," ");
+        char *Attribute = strtok(NULL,"");
+        float multiplier = atof(multiplier_str);
+        free(multiplier_str);
+
+        if (strcmp(Attribute,"DEFENCE")==0){
+            main_character.stats.DEFENCE *= multiplier;
+        }else if (strcmp(Attribute,"MAX_HP")==0){
+            main_character.stats.MAX_HP *= multiplier;
+        }//TODO Finish the stats
+
+    }
+    
+
+}
+
+Abilities* get_ability_by_id(int id) {
+    for (int i = 0; i < TOTAL_ABILITIES; i++) {
+        if (ALL_abilities[i].ID == id) {
+            return &ALL_abilities[i];
+        }
+    }
+    return NULL; // Not found
 }
