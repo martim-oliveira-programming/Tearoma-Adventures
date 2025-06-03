@@ -82,7 +82,7 @@ Player play(Player main_character, Story story){
             if (strcmp(choice,"Yes")== 0){
                 printf("You get closer and confirm your previous assessment and help the lady with her bags.\nThank you so much for the help %s, here is a gift for the help. - Old Lady\n",main_character.gender);
                 printf("You recieved 2 chicken sandwiches.\n");
-                main_character = add_inventory(main_character,"Chicken_Sandwich",2);
+                main_character = add_inventory(main_character,"Chicken Sandwich",2);
                 main_character.GOODNESS +=2;
                 printf("Thank You so much. I really need to get going now though. Goodbye! - says %s as %s thinks:\nI hope I'm not to late.",main_character.name,pronoun);
             }

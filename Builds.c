@@ -119,6 +119,7 @@ void get_attributes(Player *main_character) {
         main_character->abilities = (char*[]){"Fire Bolt","Basic Healling", NULL};
         
         // Initialize armor
+        //TODO Armors to items transform in ints
         strcpy(main_character->armor[0], "");
         strcpy(main_character->armor[1], "Mage Robe");
         strcpy(main_character->armor[2], "");
@@ -224,7 +225,7 @@ void get_attributes(Player *main_character) {
     }
 }
 
-void apply_ability_effect(Player main_character ,Abilities player_ability){
+void apply_ability_effect(Player *main_character ,Abilities player_ability){
     if (player_ability.EFFECT_TYPE == NONE){
     }
     else if(player_ability.EFFECT_TYPE == BOOST){
@@ -232,13 +233,38 @@ void apply_ability_effect(Player main_character ,Abilities player_ability){
         char *multiplier_str = strtok(effect," ");
         char *Attribute = strtok(NULL,"");
         float multiplier = atof(multiplier_str);
+        free(effect);
         free(multiplier_str);
 
         if (strcmp(Attribute,"DEFENCE")==0){
-            main_character.stats.DEFENCE *= multiplier;
+            main_character->stats.DEFENCE *= multiplier;
         }else if (strcmp(Attribute,"MAX_HP")==0){
-            main_character.stats.MAX_HP *= multiplier;
-        }//TODO Finish the stats
+            main_character->stats.MAX_HP *= multiplier;
+        }else if (strcmp(Attribute,"MAX_MANA")==0){
+            main_character->stats.MAX_MANA *= multiplier;
+        }else if (strcmp(Attribute,"MAGIC_POWER")==0){
+            main_character->stats.MAGIC_POWER *= multiplier;
+        }else if (strcmp(Attribute,"WEAPON_DAMAGE")==0){
+            main_character->stats.WEAPON_DAMAGE *= multiplier;
+        }else if (strcmp(Attribute,"DAMAGE")==0){
+            main_character->stats.DAMAGE *= multiplier;
+        }else if (strcmp(Attribute,"SPEED")==0){
+            main_character->stats.SPEED *= multiplier;
+        }else if (strcmp(Attribute,"STEALTH")==0){
+            main_character->stats.STEALTH *= multiplier;
+        }
+        free(Attribute);
+    }
+    else if(player_ability.EFFECT_TYPE == SUMMON){
+        char *effect = player_ability.EFFECTS;
+        char *ammount_str = strtok(effect," ");
+        char *SUMMON = strtok(NULL,"");
+        int ammount = atoi(ammount_str);
+        int summon_id = atoi(SUMMON);
+        free(effect);
+        free(ammount_str);
+        free(SUMMON);
+
 
     }
     
@@ -252,4 +278,22 @@ Abilities* get_ability_by_id(int id) {
         }
     }
     return NULL; // Not found
+}
+
+NPC* get_npc_by_id(int id){
+    for(int i = 0;i<TOTAL_SUMMONS;i++){
+        if (ALL_summons[i].ID == id){
+            return &ALL_summons[i];
+        }
+    }
+    return NULL;
+}
+
+Items* get_items_by_id(int id){
+    for(int i = 0;i<TOTAL_ITEMS;i++){
+        if (ALL_items[i].ID == id){
+            return &ALL_items[i];
+        }
+    }
+    return NULL;
 }

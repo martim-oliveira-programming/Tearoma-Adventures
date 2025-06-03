@@ -2,8 +2,9 @@
 #define HEADER_H
  
 #define MAX_INPUT 20
-#define TOTAL_ABILITIES 9
-#define TOTAL_ITEMS 5
+#define TOTAL_ABILITIES 10
+#define TOTAL_ITEMS 2
+#define TOTAL_SUMMONS 1
 
 typedef enum{
     QUIT = -1,
@@ -14,6 +15,7 @@ typedef enum{
 }GameState;
 
 typedef enum{
+    NO,
     MAIN_HAND,
     OFF_HAND,
     HEAD,
@@ -41,6 +43,11 @@ typedef enum{
     SUMMON,
     Group,
 }EFFECT_TYPE;
+
+typedef enum{
+    CONSUMABLE,
+    KEY,
+}ITEM_TYPE;
 
 typedef struct initial_build_attributes{
     char *MOUNT;
@@ -72,9 +79,15 @@ typedef struct items{
     int ID;
     char *name;
     char *effect;
+    int effect_type;
+    int item_type;
     int healling;
-    Equipable equipable;
+    int equipable;
 }Items;
+
+typedef struct summoning_contracts{
+    NPC stats;
+}SUMMONS;
 
 typedef struct player {
     // Basic info
@@ -86,8 +99,10 @@ typedef struct player {
     char *build;
     Abilities *abilities;
     Items *items;
+    SUMMONS summons;
+
     int *item_ammount;
-    char armor[4][20];  // Array for armor slots (helm, chest, legs, boots)
+    int armor[4];  // Array for armor slots (helm, chest, legs, boots)
     char *weapon;
     char *weapon_OFF_Hand;
     char RANK;
@@ -102,10 +117,11 @@ typedef struct player {
 } Player;
 
 typedef struct other_characters{
+    int ID;
     char *name;
-    char **abilities;
-    char RANK;
-    char *MOUNT;
+    int Ability_id;
+    int EFFECT_TYPE;
+    char* RANK;
     int LEVEL;
     int EXP;
     int HP;
@@ -139,6 +155,7 @@ void get_attributes(Player *main_character);
 
 //Abilities & Items
 Abilities ALL_abilities[TOTAL_ABILITIES];
+NPC ALL_summons[TOTAL_SUMMONS];
+Items ALL_items[TOTAL_ITEMS];
 
 #endif
- 
