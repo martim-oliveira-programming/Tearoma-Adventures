@@ -1,9 +1,10 @@
 #ifndef HEADER_H
 #define HEADER_H
+#include <stdbool.h>
  
 #define MAX_INPUT 20
-#define TOTAL_ABILITIES 10
-#define TOTAL_ITEMS 2
+#define TOTAL_ABILITIES 11
+#define TOTAL_ITEMS 14
 #define TOTAL_SUMMONS 1
 
 typedef enum{
@@ -13,6 +14,17 @@ typedef enum{
     //PAUSE,
     //MISSION_SELECTION
 }GameState;
+
+typedef enum{
+    Assassin,
+    Tank,
+    Monk,
+    Ninja,
+    Mage,
+    Healer,
+    Summoner,
+    Balanced,
+}Builds;
 
 typedef enum{
     NO,
@@ -41,12 +53,14 @@ typedef enum{
     NONE,
     BOOST,
     SUMMON,
-    Group,
+    GROUP,
+    PLUS,
 }EFFECT_TYPE;
 
 typedef enum{
     CONSUMABLE,
     KEY,
+    WEAPON,
 }ITEM_TYPE;
 
 typedef struct initial_build_attributes{
@@ -60,9 +74,9 @@ typedef struct initial_build_attributes{
     int DAMAGE;
     int SPEED;
     int STEALTH;
-    int WEAPON_USER;
-    int DUAL_WILDING;
-    int MAGIC_USER;
+    bool WEAPON_USER;
+    bool DUAL_WILDING;
+    bool MAGIC_USER;
 }Attributes;
 
 typedef struct player_abilities{
@@ -72,7 +86,7 @@ typedef struct player_abilities{
     int DAMAGE;
     int MANA_COST;
     char *EFFECTS;
-    int EFFECT_TYPE
+    int EFFECT_TYPE;
 }Abilities;
 
 typedef struct items{
@@ -84,37 +98,6 @@ typedef struct items{
     int healling;
     int equipable;
 }Items;
-
-typedef struct summoning_contracts{
-    NPC stats;
-}SUMMONS;
-
-typedef struct player {
-    // Basic info
-    char *name;
-    char *hair_colour;
-    int age;
-    char *gender;
-    // Game attributes
-    char *build;
-    Abilities *abilities;
-    Items *items;
-    SUMMONS summons;
-
-    int *item_ammount;
-    int armor[4];  // Array for armor slots (helm, chest, legs, boots)
-    char *weapon;
-    char *weapon_OFF_Hand;
-    char RANK;
-    int HUNGER;
-    int Skill_Points;
-    int LEVEL;
-    int EXP;
-    int HP;
-    int MANA;
-    int GOODNESS;
-    Attributes stats;  // Contains all build-specific attributes
-} Player;
 
 typedef struct other_characters{
     int ID;
@@ -129,6 +112,40 @@ typedef struct other_characters{
     int DAMAGE;
     int SPEED;
 }NPC;
+
+typedef struct summoning_contracts{
+    NPC stats;
+}SUMMONS;
+
+typedef struct player {
+    // Basic info
+    char *name;
+    char *hair_colour;
+    int age;
+    char *gender;
+    // Game attributes
+    int *build;
+    int* summonIDs;
+    int* abilitiesIDs;
+    int* inventoryIDs;
+    int item_ammount;
+    int abilities_ammount;
+    int summons_ammount;
+    int armor[4];  // Array for armor slots (head, chest, legs, boots)
+    int weapon;
+    int weapon_OFF_Hand;
+    char RANK;
+    int HUNGER;
+    int Skill_Points;
+    int LEVEL;
+    int EXP;
+    int HP;
+    int MANA;
+    int GOODNESS;
+    Attributes stats;  // Contains all build-specific attributes
+} Player;
+
+
 
 
 
@@ -149,13 +166,24 @@ int QuitGame();
 
 //Build Character Functions
 Player character_creation();
-Player add_inventory(Player main_character, char* item, int amount);
-Player remove_inventory(Player main_character, char* item, int amount);
 void get_attributes(Player *main_character);
 
+//Inventory Management
+Player add_inventory(Player main_character, int itemID, int amount);
+Player remove_inventory(Player main_character, int itemID, int amount);
+
+//Utilitie Functions
+Abilities* get_ability_by_id(int id);
+NPC* get_npc_by_id(int id);
+Items* get_items_by_id(int id);
+
 //Abilities & Items
-Abilities ALL_abilities[TOTAL_ABILITIES];
-NPC ALL_summons[TOTAL_SUMMONS];
-Items ALL_items[TOTAL_ITEMS];
+extern Abilities ALL_abilities[TOTAL_ABILITIES];
+extern NPC ALL_summons[TOTAL_SUMMONS];
+extern Items ALL_items[TOTAL_ITEMS];
+
 
 #endif
+
+
+

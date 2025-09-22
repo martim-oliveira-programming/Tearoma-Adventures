@@ -11,8 +11,8 @@ Player character_creation() {
     main_character.hair_colour = get_input("What is your character's hair colour?\n");
     main_character.age = 15;
     main_character.RANK = 'E';
-    main_character.items = (char*[]){"", NULL};
-    main_character.item_ammount = (int[]){0, 0};
+    main_character.inventoryIDs= malloc(1 * sizeof(int));
+    main_character.item_ammount = 0;
     main_character.HUNGER = 0;
     main_character.Skill_Points = 0;
     main_character.LEVEL = 0;
@@ -21,7 +21,7 @@ Player character_creation() {
     
     // Initialize empty armor
     for (int i = 0; i < 4; i++) {
-        strcpy(main_character.armor[i], "None"); // Now safe
+        main_character.armor[i] = 0;
     }
     printf("\nThe build you choose for your character will give you your initial attributes and possible weapons/abilities but you can nourish your other abilities throughout the story.\n");
     usleep(2500);
@@ -46,7 +46,6 @@ Player character_creation() {
     main_character.GOODNESS = 0;
     return main_character;
 }
-
 
 
 Player play(Player main_character, Story story){
@@ -82,7 +81,7 @@ Player play(Player main_character, Story story){
             if (strcmp(choice,"Yes")== 0){
                 printf("You get closer and confirm your previous assessment and help the lady with her bags.\nThank you so much for the help %s, here is a gift for the help. - Old Lady\n",main_character.gender);
                 printf("You recieved 2 chicken sandwiches.\n");
-                main_character = add_inventory(main_character,"Chicken Sandwich",2);
+                main_character = add_inventory(main_character,0,2);
                 main_character.GOODNESS +=2;
                 printf("Thank You so much. I really need to get going now though. Goodbye! - says %s as %s thinks:\nI hope I'm not to late.",main_character.name,pronoun);
             }
@@ -99,7 +98,7 @@ Player play(Player main_character, Story story){
             printf("You wake up next to the security and explain the whole situation to them.\n");
         }
 
-        main_character = add_inventory(main_character, "Flashlight", 1);
+        main_character = add_inventory(main_character,1, 1);
         printf("Reluctantly they let you in and one of them comes with you.\nThe guard gives you a flashlight to proceed with your search.\nAs you advance in the tunnels, you start to see a purple light that illuminates the cave.\n");
         printf("");//TODO
 

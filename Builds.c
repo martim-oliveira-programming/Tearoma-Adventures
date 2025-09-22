@@ -5,15 +5,10 @@
 #include <unistd.h> 
 
 void get_attributes(Player *main_character) {
-    if (strcmp(main_character->build, "Assassin") == 0) {
-        main_character->weapon = "Basic Dagger";
-        main_character->weapon_OFF_Hand = "Basic Dagger";
-        
-        // Initialize armor slots
-        strcpy(main_character->armor[0], "");
-        strcpy(main_character->armor[1], "");
-        strcpy(main_character->armor[2], "");
-        strcpy(main_character->armor[3], ""); 
+    if (main_character->build == Assassin) {
+        add_inventory(*main_character,2,1);
+        add_inventory(*main_character,3,1);
+        add_ability(*main_character,10);
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -26,21 +21,20 @@ void get_attributes(Player *main_character) {
             .SPEED = 20,
             .STEALTH = 10,
             .WEAPON_DAMAGE = 12,
-            .WEAPON_USER = 1,
-            .DUAL_WILDING = 1,
-            .MAGIC_USER = 1,
+            .WEAPON_USER = true,
+            .DUAL_WILDING = true,
+            .MAGIC_USER = true,
         };//Total:60
     }
-    else if (strcmp(main_character->build, "Tank") == 0) {
-        main_character->weapon = "Basic Sword";
-        main_character->weapon_OFF_Hand = "Basic Shield";
-        main_character->abilities = (char*[]){"Shield Bash", NULL};
+    else if (main_character->build == Tank) {
+        add_inventory(*main_character,4,1);
+        add_inventory(*main_character,5,1);
+        add_ability(*main_character,2);
         
-        // Initialize armor
-        strcpy(main_character->armor[0], "Leather Helmet");
-        strcpy(main_character->armor[1], "Leather Chestplate");
-        strcpy(main_character->armor[2], "Leather Pants");
-        strcpy(main_character->armor[3], "Leather Boots");
+        add_inventory(*main_character,6,1);
+        add_inventory(*main_character,7,1);
+        add_inventory(*main_character,8,1);
+        add_inventory(*main_character,9,1);
         
         main_character->stats = (Attributes){
             .DEFENCE = 10,
@@ -53,21 +47,18 @@ void get_attributes(Player *main_character) {
             .SPEED = 5,
             .STEALTH = 4,
             .WEAPON_DAMAGE = 12,
-            .WEAPON_USER = 1,
-            .DUAL_WILDING = 0,
-            .MAGIC_USER = 1,
+            .WEAPON_USER = true,
+            .DUAL_WILDING = false,
+            .MAGIC_USER = true,
         };//Total:60
     }
-    else if (strcmp(main_character->build, "Monk") == 0) {
-        main_character->weapon = "";
-        main_character->weapon_OFF_Hand = "";
-        main_character->abilities = (char*[]){"Lethal Punch Barrage", NULL};
-        
+    else if (main_character->build == "Monk") {
+
+        add_ability(*main_character,3);  
+
         // Initialize armor
-        strcpy(main_character->armor[0], "Headband");
-        strcpy(main_character->armor[1], "");
-        strcpy(main_character->armor[2], "");
-        strcpy(main_character->armor[3], "");
+
+        add_inventory(*main_character,6,1);//Headband
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -80,19 +71,18 @@ void get_attributes(Player *main_character) {
             .SPEED = 20,
             .STEALTH = 9,
             .WEAPON_DAMAGE = 0,
-            //0 = False 1 = True
-            .WEAPON_USER = 0,
-            .DUAL_WILDING = 0,
-            .MAGIC_USER = 0,
+            .WEAPON_USER = false,
+            .DUAL_WILDING = false,
+            .MAGIC_USER = false,
         };//Total:80. Higher because the player will never be able to use magic or weapons.
     }
-    else if (strcmp(main_character->build, "Ninja") == 0) {
+    else if (main_character->build == Ninja) {
         main_character->weapon = "Basic Katana";
         main_character->weapon_OFF_Hand = "Shuriken";
-        main_character->abilities = (char*[]){"Disguise", NULL};
+        add_ability(*main_character,4);
         
         // Initialize armor slots
-        strcpy(main_character->armor[0], "Headband");
+        add_inventory(*main_character,6,1);//Headband
         strcpy(main_character->armor[1], "Ninja chestplate");
         strcpy(main_character->armor[2], "Ninja pants");
         strcpy(main_character->armor[3], "Soundless sandals");
@@ -108,22 +98,21 @@ void get_attributes(Player *main_character) {
             .SPEED = 13,
             .STEALTH = 15,
             .WEAPON_DAMAGE = 12,
-            .WEAPON_USER = 1,
-            .DUAL_WILDING = 0,
-            .MAGIC_USER = 1,
+            .WEAPON_USER = true,
+            .DUAL_WILDING = false,
+            .MAGIC_USER = true,
         };//Total:60
     }
-    else if (strcmp(main_character->build, "Mage") == 0) {
-        main_character->weapon = "Basic Grimoire";
-        main_character->weapon_OFF_Hand = "";
-        main_character->abilities = (char*[]){"Fire Bolt","Basic Healling", NULL};
+    else if (main_character->build == Mage) {
+        add_inventory(*main_character,11,1);
+
+        add_ability(*main_character,5); 
+        add_ability(*main_character,6); 
         
         // Initialize armor
         //TODO Armors to items transform in ints
-        strcpy(main_character->armor[0], "");
-        strcpy(main_character->armor[1], "Mage Robe");
-        strcpy(main_character->armor[2], "");
-        strcpy(main_character->armor[3], "");
+        add_inventory(*main_character,13,1);
+
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -136,21 +125,18 @@ void get_attributes(Player *main_character) {
             .SPEED = 5,
             .STEALTH = 4,
             .WEAPON_DAMAGE = 10,
-            .WEAPON_USER = 1,
-            .DUAL_WILDING = 0,
-            .MAGIC_USER = 1,
+            .WEAPON_USER = true,
+            .DUAL_WILDING = false,
+            .MAGIC_USER = true,
         };//Total:60
     }
-    else if (strcmp(main_character->build, "Healer") == 0) {
-        main_character->weapon = "Basic Grimoire";
-        main_character->weapon_OFF_Hand = "";
-        main_character->abilities = (char*[]){"Group Healing","Basic Healing", NULL};
+    else if (main_character->build == Healer) {
+        add_inventory(*main_character,6,1);
+        add_ability(*main_character,6);
+        add_ability(*main_character,7); 
         
-        // Initialize armor
-        strcpy(main_character->armor[0], "");
-        strcpy(main_character->armor[1], "Healer's Glove");
-        strcpy(main_character->armor[2], "");
-        strcpy(main_character->armor[3], "");
+        add_inventory(*main_character,12,1);
+
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -163,21 +149,16 @@ void get_attributes(Player *main_character) {
             .SPEED = 6,
             .STEALTH = 12,
             .WEAPON_DAMAGE = 10,
-            .WEAPON_USER = 1,
-            .DUAL_WILDING = 0,
-            .MAGIC_USER = 1,
+            .WEAPON_USER = true,
+            .DUAL_WILDING = false,
+            .MAGIC_USER = true,
         };//Total:60
     }
-    else if (strcmp(main_character->build, "Summoner") == 0) {
-        main_character->weapon = "Basic Grimoire";
-        main_character->weapon_OFF_Hand = "";
-        main_character->abilities = (char*[]){"Shadow Dog Summon","Basic Healing", NULL};
-        
-        // Initialize armor
-        strcpy(main_character->armor[0], "");
-        strcpy(main_character->armor[1], "");
-        strcpy(main_character->armor[2], "");
-        strcpy(main_character->armor[3], "");
+    else if (main_character->build == Summoner) {
+        add_inventory(*main_character,6,1);
+
+        add_ability(*main_character,6);
+        add_ability(*main_character,8);
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -190,22 +171,20 @@ void get_attributes(Player *main_character) {
             .SPEED = 6,
             .STEALTH = 12,
             .WEAPON_DAMAGE = 2,
-            .WEAPON_USER = 1,
-            .DUAL_WILDING = 0,
-            .MAGIC_USER = 1,
+            .WEAPON_USER = true,
+            .DUAL_WILDING = false,
+            .MAGIC_USER = true,
         };//Total:60
     }
 
-    else if (strcmp(main_character->build, "Balanced") == 0) {
-        main_character->weapon = "Basic Sword";
-        main_character->weapon_OFF_Hand = "Basic Grimoir";
-        main_character->abilities = (char*[]){"Strength Boost","Fire Bolt", NULL};
+    else if (main_character->build == Balanced) {
+        add_inventory(*main_character,4,1);
+        add_inventory(*main_character,6,1);
+        add_ability(*main_character,5);
+        add_ability(*main_character,9);
         
-        // Initialize armor
-        strcpy(main_character->armor[0], "");
-        strcpy(main_character->armor[1], "Leather Chestplate");
-        strcpy(main_character->armor[2], "Leather Pants");
-        strcpy(main_character->armor[3], "");
+        add_inventory(*main_character,7,1);
+        add_inventory(*main_character,8,1);
         
         main_character->stats = (Attributes){
             .DEFENCE = 6,
@@ -218,13 +197,14 @@ void get_attributes(Player *main_character) {
             .SPEED = 6,
             .STEALTH = 6,
             .WEAPON_DAMAGE = 6,
-            .WEAPON_USER = 1,
-            .DUAL_WILDING = 1,
-            .MAGIC_USER = 1,
+            .WEAPON_USER = true,
+            .DUAL_WILDING = true,
+            .MAGIC_USER = true,
         };//Total:60
     }
 }
 
+//TODO PLUS abilities
 void apply_ability_effect(Player *main_character ,Abilities player_ability){
     if (player_ability.EFFECT_TYPE == NONE){
     }
@@ -297,3 +277,63 @@ Items* get_items_by_id(int id){
     }
     return NULL;
 }
+
+Player add_inventory(Player main_character, int itemID, int amount){
+    main_character.inventoryIDs = realloc(main_character.inventoryIDs,main_character.item_ammount + amount * sizeof(int));
+    for(int i=0; i< amount; i++){
+    main_character.inventoryIDs[main_character.item_ammount] = itemID;
+    main_character.item_ammount +=1;
+    }
+    return main_character;
+}
+
+Player remove_inventory(Player main_character, int itemID, int amount){
+    int removed = 0;
+    for (int j = 0; j < amount && removed < amount; j++) {
+        for (int i = 0; i < main_character.item_ammount; i++) {
+            if (main_character.inventoryIDs[i] == itemID) {
+                // Shift elements left
+                for (int k = i; k < main_character.item_ammount - 1; k++) {
+                    main_character.inventoryIDs[k] = main_character.inventoryIDs[k + 1];
+                }
+                main_character.item_ammount -= 1;
+                removed += 1;
+                // Realloc to shrink array
+                main_character.inventoryIDs = realloc(main_character.inventoryIDs, main_character.item_ammount * sizeof(int));
+                break; // Only remove one per loop
+            }
+        }
+    }
+    return main_character;
+}
+
+Player add_ability(Player main_character, int abilityID){
+    // Check if ability already exists
+    for (int i = 0; i < main_character.abilities_ammount; i++) {
+        if (main_character.abilitiesIDs[i] == abilityID) {
+            return main_character; // Already present, do nothing
+        }
+    }
+    // Add new ability
+    main_character.abilitiesIDs = realloc(main_character.abilitiesIDs, (main_character.abilities_ammount + 1) * sizeof(int));
+    main_character.abilitiesIDs[main_character.abilities_ammount] = abilityID;
+    main_character.abilities_ammount += 1;
+    return main_character;
+}
+
+Player remove_ability(Player main_character, int abilityID){
+    for (int i = 0; i < main_character.abilities_ammount; i++) {
+        if (main_character.abilitiesIDs[i] == abilityID) {
+            // Shift left
+            for (int k = i; k < main_character.abilities_ammount - 1; k++) {
+                main_character.abilitiesIDs[k] = main_character.abilitiesIDs[k + 1];
+            }
+            main_character.abilities_ammount -= 1;
+            main_character.abilitiesIDs = realloc(main_character.abilitiesIDs, main_character.abilities_ammount * sizeof(int));
+            break;
+        }
+    }
+    return main_character;
+}
+
+//TODO equip_weapons()
