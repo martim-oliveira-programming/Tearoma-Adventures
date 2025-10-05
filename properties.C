@@ -20,7 +20,7 @@ Abilities ALL_abilities[TOTAL_ABILITIES] = {
 };
 
 NPC ALL_summons[TOTAL_SUMMONS] = {
-    {0,"Shadow Dog",0,NONE,"E",1,0,2,2,4,4},
+    {0,"Shadow Dog",0,NONE,E,1,0,2,2,4,4},
 };
 
 Items ALL_items[TOTAL_ITEMS] = {
@@ -37,7 +37,12 @@ Items ALL_items[TOTAL_ITEMS] = {
     {10,"Headband","3 DEFENCE",PLUS,WEAPON,HEAD},
     {11,"Basic Grimoire","3 MAGIC_POWER",PLUS,WEAPON,MAIN_HAND},
     {12,"Healer's Glove","2 MAX_MANA",PLUS,WEAPON,MAIN_HAND},
-    {13,"Mage Robe","MAGIC_POWER",PLUS,WEAPON,CHEST},
+    {13,"Mage's Robe","3 MAGIC_POWER",PLUS,WEAPON,CHEST},
+    {14,"Basic Katana","5 WEAPON_DAMAGE",PLUS,WEAPON,MAIN_HAND},
+    {15,"Shuriken","3 WEAPON_DAMAGE",PLUS,WEAPON,OFF_HAND},
+    {16,"Ninja chestplate","4 DEFENCE",PLUS,WEAPON,CHEST},
+    {17,"Ninja pants","3 DEFENCE",PLUS,WEAPON,LEGS},
+    {18,"Soundless sandals","2 DEFENCE",PLUS,WEAPON,SHOES},
 };
 
 

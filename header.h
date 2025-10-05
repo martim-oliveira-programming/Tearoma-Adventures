@@ -4,7 +4,7 @@
  
 #define MAX_INPUT 20
 #define TOTAL_ABILITIES 11
-#define TOTAL_ITEMS 14
+#define TOTAL_ITEMS 19
 #define TOTAL_SUMMONS 1
 
 typedef enum{
@@ -99,30 +99,43 @@ typedef struct items{
     int equipable;
 }Items;
 
+typedef struct summoning_contracts{
+    NPC stats;
+}SUMMONS;
+
+typedef enum gender{
+    Boy,
+    Girl,
+}Gender;
+
+typedef enum Rank{
+    E,
+    D,
+    C,
+    B,
+    A,
+    S,
+}Rank;
+
 typedef struct other_characters{
     int ID;
     char *name;
     int Ability_id;
     int EFFECT_TYPE;
-    char* RANK;
+    int RANK;
     int LEVEL;
-    int EXP;
+    int EXP_GIVVEN;
     int HP;
     int MAX_HP;
     int DAMAGE;
     int SPEED;
 }NPC;
-
-typedef struct summoning_contracts{
-    NPC stats;
-}SUMMONS;
-
 typedef struct player {
     // Basic info
     char *name;
     char *hair_colour;
     int age;
-    char *gender;
+    int gender;
     // Game attributes
     int *build;
     int* summonIDs;
@@ -134,7 +147,7 @@ typedef struct player {
     int armor[4];  // Array for armor slots (head, chest, legs, boots)
     int weapon;
     int weapon_OFF_Hand;
-    char RANK;
+    int RANK;
     int HUNGER;
     int Skill_Points;
     int LEVEL;
@@ -145,9 +158,12 @@ typedef struct player {
     Attributes stats;  // Contains all build-specific attributes
 } Player;
 
+//TODO Create a struct to create a team of NPCs to help the player in combat including Summons.
 
-
-
+typedef struct npc_team {
+    NPC *members;
+    int size;
+}Team;
 
 char* get_input(char* input);
 

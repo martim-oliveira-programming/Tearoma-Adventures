@@ -6,11 +6,21 @@
 
 Player character_creation() {
     Player main_character = {0}; // Zero-initialize first
-    main_character.gender= get_input("Are you a boy or a girl?");    
+    char *gender= get_input("Are you a boy or a girl?");    
+    if (strcmp(gender,"boy")==0 ){
+        main_character.gender = Boy;
+    }
+    else if (strcmp(gender,"girl")== 0){
+        main_character.gender = Girl;
+    }
+    else{
+        printf("Invalid input. Please enter 'boy' or 'girl'.\n");
+        return character_creation(); // Recursively call until valid input
+    }
     main_character.name = get_input("What is your character's name?\n");
     main_character.hair_colour = get_input("What is your character's hair colour?\n");
     main_character.age = 15;
-    main_character.RANK = 'E';
+    main_character.RANK = E;
     main_character.inventoryIDs= malloc(1 * sizeof(int));
     main_character.item_ammount = 0;
     main_character.HUNGER = 0;
@@ -44,6 +54,12 @@ Player character_creation() {
     main_character.HP *= 10;
     main_character.MANA *= 10;
     main_character.GOODNESS = 0;
+    main_character.armor[0] = -1; // Head
+    main_character.armor[1] = -1; // Chest
+    main_character.armor[2] = -1; // Legs
+    main_character.armor[3] = -1; // Boots
+    main_character.weapon = -1; // No weapon equipped
+    main_character.weapon_OFF_Hand = -1; // No off-hand weapon equipped
     return main_character;
 }
 
