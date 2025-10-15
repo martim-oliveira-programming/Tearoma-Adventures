@@ -97,7 +97,7 @@ Player play(Player main_character, Story story){
             if (strcmp(choice,"Yes")== 0){
                 printf("You get closer and confirm your previous assessment and help the lady with her bags.\nThank you so much for the help %s, here is a gift; to thank you for your help. - Old Lady\n",gender_to_string(main_character.gender));
                 printf("You recieved 2 chicken sandwiches.\n");
-                main_character = add_inventory(main_character,0,2);
+                main_character = add_inventory(main_character,0,2);//Chicken Sandwich
                 main_character.GOODNESS +=2;
                 printf("Thank You so much. I really need to get going now. Goodbye! - says %s as %s thinks:\nI hope I'm not to late.",main_character.name,pronoun);
             }
@@ -109,14 +109,20 @@ Player play(Player main_character, Story story){
             printf("You try to cut the fence but get zapped by it and fall to the ground.\n");
             main_character.HP -= 10;
             main_character.HUNGER += 20;
-            main_character.GOODNESS -= 1;
+            main_character.GOODNESS -= 4;
 
             printf("You wake up next to the security and explain the whole situation to them.\n");
         }
 
-        main_character = add_inventory(main_character,1, 1);
+        main_character = add_inventory(main_character,1, 1); //Flashlight
+        printf("You explain the situation to the security guard and ask if you can go in to look for your Dad.\n");
         printf("Reluctantly they let you in and one of them comes with you.\nThe guard gives you a flashlight to proceed with your search.\nAs you advance in the tunnels, you start to see a purple light that illuminates the cave.\n");
-        printf("");//TODO
+        printf("Security Guard-- I don't think we should keep going. It can get dangerous and we aren't suposed to be here anyway!\n%s-- Maybe but this light is really weird and we came this far...\n",main_character.name);
+        printf("Security Guard-- Fine but if anything happens I'm leaving you here! I can't get in trouble.\n%s-- Deal.\n",main_character.name);
+        printf("You keep going and the light gets stronger and stronger until you reach a big cavern where you see a group of people trying to remove a big rock off what seems to be the light's source.\n");
+        printf("%s-- Excuse me! What are you doing?\nMiner-- Some of our crew entered what looked like some kind of secret passage when this giant rock fell and trapped them inside. We are trying to get them out.\n",main_character.name);
+        printf("%s-- Do you know if one of them is called Luca Lanister?\nMiner-- Unfortunately yes. Mr.Lanister is one of the trapped people.\n He was the one overseeing the operation.\n",main_character.name);
+        printf("");
 
         }
 

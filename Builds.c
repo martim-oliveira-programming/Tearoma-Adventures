@@ -6,9 +6,9 @@
 
 void get_attributes(Player *main_character) {
     if (main_character->build == Assassin) {
-        add_inventory(*main_character,2,1); //Basic Dagger
-        add_inventory(*main_character,3,1); //Secondary Dagger
-        add_ability(*main_character,10); //Invisibility
+        *main_character = add_inventory(*main_character,2,1); //Basic Dagger
+        *main_character = add_inventory(*main_character,3,1); //Secondary Dagger
+        *main_character = add_ability(*main_character,10); //Invisibility
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -27,14 +27,14 @@ void get_attributes(Player *main_character) {
         };//Total:60
     }
     else if (main_character->build == Tank) {
-        add_inventory(*main_character,4,1); //Basic Sword
-        add_inventory(*main_character,5,1); //Basic Shield
-        add_ability(*main_character,2);     //Shield Bash
+        *main_character = add_inventory(*main_character,4,1); //Basic Sword
+        *main_character = add_inventory(*main_character,5,1); //Basic Shield
+        *main_character = add_ability(*main_character,2);     //Shield Bash
         
-        add_inventory(*main_character,6,1); //Headband
-        add_inventory(*main_character,7,1); //Leather Chestplate
-        add_inventory(*main_character,8,1); //Leather Pants
-        add_inventory(*main_character,9,1); //Leather Boots
+        *main_character = add_inventory(*main_character,6,1); //Headband
+        *main_character = add_inventory(*main_character,7,1); //Leather Chestplate
+        *main_character = add_inventory(*main_character,8,1); //Leather Pants
+        *main_character = add_inventory(*main_character,9,1); //Leather Boots
         
         main_character->stats = (Attributes){
             .DEFENCE = 10,
@@ -54,9 +54,9 @@ void get_attributes(Player *main_character) {
     }
     else if (main_character->build == Monk) {
 
-        add_ability(*main_character,3); //Lethal Punch Barrage 
+        *main_character = add_ability(*main_character,3); //Lethal Punch Barrage 
 
-        add_inventory(*main_character,6,1);//Headband
+        *main_character = add_inventory(*main_character,6,1);//Headband
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -75,16 +75,16 @@ void get_attributes(Player *main_character) {
         };//Total:80. Higher because the player will never be able to use magic or weapons.
     }
     else if (main_character->build == Ninja) {
-        add_inventory(*main_character,14,1); //Katana
-        add_inventory(*main_character,15,1); //Shuriken
-        add_ability(*main_character,4); //Disguise
-        add_ability(*main_character,1); //Speed Boost
+        *main_character = add_inventory(*main_character,14,1); //Katana
+        *main_character = add_inventory(*main_character,15,1); //Shuriken
+        *main_character = add_ability(*main_character,4); //Disguise
+        *main_character = add_ability(*main_character,1); //Speed Boost
         
         // Initialize armor slots
-        add_inventory(*main_character,6,1);//Headband
-        add_inventory(*main_character,16,1);//Ninja chestplate
-        add_inventory(*main_character,17,1);//Ninja pants
-        add_inventory(*main_character,18,1);//Soundless sandals
+        *main_character = add_inventory(*main_character,6,1);//Headband
+        *main_character = add_inventory(*main_character,16,1);//Ninja chestplate
+        *main_character = add_inventory(*main_character,17,1);//Ninja pants
+        *main_character = add_inventory(*main_character,18,1);//Soundless sandals
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -103,11 +103,11 @@ void get_attributes(Player *main_character) {
         };//Total:60
     }
     else if (main_character->build == Mage) {
-        add_inventory(*main_character,11,1); //Basic Grimoire
-        add_inventory(*main_character,13,1); //Mage Robe
+        *main_character = add_inventory(*main_character,11,1); //Basic Grimoire
+        *main_character = add_inventory(*main_character,13,1); //Mage Robe
 
-        add_ability(*main_character,5); //Fire Bolt
-        add_ability(*main_character,6); //Basic Healing
+        *main_character = add_ability(*main_character,5); //Fire Bolt
+        *main_character = add_ability(*main_character,6); //Basic Healing
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -126,11 +126,11 @@ void get_attributes(Player *main_character) {
         };//Total:60
     }
     else if (main_character->build == Healer) {
-        add_inventory(*main_character,6,1); //Headband
-        add_inventory(*main_character,12,1); //Healer's Glove
+        *main_character = add_inventory(*main_character,6,1); //Headband
+        *main_character = add_inventory(*main_character,12,1); //Healer's Glove
 
-        add_ability(*main_character,6); //Basic Healing
-        add_ability(*main_character,7); //Group Healing
+        *main_character = add_ability(*main_character,6); //Basic Healing
+        *main_character = add_ability(*main_character,7); //Group Healing
           
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -149,11 +149,11 @@ void get_attributes(Player *main_character) {
         };//Total:60
     }
     else if (main_character->build == Summoner) {
-        add_inventory(*main_character,6,1); //Headband
-        add_inventory(*main_character,11,1); //Basic Grimoire
+        *main_character = add_inventory(*main_character,6,1); //Headband
+        *main_character = add_inventory(*main_character,11,1); //Basic Grimoire
 
-        add_ability(*main_character,6); //Basic Healing
-        add_ability(*main_character,8); //Shadow Dog Summon
+        *main_character = add_ability(*main_character,6); //Basic Healing
+        *main_character = add_ability(*main_character,8); //Shadow Dog Summon
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -173,13 +173,13 @@ void get_attributes(Player *main_character) {
     }
 
     else if (main_character->build == Balanced) {
-        add_inventory(*main_character,4,1);
-        add_inventory(*main_character,6,1);
-        add_ability(*main_character,5);
-        add_ability(*main_character,9);
+        *main_character = add_inventory(*main_character,4,1);
+        *main_character = add_inventory(*main_character,6,1);
+        *main_character = add_ability(*main_character,5);
+        *main_character = add_ability(*main_character,9);
         
-        add_inventory(*main_character,7,1);
-        add_inventory(*main_character,8,1);
+        *main_character = add_inventory(*main_character,7,1);
+        *main_character = add_inventory(*main_character,8,1);
         
         main_character->stats = (Attributes){
             .DEFENCE = 6,
@@ -200,75 +200,59 @@ void get_attributes(Player *main_character) {
 }
 
 void apply_ability_effect(Player *main_character ,Abilities player_ability){
-    if (player_ability.EFFECT_TYPE == NONE){
+    if (player_ability.EFFECT_TYPE == NONE) {
+        return;
     }
-    else if(player_ability.EFFECT_TYPE == BOOST){
-        char *effect = player_ability.EFFECTS;
-        char *multiplier_str = strtok(effect," ");
-        char *Attribute = strtok(NULL,"");
-        float multiplier = atof(multiplier_str);
 
-        if (strcmp(Attribute,"DEFENCE")==0){
-            main_character->stats.DEFENCE *= multiplier;
-        }else if (strcmp(Attribute,"MAX_HP")==0){
-            main_character->stats.MAX_HP *= multiplier;
-        }else if (strcmp(Attribute,"MAX_MANA")==0){
-            main_character->stats.MAX_MANA *= multiplier;
-        }else if (strcmp(Attribute,"MAGIC_POWER")==0){
-            main_character->stats.MAGIC_POWER *= multiplier;
-        }else if (strcmp(Attribute,"WEAPON_DAMAGE")==0){
-            main_character->stats.WEAPON_DAMAGE *= multiplier;
-        }else if (strcmp(Attribute,"DAMAGE")==0){
-            main_character->stats.DAMAGE *= multiplier;
-        }else if (strcmp(Attribute,"SPEED")==0){
-            main_character->stats.SPEED *= multiplier;
-        }else if (strcmp(Attribute,"STEALTH")==0){
-            main_character->stats.STEALTH *= multiplier;
+    const char *src = player_ability.EFFECTS ? player_ability.EFFECTS : "";
+    char *copy = strdup(src);
+    if (!copy) return;
+
+    char *saveptr = NULL;
+    char *first = strtok_r(copy, " ", &saveptr);
+    char *second = strtok_r(NULL, " ", &saveptr);
+
+    if (player_ability.EFFECT_TYPE == BOOST) {
+        float multiplier = first ? atof(first) : 1.0f;
+        const char *Attribute = second;
+        if (Attribute) {
+            if (strcmp(Attribute,"DEFENCE")==0) main_character->stats.DEFENCE *= multiplier;
+            else if (strcmp(Attribute,"MAX_HP")==0) main_character->stats.MAX_HP *= multiplier;
+            else if (strcmp(Attribute,"MAX_MANA")==0) main_character->stats.MAX_MANA *= multiplier;
+            else if (strcmp(Attribute,"MAGIC_POWER")==0) main_character->stats.MAGIC_POWER *= multiplier;
+            else if (strcmp(Attribute,"WEAPON_DAMAGE")==0) main_character->stats.WEAPON_DAMAGE *= multiplier;
+            else if (strcmp(Attribute,"DAMAGE")==0) main_character->stats.DAMAGE *= multiplier;
+            else if (strcmp(Attribute,"SPEED")==0) main_character->stats.SPEED *= multiplier;
+            else if (strcmp(Attribute,"STEALTH")==0) main_character->stats.STEALTH *= multiplier;
         }
     }
-    else if(player_ability.EFFECT_TYPE == SUMMON){ //TODO How will summons work
-        char *effect = player_ability.EFFECTS;
-        char *ammount_str = strtok(effect," ");
-        char *SUMMON = strtok(NULL,"");
-        int ammount = atoi(ammount_str);
-        int summon_id = atoi(SUMMON);
-        
-
+    else if (player_ability.EFFECT_TYPE == SUMMON) {
+        int ammount = first ? atoi(first) : 0;
+        int summon_id = second ? atoi(second) : -1;
+        (void)ammount; (void)summon_id; // TODO: implement summon behaviour
     }
-    else if(player_ability.EFFECT_TYPE == PLUS){
-        char *effect = player_ability.EFFECTS;
-        char *plus_boost = strtok(effect," ");
-        char *Attribute = strtok(NULL,"");
-        int boost = atoi(plus_boost);
-
-
-        if (strcmp(Attribute,"DEFENCE")==0){
-            main_character->stats.DEFENCE += boost;
-        }else if (strcmp(Attribute,"MAX_HP")==0){
-            main_character->stats.MAX_HP += boost;
-        }else if (strcmp(Attribute,"MAX_MANA")==0){
-            main_character->stats.MAX_MANA += boost;
-        }else if (strcmp(Attribute,"MAGIC_POWER")==0){
-            main_character->stats.MAGIC_POWER += boost;
-        }else if (strcmp(Attribute,"WEAPON_DAMAGE")==0){
-            main_character->stats.WEAPON_DAMAGE += boost;
-        }else if (strcmp(Attribute,"DAMAGE")==0){
-            main_character->stats.DAMAGE += boost;
-        }else if (strcmp(Attribute,"SPEED")==0){
-            main_character->stats.SPEED += boost;
-        }else if (strcmp(Attribute,"STEALTH")==0){
-            main_character->stats.STEALTH += boost;
+    else if (player_ability.EFFECT_TYPE == PLUS) {
+        int boost = first ? atoi(first) : 0;
+        const char *Attribute = second;
+        if (Attribute) {
+            if (strcmp(Attribute,"DEFENCE")==0) main_character->stats.DEFENCE += boost;
+            else if (strcmp(Attribute,"MAX_HP")==0) main_character->stats.MAX_HP += boost;
+            else if (strcmp(Attribute,"MAX_MANA")==0) main_character->stats.MAX_MANA += boost;
+            else if (strcmp(Attribute,"MAGIC_POWER")==0) main_character->stats.MAGIC_POWER += boost;
+            else if (strcmp(Attribute,"WEAPON_DAMAGE")==0) main_character->stats.WEAPON_DAMAGE += boost;
+            else if (strcmp(Attribute,"DAMAGE")==0) main_character->stats.DAMAGE += boost;
+            else if (strcmp(Attribute,"SPEED")==0) main_character->stats.SPEED += boost;
+            else if (strcmp(Attribute,"STEALTH")==0) main_character->stats.STEALTH += boost;
+        }
     }
+    else if (player_ability.EFFECT_TYPE == GROUP) {
+        int team_boost = first ? atoi(first) : 0;
+        (void)team_boost; // TODO: group handling
+    }
+
+    free(copy);
 }
-    else if(player_ability.EFFECT_TYPE == GROUP){
-        char *effect = player_ability.EFFECTS;
-        char *team_boost_str = strtok(effect," ");
-        char *NONE = strtok(NULL," ");
-        char *zero_str = strtok(NULL," ");
-        int team_boost = atoi(team_boost_str);
-        //TODO Group Healling function
-    }
-}
+
 
 Abilities* get_ability_by_id(int id) {
     for (int i = 0; i < TOTAL_ABILITIES; i++) {

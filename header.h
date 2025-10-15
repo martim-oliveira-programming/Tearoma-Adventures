@@ -92,7 +92,7 @@ typedef struct player_abilities{
 typedef struct items{
     int ID;
     char *name;
-    char *effect;
+    const char *effect;
     int effect_type;
     int item_type;
     int healling;
