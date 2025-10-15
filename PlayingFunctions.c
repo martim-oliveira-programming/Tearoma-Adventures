@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <stdlib.h>
 #include "header.h"
 #include <unistd.h> 
+
 
 Player character_creation() {
     Player main_character = {0}; // Zero-initialize first
@@ -37,7 +39,7 @@ Player character_creation() {
     usleep(2500);
     printf("Select a build for your character:\n");
     usleep(2500);
-    main_character.build = get_input(
+    char *build_input = get_input(
         "Assassin: Very high Speed and great with long range weapons and dual wielding daggers.\n"
         "Tank: High Health and Strength. Is able to use powerful shields.\n"
         "Monk: High Strength, Speed and Health. Does not use weapons or Magic.\n"
@@ -47,7 +49,7 @@ Player character_creation() {
         "Summoner: Is abble to summon creatures to aid in combat or other situations.\n"
         "Balanced: Evenly distibuited tallent. 'Jack of all trades, master of none'.\n"
     );
-    
+    main_character.build = parse_build(build_input);
     get_attributes(&main_character);
     main_character.HP = main_character.stats.MAX_HP;
     main_character.MANA = main_character.stats.MAX_MANA;
@@ -65,14 +67,12 @@ Player character_creation() {
 
 
 Player play(Player main_character, Story story){
-
-    char *pronoun ="";
     char *choice;
-
-    if (strcmp(main_character.gender,"boy")==0 ){
+    const char* pronoun;
+    if (main_character.gender == Boy){
         pronoun = "he";
     }
-    else if (strcmp(main_character.gender,"girl")== 0){
+    else if (main_character.gender == Girl){
         pronoun = "she";
     }
 
@@ -95,11 +95,11 @@ Player play(Player main_character, Story story){
             printf("It's alredy dark. The street lights aren't all working and last you checked the time it was 22:54. This area of the city is known to be dangerous so you are moving at a fast pace.\n\n");
             choice = get_input("You see what seems to be an elderly lady struggling with some bags but it's too dark to be sure.\n Do you help? (Yes/No)\n");
             if (strcmp(choice,"Yes")== 0){
-                printf("You get closer and confirm your previous assessment and help the lady with her bags.\nThank you so much for the help %s, here is a gift for the help. - Old Lady\n",main_character.gender);
+                printf("You get closer and confirm your previous assessment and help the lady with her bags.\nThank you so much for the help %s, here is a gift; to thank you for your help. - Old Lady\n",gender_to_string(main_character.gender));
                 printf("You recieved 2 chicken sandwiches.\n");
                 main_character = add_inventory(main_character,0,2);
                 main_character.GOODNESS +=2;
-                printf("Thank You so much. I really need to get going now though. Goodbye! - says %s as %s thinks:\nI hope I'm not to late.",main_character.name,pronoun);
+                printf("Thank You so much. I really need to get going now. Goodbye! - says %s as %s thinks:\nI hope I'm not to late.",main_character.name,pronoun);
             }
             printf("Uppon arival, you check the premesis for an entrance but the place seems to have a metal fence all around.\n\n");
             main_character.HUNGER += 4;
@@ -130,6 +130,25 @@ Player play(Player main_character, Story story){
     return main_character;
 }
 
+Builds parse_build(const char *s) {
+    if (!s) return Balanced;
+    if (strcasecmp(s, "Assassin") == 0) return Assassin;
+    if (strcasecmp(s, "Tank") == 0) return Tank;
+    if (strcasecmp(s, "Monk") == 0) return Monk;
+    if (strcasecmp(s, "Ninja") == 0) return Ninja;
+    if (strcasecmp(s, "Mage") == 0) return Mage;
+    if (strcasecmp(s, "Healer") == 0) return Healer;
+    if (strcasecmp(s, "Summoner") == 0) return Summoner;
+    if (strcasecmp(s, "Balanced") == 0) return Balanced;
+    // default
+    return Balanced;
+}
 
 
-
+const char *gender_to_string(Gender g){
+    switch(g){
+        case Boy:  return "Boy";
+        case Girl: return "Girl";
+        default:   return "Unknown";
+    }
+}

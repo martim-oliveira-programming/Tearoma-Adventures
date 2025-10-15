@@ -99,10 +99,6 @@ typedef struct items{
     int equipable;
 }Items;
 
-typedef struct summoning_contracts{
-    NPC stats;
-}SUMMONS;
-
 typedef enum gender{
     Boy,
     Girl,
@@ -130,6 +126,11 @@ typedef struct other_characters{
     int DAMAGE;
     int SPEED;
 }NPC;
+
+typedef struct summoning_contracts{
+    NPC stats;
+}SUMMONS;
+
 typedef struct player {
     // Basic info
     char *name;
@@ -137,7 +138,7 @@ typedef struct player {
     int age;
     int gender;
     // Game attributes
-    int *build;
+    int build;
     int* summonIDs;
     int* abilitiesIDs;
     int* inventoryIDs;
@@ -182,12 +183,25 @@ int QuitGame();
 
 //Build Character Functions
 Player character_creation();
+Builds parse_build(const char *s);
 void get_attributes(Player *main_character);
+const char *gender_to_string(Gender g);
 
 //Inventory Management
 Player add_inventory(Player main_character, int itemID, int amount);
 Player remove_inventory(Player main_character, int itemID, int amount);
 
+//Abbilities & Items Management
+Player add_ability(Player main_character, int abilityID);
+Player remove_ability(Player main_character, int abilityID);
+Player equip_armor(Player main_character, int itemID);
+Player unequip_armor(Player main_character, int slot);
+Player equip_weapon(Player main_character, int itemID);
+Player unequip_weapon(Player main_character, int slot);
+Player add_summon(Player main_character, int summonID);
+Player remove_summon(Player main_character, int summonID);
+
+void apply_ability_effect(Player *main_character ,Abilities player_ability);
 //Utilitie Functions
 Abilities* get_ability_by_id(int id);
 NPC* get_npc_by_id(int id);

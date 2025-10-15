@@ -4,7 +4,7 @@
 #include <time.h>
 #include "header.h"
 
-
+//TODO: Remake the save/load to a symbol based system to make it easier to add new variables to save and load.
 int file_exists(const char* filename) {
     FILE* file = fopen(filename, "r");
     if (file) {
