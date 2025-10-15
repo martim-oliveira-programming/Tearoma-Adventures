@@ -138,6 +138,7 @@ typedef struct player {
     int age;
     int gender;
     // Game attributes
+    int money;
     int build;
     int* summonIDs;
     int* abilitiesIDs;
@@ -212,6 +213,8 @@ extern Abilities ALL_abilities[TOTAL_ABILITIES];
 extern NPC ALL_summons[TOTAL_SUMMONS];
 extern Items ALL_items[TOTAL_ITEMS];
 
+//Playing Functions
+Player play_chapter(Player main_character, Story story);
 
 #endif
 

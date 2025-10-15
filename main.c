@@ -30,21 +30,10 @@ int main() {
                     // Load existing game
                     load_save(&story, &main_character, chapter_npcs);
                 }
-
-                // Gameplay loop
-                char *next_action = "";
-                while(current_state == PLAYING) {
-                    // Here you would add your actual game logic
-                    
-                    
-                    // Example of game logic
-                    if (strcmp(next_action, "Quit") == 0) {
-                        save_game(story,main_character,chapter_npcs);
-                        current_state = MENU;
-                    }
-                    
-                    free(next_action);
-                }
+                printf("Starting game -- Chapter %d -- Hello %s\n", story.Chapter +1, main_character.name);
+                main_character = play_chapter(main_character, story);
+                save_game(story, main_character, chapter_npcs);
+                current_state = MENU; // Return to menu after playing
                 break;
             }
             case QUIT:

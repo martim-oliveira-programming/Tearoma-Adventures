@@ -250,7 +250,6 @@ void apply_ability_effect(Player *main_character ,Abilities player_ability){
         (void)team_boost; // TODO: group handling
     }
 
-    free(copy);
 }
 
 
@@ -455,4 +454,26 @@ Player remove_summon(Player main_character, int summonID){
         }
     }
     return main_character;
+}
+
+Builds parse_build(const char *s) {
+    if (!s) return Balanced;
+    if (strcasecmp(s, "Assassin") == 0) return Assassin;
+    if (strcasecmp(s, "Tank") == 0) return Tank;
+    if (strcasecmp(s, "Monk") == 0) return Monk;
+    if (strcasecmp(s, "Ninja") == 0) return Ninja;
+    if (strcasecmp(s, "Mage") == 0) return Mage;
+    if (strcasecmp(s, "Healer") == 0) return Healer;
+    if (strcasecmp(s, "Summoner") == 0) return Summoner;
+    if (strcasecmp(s, "Balanced") == 0) return Balanced;
+    // default
+    return Balanced;
+}
+
+const char *gender_to_string(Gender g){
+    switch(g){
+        case Boy:  return "Boy";
+        case Girl: return "Girl";
+        default:   return "Unknown";
+    }
 }
