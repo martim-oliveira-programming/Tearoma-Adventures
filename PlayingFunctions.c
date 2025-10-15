@@ -72,7 +72,7 @@ Player character_creation() {
 }
 
 
-Player play_chapter(Player main_character, Story story){
+Player play_chapter(Player main_character, Story *story){
     char *choice;
     const char* pronoun;
     if (main_character.gender == Boy){
@@ -82,7 +82,7 @@ Player play_chapter(Player main_character, Story story){
         pronoun = "she";
     }
 
-    switch (story.Chapter)
+    switch (story->Chapter)
     {
     case Chapter_1:{
         printf("Chapter 1: The Beginning\n");
@@ -106,9 +106,9 @@ Player play_chapter(Player main_character, Story story){
         sleep(5);
         choice = get_input("Should I go search for my Dad or stay with my Mom (Dad/Mom)\n");
         if(strcmp(choice,"Dad")== 0){ //TODO Mom
-            story.Path = 1;
+            story->Path = 1;
             main_character.HUNGER +=1;
-            printf("%s-- I .. just can't Mom but I love you and I will come back soon.\nHopefully with Dad.\n",main_character.name);
+            printf("%s-- I .. just can't Mom but I love you and I will come back soon.\n-- Hopefully with Dad.\n",main_character.name);
             sleep(7);
             printf("You leave and start heading towards your Dad's office when you remember he said he whoudn't work from there today and whould instead visit the new mine his company was exploring.\n");
             sleep(7);
@@ -117,7 +117,7 @@ Player play_chapter(Player main_character, Story story){
             choice = get_input("I see what seems to be an elderly lady struggling with some bags but it's too dark to be sure.\nShould I help her? (Yes/No)\n");
             
             if (strcmp(choice,"Yes")== 0){
-                printf("You get closer and confirm your previous assessment was correct and help the lady with her bags.\nOld Lady-- Thank you so much for the help %s, here is a gift.\nThank you for all your help.\n",gender_to_string(main_character.gender));
+                printf("You get closer and confirm your previous assessment was correct and help the lady with her bags.\nOld Lady-- Thank you so much for the help %s, here is a gift.\n-- Thank you for all your help.\n",gender_to_string(main_character.gender));
                 sleep(5);
                 printf("'You recieved 2 chicken sandwiches'.\n");
                 main_character = add_inventory(main_character,0,2);//Chicken Sandwich
@@ -145,7 +145,7 @@ Player play_chapter(Player main_character, Story story){
                 main_character.HUNGER += 20;
                 main_character.GOODNESS -= 4;
                 sleep(5);
-                printf("You wake up next to the security guards.\n They tell you that you can't be here and that they will have to take you to the police station.\n");
+                printf("You wake up next to the security guards.\nThey tell you that you can't be here and that they will have to take you to the police station.\n");
             }
             else if (strcmp(choice, "Ask") == 0) {
                 sleep(2);
@@ -155,8 +155,9 @@ Player play_chapter(Player main_character, Story story){
             sleep(5);
             main_character = add_inventory(main_character,1, 1); //Flashlight
             printf("You explain the situation to the security guards and ask if you can go in to look for your Dad.\n");
-            sleep(5);
+            sleep(6);
             printf("Reluctantly they let you in and one of them comes with you.\nThe guard gives you a flashlight to proceed with your search.\nAs you advance in the tunnels, you start to see a purple light that illuminates the cave.\n");
+            sleep(6);
             printf("'You recieved 1 Flashlight'.\n");
             sleep(5);
             printf("Security Guard-- I don't think we should keep going. It can get dangerous and we aren't suposed to be here anyway!\n%s-- Maybe but this light is really weird and we came this far...\n",main_character.name);
@@ -177,14 +178,13 @@ Player play_chapter(Player main_character, Story story){
             choice = get_input("Should I help the miners or go back home to Mom? (Help/Back)\n");
             
             if (strcmp(choice,"Help")== 0){//TODO Back
-                story.Path = 11;
+                story->Path = 11;
                 printf("You help the miners move the rock to save your Dad and the other trapped people.\n");
                 sleep(5);
                 printf("As the team finnaly moves the rock you fall into the purple crystal hole that looks like a weird passage or portal.\n");
                 sleep(4);
                 printf("----------------------\nChapter 1 Completed\n-------------------\n");
-                story.Chapter = Chapter_2;
-                save_game(story,main_character,NULL);
+                story->Chapter = Chapter_2;
                 return main_character;
             }
 

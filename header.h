@@ -214,7 +214,7 @@ extern NPC ALL_summons[TOTAL_SUMMONS];
 extern Items ALL_items[TOTAL_ITEMS];
 
 //Playing Functions
-Player play_chapter(Player main_character, Story story);
+Player play_chapter(Player main_character, Story *story);
 
 #endif
 

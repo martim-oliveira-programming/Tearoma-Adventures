@@ -6,7 +6,7 @@
 
 int main() {
     GameState current_state = MENU;
-    Story story = {0};
+    Story story = {0}; // Initialize story
     Player main_character = {0};
     NPC chapter_npcs[1] = {0};
 
@@ -31,7 +31,7 @@ int main() {
                     load_save(&story, &main_character, chapter_npcs);
                 }
                 printf("Starting game -- Chapter %d -- Hello %s\n", story.Chapter +1, main_character.name);
-                main_character = play_chapter(main_character, story);
+                main_character = play_chapter(main_character,&story);
                 save_game(story, main_character, chapter_npcs);
                 current_state = MENU; // Return to menu after playing
                 break;
