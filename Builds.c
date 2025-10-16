@@ -227,10 +227,13 @@ void apply_ability_effect(Player *main_character ,Abilities player_ability){
         }
     }
     else if (player_ability.EFFECT_TYPE == SUMMON) {
-        int ammount = first ? atoi(first) : 0;
-        int summon_id = second ? atoi(second) : -1;
-        (void)ammount; (void)summon_id; // TODO: implement summon behaviour
+        int summon_id = first ? atoi(first) : -1;
+        if (summon_id != -1) {
+            *main_character->team = add_team_member(*(main_character->team), summon_id, true);
+        
+        }
     }
+
     else if (player_ability.EFFECT_TYPE == PLUS) {
         int boost = first ? atoi(first) : 0;
         const char *Attribute = second;
@@ -246,12 +249,44 @@ void apply_ability_effect(Player *main_character ,Abilities player_ability){
         }
     }
     else if (player_ability.EFFECT_TYPE == GROUP) {
-        int team_boost = first ? atoi(first) : 0;
-        (void)team_boost; // TODO: group handling
+        int team_heal = first ? atoi(first) : 0;
+        int team_boost = second ? atoi(second) : 0;
+        if (team_heal > 0) {
+            main_character->HP += team_heal;
+            if (main_character->HP > main_character->stats.MAX_HP) {
+                main_character->HP = main_character->stats.MAX_HP;
+            }
+            for (int i = 0; i < main_character->team->size; i++) {
+                NPC *member = get_npc_by_id(main_character->team->memberIDs[i]);
+                if (member) {
+                    member->HP += team_heal;
+                    if (member->HP > member->MAX_HP) {
+                        member->HP = member->MAX_HP;
+                    }
+                }
+            }
     }
-
+        if (team_boost > 0) {
+            main_character->stats.DAMAGE += team_boost;
+            for (int i = 0; i < main_character->team->size; i++) {
+                NPC *member = get_npc_by_id(main_character->team->memberIDs[i]);
+                if (member) {
+                    member->DAMAGE += team_boost;
+                }
+            }
+        }
+    }
+    free(copy);
 }
 
+SUMMONS *get_summon_by_id(int id){
+    for(int i = 0;i<TOTAL_SUMMONS;i++){
+        if (ALL_summons[i].ID == id){
+            return &ALL_summons[i];
+        }
+    }
+    return NULL;
+}
 
 Abilities* get_ability_by_id(int id) {
     for (int i = 0; i < TOTAL_ABILITIES; i++) {
@@ -476,4 +511,45 @@ const char *gender_to_string(Gender g){
         case Girl: return "Girl";
         default:   return "Unknown";
     }
+}
+
+NPC_Team add_team_member(NPC_Team team, int memberID, bool is_summon) {
+    if (is_summon) {
+        team.summonIDs = realloc(team.summonIDs, (team.size + 1) * sizeof(int));
+        team.summonIDs[team.size] = memberID;
+    } else {
+    team.memberIDs = realloc(team.memberIDs, (team.size + 1) * sizeof(int));
+    team.memberIDs[team.size] = memberID;
+    team.size += 1;
+    return team;
+}
+}
+
+NPC_Team remove_team_member(NPC_Team team, int memberID, bool is_summon) {
+    if (is_summon) {
+        for (int i = 0; i < team.size; i++) {
+            if (team.summonIDs[i] == memberID) {
+                // Shift left
+                for (int k = i; k < team.size - 1; k++) {
+                    team.summonIDs[k] = team.summonIDs[k + 1];
+                }
+                team.size -= 1;
+                team.summonIDs = realloc(team.summonIDs, team.size * sizeof(int));
+                break;
+            }
+        }
+    } else {
+    for (int i = 0; i < team.size; i++) {
+        if (team.memberIDs[i] == memberID) {
+            // Shift left
+            for (int k = i; k < team.size - 1; k++) {
+                team.memberIDs[k] = team.memberIDs[k + 1];
+            }
+            team.size -= 1;
+            team.memberIDs = realloc(team.memberIDs, team.size * sizeof(int));
+            break;
+        }
+    }
+    return team;
+}
 }

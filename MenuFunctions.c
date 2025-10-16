@@ -4,7 +4,6 @@
 #include "header.h"
 #include <unistd.h> 
 
-
 char* get_input(char* prompt) {
     printf("%s", prompt);
     char *choice = malloc(MAX_INPUT);
@@ -53,9 +52,7 @@ GameState menu_selection() {
 }
 
 GameState Commands(){
-    printf("Quit: (Quit the game and go to Main Menu.\nThis will NOT save the game.\nThe game saves automatically after each Chapter.)\n\n"
-            "Inventory: Opens the Inventory.\n\n"
-            );
+    printf("Quit: (Quit the game and go to Main Menu.\nThis will NOT save the game.\nThe game saves automatically after each Chapter.)\n\n");
     return MENU;
 }
 

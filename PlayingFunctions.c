@@ -29,7 +29,6 @@ Player character_creation() {
     main_character.LEVEL = 0;
     main_character.EXP = 0;
 
-    
     // Initialize empty armor
     for (int i = 0; i < 4; i++) {
         main_character.armor[i] = 0;
@@ -70,7 +69,6 @@ Player character_creation() {
     main_character.item_ammount = 0;
     return main_character;
 }
-
 
 Player play_chapter(Player main_character, Story *story){
     char *choice;

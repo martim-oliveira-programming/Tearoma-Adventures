@@ -1,4 +1,0 @@
-Player: Martim
-Age: 15
-Chapter: 1
-NPC: (null)

@@ -4,7 +4,7 @@
 #include "header.h"
 #include <unistd.h> 
 
-
+//Abilities {Id,Name,Healing,Damage,Mana Cost,Effects,Effect Type}
 Abilities ALL_abilities[TOTAL_ABILITIES] = {
     {0,"NO Abilitie",0,0,0,"",NONE},
     {1,"Speed Boost",0,0,30,"2 SPEED",BOOST},
@@ -13,16 +13,31 @@ Abilities ALL_abilities[TOTAL_ABILITIES] = {
     {4,"Disguise",0,0,30,"3 STEALTH",BOOST},
     {5,"Fire Bolt",0,15,15,"",NONE},
     {6,"Basic Healing",20,0,20,"",NONE},
-    {7,"Group Healing",15,0,30,"15 NONE 0",GROUP},
+    {7,"Group Healing",15,0,30,"15 0",GROUP},
     {8,"Shadow Dog Summon",0,0,40,"1 Shadow Dog",SUMMON},
     {9,"Strength Boost",0,0,30,"2 DAMAGE",BOOST},
     {10,"Invisibility",0,0,5,"10 STEALTH",BOOST},
 };
 
+//NPC {ID,Name,Ability_id,Effect Type,Rank,Level,Exp_Givven,HP,Max_HP,Damage,Speed}
 NPC ALL_summons[TOTAL_SUMMONS] = {
-    {0,"Shadow Dog",0,NONE,E,1,0,2,2,4,4},
+    {0,"Shadow Dog",0,NONE,D,1,0,3,3,4,5},
 };
 
+NPC ALL_npc[TOTAL_NPC] = {//TODO Change these Random NPC
+    {0,"Mom",0,NONE,E,1,0,10,10,1,1},
+    {1,"Dad",0,NONE,E,1,0,10,10,1,1},
+    {2,"Security Guard",0,NONE,D,1,10,20,20,5,3},
+    {3,"Old Lady",0,NONE,C,1,15,15,15,3,2},
+    {4,"Mysterious Stranger",0,NONE,B,1,20,30,30,7,5},
+    {5,"Gang Member",0,NONE,C,1,15,25,25,6,4},
+    {6,"Police Officer",0,NONE,A,1,30,40,40,8,6},
+    {7,"Company Executive",0,NONE,B,1,20,30,30,5,4},
+    {8,"Mine Foreman",0,NONE,C,1,15,25,25,6,4},
+    {9,"Underground Creature",0,NONE,S,1,50,60,60,10,8},
+};
+
+//Items {ID,Name,Effect,Effect Type,Item Type,Healling,Equipable}
 Items ALL_items[TOTAL_ITEMS] = {
     {0,"Chicken Sandwich","",NONE,CONSUMABLE,10,NO},
     {1,"Flashlight","0.3 Stealth",BOOST,KEY,0,OFF_HAND},

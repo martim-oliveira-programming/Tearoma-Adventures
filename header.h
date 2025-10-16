@@ -6,6 +6,7 @@
 #define TOTAL_ABILITIES 11
 #define TOTAL_ITEMS 19
 #define TOTAL_SUMMONS 1
+#define TOTAL_NPC 10
 
 typedef enum{
     QUIT = -1,
@@ -158,14 +159,15 @@ typedef struct player {
     int MANA;
     int GOODNESS;
     Attributes stats;  // Contains all build-specific attributes
+    NPC_Team *team;
 } Player;
 
-//TODO Create a struct to create a team of NPCs to help the player in combat including Summons.
-
-typedef struct npc_team {
-    NPC *members;
+typedef struct team {
+    int *memberIDs;
+    int *summonIDs;
     int size;
-}Team;
+}NPC_Team;
+
 
 char* get_input(char* input);
 
@@ -187,6 +189,7 @@ Player character_creation();
 Builds parse_build(const char *s);
 void get_attributes(Player *main_character);
 const char *gender_to_string(Gender g);
+const char *build_to_string(Builds b);
 
 //Inventory Management
 Player add_inventory(Player main_character, int itemID, int amount);
@@ -201,12 +204,16 @@ Player equip_weapon(Player main_character, int itemID);
 Player unequip_weapon(Player main_character, int slot);
 Player add_summon(Player main_character, int summonID);
 Player remove_summon(Player main_character, int summonID);
+NPC_Team add_team_member(NPC_Team team, int memberID, bool is_summon);
+NPC_Team remove_team_member(NPC_Team team, int memberID, bool is_summon);
 
 void apply_ability_effect(Player *main_character ,Abilities player_ability);
 //Utilitie Functions
 Abilities* get_ability_by_id(int id);
 NPC* get_npc_by_id(int id);
 Items* get_items_by_id(int id);
+SUMMONS *get_summon_by_id(int id);
+
 
 //Abilities & Items
 extern Abilities ALL_abilities[TOTAL_ABILITIES];
