@@ -22,7 +22,7 @@ int main() {
             case PLAYING: {
                 // Initialize new game if no save exists
                 if (!file_exists("save.txt")) {
-                    main_character = character_creation();//Create the player's character
+                    main_character = character_creation(); // Create the player's character
                     story.Chapter = Chapter_1;
                     story.Path = 0;
                     save_game(story, main_character, chapter_npcs);
@@ -30,12 +30,19 @@ int main() {
                     // Load existing game
                     load_save(&story, &main_character, chapter_npcs);
                 }
-                printf("Starting game -- Chapter %d -- Hello %s\n", story.Chapter +1, main_character.name);
-                main_character = play_chapter(main_character,&story);
-                save_game(story, main_character, chapter_npcs);
-                current_state = MENU; // Return to menu after playing
+                printf("Starting game -- Chapter %d -- Hello %s\n", story.Chapter + 1, main_character.name);
+
+                // Ask Continue (may return MENU, PLAYING, QUIT, etc.)
+                current_state = Continue(&story, &main_character, chapter_npcs);
+
+                if (current_state == PLAYING) {
+                    // actually play the chapter and persist changes
+                    main_character = play_chapter(main_character, &story);
+                    save_game(story, main_character, chapter_npcs);
+                }
                 break;
             }
+// ...existing code...
             case QUIT:
                 break;
         }

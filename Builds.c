@@ -279,7 +279,7 @@ void apply_ability_effect(Player *main_character ,Abilities player_ability){
     free(copy);
 }
 
-SUMMONS *get_summon_by_id(int id){
+NPC *get_summon_by_id(int id){
     for(int i = 0;i<TOTAL_SUMMONS;i++){
         if (ALL_summons[i].ID == id){
             return &ALL_summons[i];
@@ -517,13 +517,15 @@ NPC_Team add_team_member(NPC_Team team, int memberID, bool is_summon) {
     if (is_summon) {
         team.summonIDs = realloc(team.summonIDs, (team.size + 1) * sizeof(int));
         team.summonIDs[team.size] = memberID;
+
     } else {
     team.memberIDs = realloc(team.memberIDs, (team.size + 1) * sizeof(int));
     team.memberIDs[team.size] = memberID;
+    }
     team.size += 1;
     return team;
 }
-}
+
 
 NPC_Team remove_team_member(NPC_Team team, int memberID, bool is_summon) {
     if (is_summon) {
@@ -550,6 +552,8 @@ NPC_Team remove_team_member(NPC_Team team, int memberID, bool is_summon) {
             break;
         }
     }
+}
+    team.size -= 1;
     return team;
 }
-}
+

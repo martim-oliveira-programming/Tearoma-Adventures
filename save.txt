@@ -1,0 +1,26 @@
+PlayerName: Martim
+Age: 15
+Chapter: 0
+Path: 0
+HUNGER: 0
+RANK: 0
+LEVEL: 0
+EXP: 0
+STAT_DEFENCE: 0
+STAT_MAX_HP: 10
+STAT_MAX_MANA: 10
+STAT_MAGIC_POWER: 0
+STAT_WEAPON_DAMAGE: 0
+STAT_DAMAGE: 30
+STAT_SPEED: 20
+STAT_STEALTH: 9
+STAT_WEAPON_USER: 0
+STAT_DUAL_WIELD: 0
+STAT_MAGIC_USER: 0
+InventoryCount: 0
+Inventory:
+AbilitiesCount: 1
+Abilities:3
+SummonsCount: 0
+Summons:
+NPC0:

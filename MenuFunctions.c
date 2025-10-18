@@ -37,7 +37,7 @@ GameState menu_selection() {
         result = Commands();
     }
     else if (strcmp(command, "Continue") == 0) {
-        result = Continue();
+        result = PLAYING;
     }
     else if (strcmp(command, "QuitGame") == 0) {
         result = QuitGame();
@@ -87,7 +87,7 @@ GameState NewGame() {
     }
 }
 
-GameState Continue() {
+GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs) {
     printf("Loading your saved game...\n");
     
     Story loaded_story = {0};
@@ -95,37 +95,48 @@ GameState Continue() {
     NPC loaded_npcs[1] = {0};
     
     int found_file = load_save(&loaded_story, &loaded_player, loaded_npcs);
-    
-    if(found_file==1){
+    if (!found_file) {
+        printf("Select NewGame to start a New Game.\nReturning to Menu...\n");
+        return MENU;
+    }
+
     char *choice = get_input("Found save file. Load it? (yes/no)\n");
-    
-    if(strcmp(choice,"yes")==0){
-        // Only show details if they say yes
+    if (!choice) return MENU;
+
+    if (strcmp(choice, "yes") == 0) {
+        // copy loaded into caller-provided structures
+        // free any existing dynamic fields in out_player if needed before overwrite
+        if (out_player->name) { free(out_player->name); out_player->name = NULL; }
+        if (chapter_NPCs && chapter_NPCs[0].name) { free(chapter_NPCs[0].name); chapter_NPCs[0].name = NULL; }
+        // shallow copy whole struct then replace dynamic pointers
+        *out_story = loaded_story;
+        *out_player = loaded_player;
+        if (chapter_NPCs) chapter_NPCs[0] = loaded_npcs[0];
+
+        // show minimal info
         printf("\n--- Loaded Game ---\n");
-        usleep(200000); // 0.2s delay
-        printf("Player: %s\n", loaded_player.name);
         usleep(200000);
-        printf("Age: %d\n", loaded_player.age);
+        printf("Player: %s\n", out_player->name ? out_player->name : "(unknown)");
         usleep(200000);
-        printf("Chapter: %d\n", loaded_story.Chapter);
+        printf("Age: %d\n", out_player->age);
         usleep(200000);
-        printf("NPC: %s\n", loaded_npcs[0].name);
-        usleep(1000000); // 1s delay
-        
+        printf("Chapter: %d\n", out_story->Chapter);
+        usleep(200000);
+        printf("NPC: %s\n", (chapter_NPCs && chapter_NPCs[0].name) ? chapter_NPCs[0].name : "(none)");
+        usleep(1000000);
+
         free(choice);
         return PLAYING;
     } else {
         free(choice);
-        // Clean up allocations before returning
-        free(loaded_player.name);
-        free(loaded_npcs[0].name);
+        // free loaded allocations because user declined
+        if (loaded_player.name) free(loaded_player.name);
+        if (loaded_player.inventoryIDs) free(loaded_player.inventoryIDs);
+        if (loaded_player.abilitiesIDs) free(loaded_player.abilitiesIDs);
+        if (loaded_player.summonIDs) free(loaded_player.summonIDs);
+        if (loaded_npcs[0].name) free(loaded_npcs[0].name);
         return MENU;
     }
-}
-else{
-    printf("Select NewGame to start a New Game.\n Returning to Menu...\n");
-    return MENU;
-}
 }
 
 GameState QuitGame(){

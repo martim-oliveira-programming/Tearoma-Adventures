@@ -132,6 +132,12 @@ typedef struct summoning_contracts{
     NPC stats;
 }SUMMONS;
 
+typedef struct team {
+    int *memberIDs;
+    int *summonIDs;
+    int size;
+}NPC_Team;
+
 typedef struct player {
     // Basic info
     char *name;
@@ -162,11 +168,7 @@ typedef struct player {
     NPC_Team *team;
 } Player;
 
-typedef struct team {
-    int *memberIDs;
-    int *summonIDs;
-    int size;
-}NPC_Team;
+
 
 
 char* get_input(char* input);
@@ -181,7 +183,7 @@ int file_exists(const char* filename);
 int menu_selection();
 int NewGame();
 int Commands();
-int Continue();
+GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs);
 int QuitGame();
 
 //Build Character Functions
@@ -212,7 +214,7 @@ void apply_ability_effect(Player *main_character ,Abilities player_ability);
 Abilities* get_ability_by_id(int id);
 NPC* get_npc_by_id(int id);
 Items* get_items_by_id(int id);
-SUMMONS *get_summon_by_id(int id);
+NPC *get_summon_by_id(int id);
 
 
 //Abilities & Items
