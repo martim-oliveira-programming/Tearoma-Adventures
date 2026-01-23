@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "header.h"
+#include "story.h"
+#include "mechanics.h"
 #include <unistd.h> 
 
 //Abilities {Id,Name,Healing,Damage,Mana Cost,Effects,Effect Type}

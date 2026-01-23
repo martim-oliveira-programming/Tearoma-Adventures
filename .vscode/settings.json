@@ -3,5 +3,6 @@
         "*.pl": "prolog",
         "*.pro": "prolog",
         "properties.C": "cpp"
-    }
+    },
+    "makefile.configureOnOpen": false
 }

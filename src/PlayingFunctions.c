@@ -2,8 +2,9 @@
 #include <string.h>
 #include <strings.h>
 #include <stdlib.h>
-#include "header.h"
+#include "story.h"
 #include "menu.h"
+#include "mechanics.h"
 #include "save.h"
 #include <unistd.h> 
 

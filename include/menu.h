@@ -1,7 +1,8 @@
 #ifndef MENU_H
 #define MENU_H
 #include <stdbool.h>
-#include "header.h"
+#include "story.h"
+#include "mechanics.h"
  
 #define MAX_INPUT 20
 

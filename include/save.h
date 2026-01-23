@@ -1,7 +1,7 @@
 #ifndef SAVE_H
 #define SAVE_H
 #include <stdbool.h>
-#include "header.h"
+#include "story.h"
 
 void save_game(Story story,Player player,NPC* chapter_NPCs);
 int load_save(Story *story, Player *player, NPC *chapter_NPCs);

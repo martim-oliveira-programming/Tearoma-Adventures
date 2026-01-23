@@ -17,7 +17,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(OBJ)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c include/header.h include/menu.h | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
 
 $(BUILD_DIR):

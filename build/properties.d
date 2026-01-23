@@ -1,3 +1,5 @@
-build/properties.o: src/properties.c include/header.h
+build/properties.o: src/properties.c include/story.h include/mechanics.h
 
-include/header.h:
+include/story.h:
+
+include/mechanics.h:

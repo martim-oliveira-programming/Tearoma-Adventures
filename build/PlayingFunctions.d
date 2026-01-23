@@ -1,8 +1,10 @@
-build/PlayingFunctions.o: src/PlayingFunctions.c include/header.h \
-  include/menu.h include/save.h
+build/PlayingFunctions.o: src/PlayingFunctions.c include/story.h \
+  include/menu.h include/mechanics.h include/save.h
 
-include/header.h:
+include/story.h:
 
 include/menu.h:
+
+include/mechanics.h:
 
 include/save.h:

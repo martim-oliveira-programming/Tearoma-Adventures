@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "header.h"
+#include "story.h"
 #include "menu.h"
 #include "save.h"
+#include "mechanics.h"
 #include <unistd.h> 
 
 int main() {

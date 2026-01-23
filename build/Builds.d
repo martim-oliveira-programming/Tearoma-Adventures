@@ -1,3 +1,5 @@
-build/Builds.o: src/Builds.c include/header.h
+build/Builds.o: src/Builds.c include/story.h include/mechanics.h
 
-include/header.h:
+include/story.h:
+
+include/mechanics.h:

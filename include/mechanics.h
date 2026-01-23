@@ -1,7 +1,8 @@
-#ifndef HEADER_H
-#define HEADER_H
+#ifndef MECHANICS_H
+#define MECHANICS_H
 #include <stdbool.h>
- 
+#include "story.h"
+
 #define TOTAL_ABILITIES 11
 #define TOTAL_ITEMS 19
 #define TOTAL_SUMMONS 1
@@ -27,19 +28,6 @@ typedef enum{
     LEGS,
     SHOES,
 }Equipable;
-
-typedef enum{
-    Chapter_1,
-    Chapter_2,
-    Chapter_3,
-    Chapter_4,
-    Chapter_5,
-}Chapters;
-
-typedef struct story{
-    int Chapter;
-    int Path;
-}Story;
 
 typedef enum{
     NONE,
@@ -159,7 +147,6 @@ typedef struct player {
     NPC_Team *team;
 } Player;
 
-
 //Build Character Functions
 Player character_creation();
 Builds parse_build(const char *s);
@@ -171,7 +158,7 @@ const char *build_to_string(Builds b);
 Player add_inventory(Player main_character, int itemID, int amount);
 Player remove_inventory(Player main_character, int itemID, int amount);
 
-//Abbilities & Items Management
+
 Player add_ability(Player main_character, int abilityID);
 Player remove_ability(Player main_character, int abilityID);
 Player equip_armor(Player main_character, int itemID);
@@ -182,16 +169,14 @@ Player add_summon(Player main_character, int summonID);
 Player remove_summon(Player main_character, int summonID);
 NPC_Team add_team_member(NPC_Team team, int memberID, bool is_summon);
 NPC_Team remove_team_member(NPC_Team team, int memberID, bool is_summon);
-
 void apply_ability_effect(Player *main_character ,Abilities player_ability);
+
 //Utilitie Functions
 Abilities* get_ability_by_id(int id);
 NPC* get_npc_by_id(int id);
 Items* get_items_by_id(int id);
 NPC *get_summon_by_id(int id);
 
-
-//Abilities & Items
 extern Abilities ALL_abilities[TOTAL_ABILITIES];
 extern NPC ALL_summons[TOTAL_SUMMONS];
 extern Items ALL_items[TOTAL_ITEMS];
@@ -200,6 +185,3 @@ extern Items ALL_items[TOTAL_ITEMS];
 Player play_chapter(Player main_character, Story *story);
 
 #endif
-
-
-
