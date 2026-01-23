@@ -3,6 +3,8 @@
 #include <strings.h>
 #include <stdlib.h>
 #include "header.h"
+#include "menu.h"
+#include "save.h"
 #include <unistd.h> 
 
 Player character_creation() {

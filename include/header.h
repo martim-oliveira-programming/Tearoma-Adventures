@@ -2,19 +2,10 @@
 #define HEADER_H
 #include <stdbool.h>
  
-#define MAX_INPUT 20
 #define TOTAL_ABILITIES 11
 #define TOTAL_ITEMS 19
 #define TOTAL_SUMMONS 1
 #define TOTAL_NPC 10
-
-typedef enum{
-    QUIT = -1,
-    MENU,
-    PLAYING,
-    //PAUSE,
-    //MISSION_SELECTION
-}GameState;
 
 typedef enum{
     Assassin,
@@ -168,23 +159,6 @@ typedef struct player {
     NPC_Team *team;
 } Player;
 
-
-
-
-char* get_input(char* input);
-
-//Save Functions
-void save_game(Story story,Player player,NPC* chapter_NPCs);
-int load_save(Story *story, Player *player, NPC *chapter_NPCs);
-void secure_wipe();
-int file_exists(const char* filename);
-
-//Menu Functions
-int menu_selection();
-int NewGame();
-int Commands();
-GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs);
-int QuitGame();
 
 //Build Character Functions
 Player character_creation();

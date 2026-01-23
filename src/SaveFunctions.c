@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include "header.h"
+#include "menu.h"
+#include "save.h"
+#include <unistd.h>
 
 /* helper: parse comma separated ints into allocated array */
 static int parse_int_list(const char *src, int **out_arr) {

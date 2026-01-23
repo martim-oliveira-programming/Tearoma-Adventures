@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "header.h"
+#include "menu.h"
+#include "save.h"
 #include <unistd.h> 
 
 char* get_input(char* prompt) {
