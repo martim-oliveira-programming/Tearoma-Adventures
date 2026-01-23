@@ -85,7 +85,7 @@ Player play_chapter(Player main_character, Story *story){
     case Chapter_1:{
         printf("Chapter 1: The Beginning\n");
         sleep(1);
-        printf("It's a cold and rainy night.\nYou are at home with your Mom when you hear her calling you.\n");
+        printf("It's a cold and rainy night.\nYou are at home when you hear someone calling you.\n");
         sleep(5);
         printf("\?\?\?-- %s!!! Let's eat, dinner's ready.\nOk Mom I'm going! - %s\n",main_character.name,main_character.name);
         printf("Mom-- I have to tell you something sweety...\n");
@@ -201,9 +201,39 @@ Player play_chapter(Player main_character, Story *story){
         return main_character;
         break;
     }
+    else if (strcmp(choice,"Mom")== 0){
+        story->Path = 2;
+        printf("%s-- You're right Mom. I'm sorry. Let's wait for the police together.\n-- I love you.\n",main_character.name);
+        sleep(7);
+        printf("You stay with your Mom and try to comfort her as best as you can.\nDays go by and there is still no sign of your Dad.\nThe police tell you they are doing everything they can but there are no leads.\n");
+        sleep(7);
+        printf("One night, while you and your Mom are sleeping, you hear a noise outside the house.\nYou get up to check what it is and see a shadowy figure running away from your house.\n");
+        sleep(7);
+        printf("You chase after the figure but he is too fast and disappears into the night.\nYou return home and tell your Mom what happened but she is too scared to go outside again.\n");
+        sleep(7);
+        printf("Days turn into weeks and weeks into months. Your Mom becomes more and more depressed and you feel helpless.\nOne day, you receive a mysterious letter in the mail.\n");
+        sleep(7);
+        printf("The letter contains a clue about your Dad's whereabouts and a warning to be careful.\nYou decide to follow the clue and see where it leads you.\n");
+        sleep(7);
+        printf("----------------------\nChapter 1 Completed\n-------------------\n");
+        story->Chapter = Chapter_2;
+        return main_character;
+        break;
 
     }
-    return main_character;
 }
-return main_character;
+    case Chapter_2:{
+        printf("Chapter 2: To be continued...\n");
+        sleep(2);
+        printf("This chapter is still under development. Stay tuned for more adventures!\n");
+        sleep(2);
+        printf("----------------------\nChapter 2 Completed\n-------------------\n");
+        exit(0); // TODO remove exit when chapter 2 is implemented
+        //story->Chapter = Chapter_3;
+        //return main_character;
+        //break;
+    }
+    return main_character;
+    }
+    return main_character;
 }

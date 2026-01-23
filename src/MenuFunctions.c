@@ -88,6 +88,7 @@ GameState NewGame() {
 }
 
 GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs) {
+    char *choice;
     printf("Loading your saved game...\n");
     
     Story loaded_story = {0};
@@ -100,7 +101,11 @@ GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs) {
         return MENU;
     }
 
-    char *choice = get_input("Found save file. Load it? (yes/no)\n");
+    if (out_story->Chapter == 0){
+        choice = "yes"; // auto-continue if no current game
+    }else{
+        choice = get_input("Found save file. Do you wish to proceed to the next Chapter? (yes/no)\n");
+    }
     if (!choice) return MENU;
 
     if (strcmp(choice, "yes") == 0) {
@@ -125,7 +130,7 @@ GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs) {
         printf("NPC: %s\n", (chapter_NPCs && chapter_NPCs[0].name) ? chapter_NPCs[0].name : "(none)");
         usleep(1000000);
 
-        free(choice);
+        if (out_story->Chapter != 0){free(choice);}
         return PLAYING;
     } else {
         free(choice);
