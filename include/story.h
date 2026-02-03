@@ -15,8 +15,4 @@ typedef struct story{
     int Path;
 }Story;
 
-
 #endif
-
-
-

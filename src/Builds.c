@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "story.h"
 #include "mechanics.h"
+#include "utils.h"
 #include <unistd.h> 
 
 void get_attributes(Player *main_character) {
@@ -326,6 +327,10 @@ Player add_inventory(Player main_character, int itemID, int amount){
 }
 
 Player remove_inventory(Player main_character, int itemID, int amount){
+    if (not_in(itemID,main_character.inventoryIDs,main_character.item_ammount)) {
+        printf("Item not found in inventory.\n");
+        return main_character;
+    }
     int removed = 0;
     for (int j = 0; j < amount && removed < amount; j++) {
         for (int i = 0; i < main_character.item_ammount; i++) {
@@ -360,6 +365,10 @@ Player add_ability(Player main_character, int abilityID){
 }
 
 Player remove_ability(Player main_character, int abilityID){
+    if(not_in(abilityID,main_character.abilitiesIDs,main_character.abilities_ammount)) {
+        printf("Ability not found in player's abilities.\n");
+        return main_character;
+    }
     for (int i = 0; i < main_character.abilities_ammount; i++) {
         if (main_character.abilitiesIDs[i] == abilityID) {
             // Shift left
@@ -478,6 +487,10 @@ Player add_summon(Player main_character, int summonID){
 }
 
 Player remove_summon(Player main_character, int summonID){
+    if(not_in(summonID,main_character.summonIDs,main_character.summons_ammount)) {
+        printf("Summon not found in player's summons.\n");
+        return main_character;
+    }
     for (int i = 0; i < main_character.summons_ammount; i++) {
         if (main_character.summonIDs[i] == summonID) {
             // Shift left
@@ -527,7 +540,6 @@ NPC_Team add_team_member(NPC_Team team, int memberID, bool is_summon) {
     return team;
 }
 
-
 NPC_Team remove_team_member(NPC_Team team, int memberID, bool is_summon) {
     if (is_summon) {
         for (int i = 0; i < team.size; i++) {
@@ -558,3 +570,19 @@ NPC_Team remove_team_member(NPC_Team team, int memberID, bool is_summon) {
     return team;
 }
 
+int is_team_member(NPC_Team team, int memberID, bool is_summon) {
+    if (is_summon) {
+        for (int i = 0; i < team.size; i++) {
+            if (team.summonIDs[i] == memberID) {
+                return 1; // Found
+            }
+        }
+    } else {
+    for (int i = 0; i < team.size; i++) {
+        if (team.memberIDs[i] == memberID) {
+            return 1; // Found
+        }
+    }
+}
+    return 0; // Not found
+}

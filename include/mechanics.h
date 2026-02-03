@@ -169,6 +169,7 @@ Player add_summon(Player main_character, int summonID);
 Player remove_summon(Player main_character, int summonID);
 NPC_Team add_team_member(NPC_Team team, int memberID, bool is_summon);
 NPC_Team remove_team_member(NPC_Team team, int memberID, bool is_summon);
+int is_team_member(NPC_Team team, int memberID, bool is_summon);
 void apply_ability_effect(Player *main_character ,Abilities player_ability);
 
 //Utilitie Functions

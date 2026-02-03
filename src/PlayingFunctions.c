@@ -86,7 +86,7 @@ Player play_chapter(Player main_character, Story *story){
     switch (story->Chapter)
     {
     case Chapter_1:{
-        printf("Chapter 1: The Beginning\n");
+        printf("Chapter 1: I Can't Loose Him\n");
         sleep(1);
         printf("It's a cold and rainy night.\nYou are at home when you hear someone calling you.\n");
         sleep(5);
@@ -106,7 +106,7 @@ Player play_chapter(Player main_character, Story *story){
         printf("Mom-- Please ... don't go. I can't loose you too! - Your Mom begs\n\n");
         sleep(5);
         choice = get_input("Should I go search for my Dad or stay with my Mom (Dad/Mom)\n");
-        if(strcmp(choice,"Dad")== 0){ //TODO Mom
+        if(strcmp(choice,"Dad")== 0){
             story->Path = 1;
             main_character.HUNGER +=1;
             printf("%s-- I .. just can't Mom but I love you and I will come back soon.\n-- Hopefully with Dad.\n",main_character.name);
@@ -179,62 +179,91 @@ Player play_chapter(Player main_character, Story *story){
             choice = get_input("Should I help the miners or go back home to Mom? (Help/Back)\n");
             
             if (strcmp(choice,"Help")== 0){//TODO Back
-                story->Path = 11;
-                printf("You help the miners move the rock to save your Dad and the other trapped people.\n");
+                printf("I will help you move the rock to save my Dad and the other trapped people.\n");
                 sleep(5);
                 printf("As the team finnaly moves the rock you fall into the purple crystal hole that looks like a weird passage or portal.\n");
-                sleep(4);
-                printf("----------------------\nChapter 1 Completed\n-------------------\n");
-                story->Chapter = Chapter_2;
-                return main_character;
+                
             }
-
-            
-
-        /*
-        printf("You wake up and do not recognize the world around you.\n The miners are gone and you feel a strange sensation in your body.\n");
-            printf("You look around and see a big city in the distance. You decide to head there and try to find your way back home.\n");
-            main_character.HUNGER += 20;
-            printf("You're very hungry and tired. You need to find food and a place to rest.\n");
-            usleep(2000);
-            printf("You arrive at the city and see a big market place with many people around.\n");
-            usleep(2000);
-        */
-
-        return main_character;
-        break;
+            else if (strcmp(choice,"Back")== 0){
+                printf("I have to see how Mom's doing.\nAs you turn around to leave ,disapointed, you are called by someone.\nThe miners finally removed the rock!!\nYou are distracted and trip, falling into the purple crystal portal.\n");
+                
+            }
     }
     else if (strcmp(choice,"Mom")== 0){
         story->Path = 2;
         printf("%s-- You're right Mom. I'm sorry. Let's wait for the police together.\n-- I love you.\n",main_character.name);
         sleep(7);
-        printf("You stay with your Mom and try to comfort her as best as you can.\nDays go by and there is still no sign of your Dad.\nThe police tell you they are doing everything they can but there are no leads.\n");
+        printf("You stay with your Mom and try to comfort her as best as you can.\n The police arrive a few hours later and start investigating your Dad's disappearance.\n");
         sleep(7);
-        printf("One night, while you and your Mom are sleeping, you hear a noise outside the house.\nYou get up to check what it is and see a shadowy figure running away from your house.\n");
-        sleep(7);
-        printf("You chase after the figure but he is too fast and disappears into the night.\nYou return home and tell your Mom what happened but she is too scared to go outside again.\n");
-        sleep(7);
-        printf("Days turn into weeks and weeks into months. Your Mom becomes more and more depressed and you feel helpless.\nOne day, you receive a mysterious letter in the mail.\n");
-        sleep(7);
-        printf("The letter contains a clue about your Dad's whereabouts and a warning to be careful.\nYou decide to follow the clue and see where it leads you.\n");
-        sleep(7);
-        printf("----------------------\nChapter 1 Completed\n-------------------\n");
-        story->Chapter = Chapter_2;
+        printf("You tell them everything you know and they promise to do their best to find him.\n The next day, the police imform you that they will search the mine your Dad was working at since it's the last place he was seen.\n");
+        sleep(5);
+        printf("You insist on going and your mom decides to come with you to keep you safe.\nBecause the police needs someone that knows your Dad to identify him if they find him, they let you both go.\n");
+        sleep(5);
+        printf("At the mine entrance, you see the security guards and explain the situation to them.\nThey let you in and one of them comes with you.\nAs you advance in the tunnels, you start to see a purple light that illuminates the cave.\n");
+        sleep(6);
+        printf("You keep going and the light gets stronger and stronger until you reach a big cavern where you see a group of people that have removed a big rock off what seems to be the light's source.\n");
+        sleep(5);
+        printf("%s-- Excuse me! What are you doing?\nMiner-- Some of our crew entered what looked like some kind of secret passage when this giant rock fell and trapped them inside. We just got the rock out and there's this purple passage.\n-No one has had the courage to go through it!!",main_character.name);
+        sleep(5);
+        printf("%s-- Do you know if one of them is called Luca Lanister?\nMiner-- Unfortunately yes. Mr.Lanister is one of the trapped people.\nHe was the one overseeing the operation.\n",main_character.name);
+        sleep(5);
+        printf("The police and miners look at each other and then at you.\nPolice Officer-- Look kid, we are really sorry about your dad but you can't get near that thing.\nNo one knows what it is!!\n");
+        sleep(5);
+        printf("%s-- But my Dad is in there!! Please I have to go in!\nPolice Officer-- I'm sorry but we can't let you. It's too dangerous.\n",main_character.name);
+        sleep(5);
+        printf("You insist and beg them to let you go in but they refuse.\nYou feel helpless and frustrated.\nSuddenly, your Mom, out of nowhere, steps forward and dives in, going trough the purple portal.\n");
+        sleep(5);
+        printf("Mom-- I'm going in! I have to find him!\n%s-- Mom no! I'm going in!\n",main_character.name);
+        sleep(5);
+        printf("Both you and your mom enter the portal.\nYou feel a strange sensation in your body as you pass through it.\n");
+    }
+    sleep(5);   
+    printf("----------------------\nChapter 1 Completed\n-------------------\n");
+    story->Chapter = Chapter_2;
+    return main_character;
+    break;
+}
+
+    case Chapter_2:{
+        printf("Chapter 2: A New World!\n");
+        sleep(1);
+        printf("%s-- Where am I? This place looks... strange.\nYou look around and see that you are in a huge grassy field.\n",main_character.name);
+        sleep(5);
+        printf("You see some strange plants and creatures around you.\nThe sky is a weird shade of purple and there are two suns in the sky.\n");
+        sleep(5);
+        printf("%s --What... is this place?\nYou start to walk around trying to find any sign of civilization or your Dad.\n",main_character.name);
+        sleep(5);
+        if (story->Path == 1){//You came alone
+            printf("%s-- Dad? Where are you?\nYou call out for your Dad but there's no answer.\n",main_character.name);
+            sleep(5);
+            printf("You start to feel a bit hungry and thirsty.\nYou check your backpack");
+            
+            sleep(5);
+            printf("'You eat 1 Chicken Sandwich'.\n");
+            main_character = remove_inventory(main_character,0,1);//Eat Chicken Sandwich
+            main_character.HUNGER -= 5;
+            sleep(5);
+            printf("You keep walking and exploring the area hoping to find some clue about where you are or where your Dad is.\n");
+            sleep(5);
+        }
+        else if(story->Path == 2){//You are with Mom
+            printf("%s-- Mom? Are you here?\nMOM!!\nYou call out for your Mom but there's no answer.\n",main_character.name);
+            sleep(5);
+            printf("It seems even though you went through the portal together, you got separated somehow.\n");
+            sleep(5);
+        }
+        else{
+            printf("\nError: Invalid story path.\n");
+            return main_character;
+        }
+
+        sleep(5);
+        printf("----------------------\nChapter 2 Completed\n-------------------\n");
+
+        
+        story->Chapter = Chapter_3;
         return main_character;
         break;
-
-    }
-}
-    case Chapter_2:{
-        printf("Chapter 2: To be continued...\n");
-        sleep(2);
-        printf("This chapter is still under development. Stay tuned for more adventures!\n");
-        sleep(2);
-        printf("----------------------\nChapter 2 Completed\n-------------------\n");
-        exit(0); // TODO remove exit when chapter 2 is implemented
-        //story->Chapter = Chapter_3;
-        //return main_character;
-        //break;
     }
     return main_character;
     }

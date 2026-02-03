@@ -4,6 +4,7 @@
 #include "story.h"
 #include "mechanics.h"
  
+ 
 #define MAX_INPUT 20
 
 typedef enum{
