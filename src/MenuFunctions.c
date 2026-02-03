@@ -13,7 +13,7 @@ char* get_input(char* prompt) {
     if (!choice) return NULL;
     
     if (!fgets(choice, MAX_INPUT, stdin)) {
-        free(choice);
+        if(choice)free(choice);
         return NULL;
     }
     choice[strcspn(choice, "\n")] = '\0';
@@ -50,7 +50,7 @@ GameState menu_selection() {
         result = menu_selection();
     }
     
-    free(command);
+    if (command)free(command);
     return result;
 }
 
@@ -69,18 +69,18 @@ GameState NewGame() {
         if (!choice) return MENU;
 
         if (strcmp(choice, "yes") == 0) {
-            free(choice);
+            if(choice)free(choice);
             secure_wipe();
             printf("Starting new game...\n");
             return PLAYING;
         }
         else if (strcmp(choice, "no") == 0) {
-            free(choice);
+            if(choice)free(choice);
             return MENU;
         }
         else {
             printf("Please answer with 'yes' or 'no'.\n");
-            free(choice);
+            if(choice)free(choice);
             return MENU;
         }
     }
@@ -133,10 +133,10 @@ GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs) {
         printf("NPC: %s\n", (chapter_NPCs && chapter_NPCs[0].name) ? chapter_NPCs[0].name : "(none)");
         usleep(1000000);
 
-        if (out_story->Chapter != 0){free(choice);}
+        if (out_story->Chapter != 0){if(choice)free(choice);}
         return PLAYING;
     } else {
-        free(choice);
+        if(choice)free(choice);
         // free loaded allocations because user declined
         if (loaded_player.name) free(loaded_player.name);
         if (loaded_player.inventoryIDs) free(loaded_player.inventoryIDs);

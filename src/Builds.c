@@ -278,7 +278,7 @@ void apply_ability_effect(Player *main_character ,Abilities player_ability){
             }
         }
     }
-    free(copy);
+    if (copy)free(copy);
 }
 
 NPC *get_summon_by_id(int id){

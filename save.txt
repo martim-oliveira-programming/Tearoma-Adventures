@@ -1,26 +1,26 @@
-PlayerName: Afonso
+PlayerName: Martim
 Age: 15
-Chapter: 1
-Path: 2
+Chapter: 0
+Path: 0
 HUNGER: 0
 RANK: 0
 LEVEL: 0
 EXP: 0
-STAT_DEFENCE: 10
-STAT_MAX_HP: 20
-STAT_MAX_MANA: 4
-STAT_MAGIC_POWER: 1
+STAT_DEFENCE: 0
+STAT_MAX_HP: 2
+STAT_MAX_MANA: 8
+STAT_MAGIC_POWER: 8
 STAT_WEAPON_DAMAGE: 12
-STAT_DAMAGE: 4
-STAT_SPEED: 5
-STAT_STEALTH: 4
+STAT_DAMAGE: 2
+STAT_SPEED: 13
+STAT_STEALTH: 15
 STAT_WEAPON_USER: 1
 STAT_DUAL_WIELD: 0
 STAT_MAGIC_USER: 1
 InventoryCount: 0
 Inventory:
-AbilitiesCount: 1
-Abilities:2
+AbilitiesCount: 2
+Abilities:4,1
 SummonsCount: 0
 Summons:
 NPC0:
