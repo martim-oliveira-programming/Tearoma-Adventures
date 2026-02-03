@@ -1,3 +1,4 @@
+
 int not_in(int x, int arr[],int n) {
     for (int i = 0; i < n; i++) {
         if (arr[i] == x)
@@ -5,3 +6,5 @@ int not_in(int x, int arr[],int n) {
     }
     return 1; // NÃO está no array
 }
+
+

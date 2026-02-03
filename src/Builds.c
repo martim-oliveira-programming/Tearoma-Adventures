@@ -4,6 +4,8 @@
 #include "story.h"
 #include "mechanics.h"
 #include "utils.h"
+#include "save.h"
+#include "menu.h"
 #include <unistd.h> 
 
 void get_attributes(Player *main_character) {
@@ -317,12 +319,28 @@ Items* get_items_by_id(int id){
     return NULL;
 }
 
+Player sort_items(Player main_character){
+    // Simple bubble sort for demonstration
+    for (int i = 0; i < main_character.item_ammount - 1; i++) {
+        for (int j = 0; j < main_character.item_ammount - i - 1; j++) {
+            if (main_character.inventoryIDs[j] > main_character.inventoryIDs[j + 1]) {
+                // Swap
+                int temp = main_character.inventoryIDs[j];
+                main_character.inventoryIDs[j] = main_character.inventoryIDs[j + 1];
+                main_character.inventoryIDs[j + 1] = temp;
+            }
+        }
+    }
+    return main_character;
+}
+
 Player add_inventory(Player main_character, int itemID, int amount){
     main_character.inventoryIDs = realloc(main_character.inventoryIDs,(main_character.item_ammount + amount) * sizeof(int));
     for(int i=0; i< amount; i++){
     main_character.inventoryIDs[main_character.item_ammount] = itemID;
     main_character.item_ammount +=1;
     }
+    main_character = sort_items(main_character);
     return main_character;
 }
 
@@ -347,6 +365,7 @@ Player remove_inventory(Player main_character, int itemID, int amount){
             }
         }
     }
+    main_character = sort_items(main_character);
     return main_character;
 }
 
@@ -383,91 +402,66 @@ Player remove_ability(Player main_character, int abilityID){
     return main_character;
 }
 
-Player equip_armor(Player main_character, int itemID){
+Player equip_item(Player main_character, int itemID) {
     Items *item = get_items_by_id(itemID);
-    if (item == NULL || item->item_type != WEAPON || item->equipable == MAIN_HAND || item->equipable == OFF_HAND){
-        printf("Item cannot be equipped as armor.\n");
+    if (item == NULL || item->item_type != WEAPON) {
+        printf("Item cannot be equipped.\n");
         return main_character;
     }
-    int slot = item->equipable;
-    if (slot < HEAD || slot > SHOES){
-        printf("Invalid armor slot.\n");
-        return main_character;
-    }
-    // Unequip current armor in the slot if any
-    if (main_character.armor[slot] != -1) {
-        main_character = add_inventory(main_character, main_character.armor[slot], 1);
-    }
-    // Equip new armor
-    main_character.armor[slot] = itemID;
-    // Remove from inventory
-    main_character = remove_inventory(main_character, itemID, 1);
-    return main_character;
-}
 
-Player unequip_armor(Player main_character, int slot){
-    if (slot < HEAD || slot > SHOES){
-        printf("Invalid armor slot.\n");
-        return main_character;
-    }
-    if (main_character.armor[slot] == -1) {
-        printf("No armor equipped in this slot.\n");
-        return main_character;
-    }
-    // Add armor back to inventory
-    main_character = add_inventory(main_character, main_character.armor[slot], 1);
-    // Unequip armor
-    main_character.armor[slot] = -1;
-    return main_character;
-}
-
-Player equip_weapon(Player main_character, int itemID){
-    Items *item = get_items_by_id(itemID);
-    if (item == NULL || item->item_type != WEAPON){
-        printf("Item cannot be equipped as a weapon.\n");
-        return main_character;
-    }
     int slot = item->equipable;
-    if (slot != MAIN_HAND && slot != OFF_HAND){
-        printf("Invalid weapon slot.\n");
-        return main_character;
-    }
-    // Unequip current weapon in the slot if any
-    if (slot == MAIN_HAND && main_character.weapon != -1) {
-        main_character = add_inventory(main_character, main_character.weapon, 1);
-    } else if (slot == OFF_HAND && main_character.weapon_OFF_Hand != -1) {
-        main_character = add_inventory(main_character, main_character.weapon_OFF_Hand, 1);
-    }
-    // Equip new weapon
     if (slot == MAIN_HAND) {
+        if (main_character.weapon != -1) {
+            main_character = unequip_item(main_character, MAIN_HAND);
+        }
         main_character.weapon = itemID;
-    } else {
+    } else if (slot == OFF_HAND) {
+        if (main_character.weapon_OFF_Hand != -1) {
+            main_character = unequip_item(main_character, OFF_HAND);
+        }
         main_character.weapon_OFF_Hand = itemID;
+    } else if (slot >= HEAD && slot <= SHOES) {
+        if (main_character.armor[slot] != -1) {
+            main_character = unequip_item(main_character, slot);
+        }
+        main_character.armor[slot] = itemID;
+    } else {
+        printf("Invalid equip slot.\n");
+        return main_character;
     }
-    // Remove from inventory
+    main_character = apply_item_effects(main_character, *item);
     main_character = remove_inventory(main_character, itemID, 1);
     return main_character;
 }
 
-Player unequip_weapon(Player main_character, int slot){
-    if (slot != MAIN_HAND && slot != OFF_HAND){
-        printf("Invalid weapon slot.\n");
-        return main_character;
-    }
-    if (slot == MAIN_HAND && main_character.weapon == -1) {
-        printf("No weapon equipped in main hand.\n");
-        return main_character;
-    } else if (slot == OFF_HAND && main_character.weapon_OFF_Hand == -1) {
-        printf("No weapon equipped in off hand.\n");
-        return main_character;
-    }
-    // Add weapon back to inventory
+Player unequip_item(Player main_character, int slot) {
     if (slot == MAIN_HAND) {
+        if (main_character.weapon == -1) {
+            printf("No weapon equipped in main hand.\n");
+            return main_character;
+        }
+        main_character = apply_item_effects(main_character, *get_items_by_id(main_character.weapon));
         main_character = add_inventory(main_character, main_character.weapon, 1);
         main_character.weapon = -1;
-    } else {
+    } else if (slot == OFF_HAND) {
+        if (main_character.weapon_OFF_Hand == -1) {
+            printf("No weapon equipped in off hand.\n");
+            return main_character;
+        }
+        main_character = apply_item_effects(main_character, *get_items_by_id(main_character.weapon_OFF_Hand));
         main_character = add_inventory(main_character, main_character.weapon_OFF_Hand, 1);
         main_character.weapon_OFF_Hand = -1;
+    } else if (slot >= HEAD && slot <= SHOES) {
+        if (main_character.armor[slot] == -1) {
+            printf("No armor equipped in this slot.\n");
+            return main_character;
+        }
+        main_character = apply_item_effects(main_character, *get_items_by_id(main_character.armor[slot]));
+        main_character = add_inventory(main_character, main_character.armor[slot], 1);
+        main_character.armor[slot] = -1;
+    } else {
+        printf("Invalid equip slot.\n");
+        return main_character;
     }
     return main_character;
 }
@@ -585,4 +579,242 @@ int is_team_member(NPC_Team team, int memberID, bool is_summon) {
     }
 }
     return 0; // Not found
+}
+
+void free_team(NPC_Team *team) {
+    if (team->memberIDs) {
+        free(team->memberIDs);
+        team->memberIDs = NULL;
+    }
+    if (team->summonIDs) {
+        free(team->summonIDs);
+        team->summonIDs = NULL;
+    }
+    team->size = 0;
+}
+
+static const char *item_type_to_string(int type) {
+    switch (type) {
+        case CONSUMABLE: return "Consumable";
+        case KEY:        return "Key";
+        case WEAPON:     return "Weapon";
+        default:         return "Unknown";
+    }
+}
+
+void open_inventory(Player *main_character) {
+    printf("---- Inventory ----\n");
+    if (main_character->item_ammount == 0) {
+        printf("Inventory is empty.\n");
+        return;
+    }
+
+    int index = 0;
+    int printed = 0;
+    while (index < main_character->item_ammount) {
+        int current_id = main_character->inventoryIDs[index];
+        int count = 1;
+        while (index + count < main_character->item_ammount && main_character->inventoryIDs[index + count] == current_id) {
+            count++;
+        }
+        Items *item = get_items_by_id(current_id);
+        if (item) {
+            printf("%d. %dx %s (%s) ID(%d)\n", ++printed, count, item->name, item_type_to_string(item->item_type), item->ID);
+        } else {
+            printf("%d. %dx Unknown Item (ID: %d)\n", ++printed, count, current_id);
+        }
+        index += count;
+    }
+
+    while (1) {
+        char *choice = get_input("ID to use item, 'q' to exit: ");
+        if (!choice) {
+            break;
+        }
+        if (choice[0] == 'q' && choice[1] == '\0') {
+            free(choice);
+            break;
+        }
+        int id_to_use = atoi(choice);
+        free(choice);
+        use_item(main_character, id_to_use);
+    }
+}
+
+void use_item(Player *main_character, int item_id){
+    if (not_in(item_id,main_character->inventoryIDs,main_character->item_ammount)) {
+        printf("Item not found in inventory.\n");
+        return;
+    }
+    Items *item = get_items_by_id(item_id);
+    if (item == NULL) {
+        printf("Invalid item.\n");
+        return;
+    }
+    if (item->item_type == CONSUMABLE) {
+        *main_character = decrease_hunger(*main_character, item->healling);
+        *main_character = remove_inventory(*main_character, item_id, 1);
+        printf("You used %s and restored %d hunger.\n", item->name, item->healling);
+        
+        return;
+    }
+    else if (item->item_type == WEAPON) {
+        *main_character = equip_item(*main_character, item_id);
+        printf("You equipped %s.\n", item->name);
+        return;
+    }
+    else if (item->item_type == KEY) {
+        printf("You can't use %s right now!!.\n", item->name);
+        return;
+    }
+    else {
+        printf("Item type not usable.\n");
+        return;
+    }    
+}
+
+Player apply_item_effects(Player main_character, Items item) {
+    if (item.effect_type == NONE) {
+        return main_character;
+    }
+
+    const char *src = item.effect ? item.effect : "";
+    char *copy = strdup(src);
+    if (!copy) return main_character;
+
+    char *saveptr = NULL;
+    char *first = strtok_r(copy, " ", &saveptr);
+    char *second = strtok_r(NULL, " ", &saveptr);
+
+    if (item.effect_type == BOOST) {
+        float multiplier = first ? strtof(first, NULL) : 1.0f;
+        const char *Attribute = second;
+        if (Attribute) {
+            if (strcmp(Attribute,"DEFENCE")==0) main_character.stats.DEFENCE *= multiplier;
+            else if (strcmp(Attribute,"MAX_HP")==0) main_character.stats.MAX_HP *= multiplier;
+            else if (strcmp(Attribute,"MAX_MANA")==0) main_character.stats.MAX_MANA *= multiplier;
+            else if (strcmp(Attribute,"MAGIC_POWER")==0) main_character.stats.MAGIC_POWER *= multiplier;
+            else if (strcmp(Attribute,"WEAPON_DAMAGE")==0) main_character.stats.WEAPON_DAMAGE *= multiplier;
+            else if (strcmp(Attribute,"DAMAGE")==0) main_character.stats.DAMAGE *= multiplier;
+            else if (strcmp(Attribute,"SPEED")==0) main_character.stats.SPEED *= multiplier;
+            else if (strcmp(Attribute,"STEALTH")==0) main_character.stats.STEALTH *= multiplier;
+        }
+    }
+    else if (item.effect_type == PLUS) {
+        int boost = first ? atoi(first) : 0;
+        const char *Attribute = second;
+        if (Attribute) {
+            if (strcmp(Attribute,"DEFENCE")==0) main_character.stats.DEFENCE += boost;
+            else if (strcmp(Attribute,"MAX_HP")==0) main_character.stats.MAX_HP += boost;
+            else if (strcmp(Attribute,"MAX_MANA")==0) main_character.stats.MAX_MANA += boost;
+            else if (strcmp(Attribute,"MAGIC_POWER")==0) main_character.stats.MAGIC_POWER += boost;
+            else if (strcmp(Attribute,"WEAPON_DAMAGE")==0) main_character.stats.WEAPON_DAMAGE += boost;
+            else if (strcmp(Attribute,"DAMAGE")==0) main_character.stats.DAMAGE += boost;
+            else if (strcmp(Attribute,"SPEED")==0) main_character.stats.SPEED += boost;
+            else if (strcmp(Attribute,"STEALTH")==0) main_character.stats.STEALTH += boost;
+        }
+    }
+
+    if(copy)free(copy);
+    return main_character;
+}
+
+Player remove_item_effects(Player main_character, Items item) {
+    if (item.effect_type == NONE) {
+        return main_character;
+    }
+
+    const char *src = item.effect ? item.effect : "";
+    char *copy = strdup(src);
+    if (!copy) return main_character;
+
+    char *saveptr = NULL;
+    char *first = strtok_r(copy, " ", &saveptr);
+    char *second = strtok_r(NULL, " ", &saveptr);
+
+    if (item.effect_type == BOOST) {
+        float multiplier = first ? strtof(first, NULL) : 1.0f;
+        const char *Attribute = second;
+        if (Attribute) {
+            if (strcmp(Attribute,"DEFENCE")==0) main_character.stats.DEFENCE /= multiplier;
+            else if (strcmp(Attribute,"MAX_HP")==0) main_character.stats.MAX_HP /= multiplier;
+            else if (strcmp(Attribute,"MAX_MANA")==0) main_character.stats.MAX_MANA /= multiplier;
+            else if (strcmp(Attribute,"MAGIC_POWER")==0) main_character.stats.MAGIC_POWER /= multiplier;
+            else if (strcmp(Attribute,"WEAPON_DAMAGE")==0) main_character.stats.WEAPON_DAMAGE /= multiplier;
+            else if (strcmp(Attribute,"DAMAGE")==0) main_character.stats.DAMAGE /= multiplier;
+            else if (strcmp(Attribute,"SPEED")==0) main_character.stats.SPEED /= multiplier;
+            else if (strcmp(Attribute,"STEALTH")==0) main_character.stats.STEALTH /= multiplier;
+        }
+    }
+    else if (item.effect_type == PLUS) {
+        int boost = first ? atoi(first) : 0;
+        const char *Attribute = second;
+        if (Attribute) {
+            if (strcmp(Attribute,"DEFENCE")==0) main_character.stats.DEFENCE -= boost;
+            else if (strcmp(Attribute,"MAX_HP")==0) main_character.stats.MAX_HP -= boost;
+            else if (strcmp(Attribute,"MAX_MANA")==0) main_character.stats.MAX_MANA -= boost;
+            else if (strcmp(Attribute,"MAGIC_POWER")==0) main_character.stats.MAGIC_POWER -= boost;
+            else if (strcmp(Attribute,"WEAPON_DAMAGE")==0) main_character.stats.WEAPON_DAMAGE -= boost;
+            else if (strcmp(Attribute,"DAMAGE")==0) main_character.stats.DAMAGE -= boost;
+            else if (strcmp(Attribute,"SPEED")==0) main_character.stats.SPEED -= boost;
+            else if (strcmp(Attribute,"STEALTH")==0) main_character.stats.STEALTH -= boost;
+        }
+    }
+    if(copy)free(copy);
+    return main_character;
+}
+
+Player check_hunger(Player main_character) {
+    if (main_character.HUNGER >= 100) {
+        printf("You are starving! Find food quickly!\n");
+        main_character.HP -= 10; // Lose health due to starvation
+    } else if (main_character.HUNGER >= 75) {
+        printf("You are very hungry.\n");
+    } else if (main_character.HUNGER >= 50) {
+        printf("You are getting hungry.\n");
+    } else if (main_character.HUNGER >= 25) {
+        printf("You feel a bit hungry.\n");
+    } else {
+        printf("You are well fed.\n");
+    }
+    return main_character;
+}
+
+Player increase_hunger(Player main_character, int amount) {
+    main_character.HUNGER += amount;
+    if (main_character.HUNGER > 100) {
+        main_character.HUNGER = 100;
+    }
+    check_hunger(main_character);
+    return main_character;
+}
+
+Player decrease_hunger(Player main_character, int amount) {
+    main_character.HUNGER -= amount;
+    if (main_character.HUNGER < 0) {
+        main_character.HUNGER = 0;
+    }
+    check_hunger(main_character);
+    return main_character;
+}
+
+void check_hp(Player *main_character, Story *story,NPC* npcs) {
+    if (main_character->HP <= 0) {
+        printf("You have died!\n");
+        load_save(story, main_character, npcs);
+    }
+}
+
+Player heal_player(Player main_character, int heal_amount) {
+    main_character.HP += heal_amount;
+    if (main_character.HP > main_character.stats.MAX_HP) {
+        main_character.HP = main_character.stats.MAX_HP;
+    }
+    return main_character;
+}
+
+Player damage_player(Player main_character, int damage_amount, Story *story,NPC* npcs) {
+    main_character.HP -= damage_amount;
+    check_hp(&main_character, story, npcs);
+    return main_character;
 }

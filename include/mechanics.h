@@ -5,7 +5,7 @@
 
 #define TOTAL_ABILITIES 11
 #define TOTAL_ITEMS 19
-#define TOTAL_SUMMONS 1
+#define TOTAL_SUMMONS 2
 #define TOTAL_NPC 10
 
 typedef enum{
@@ -100,7 +100,7 @@ typedef struct other_characters{
     int EFFECT_TYPE;
     int RANK;
     int LEVEL;
-    int EXP_GIVVEN;
+    int EXP_GIVEN;
     int HP;
     int MAX_HP;
     int DAMAGE;
@@ -161,17 +161,26 @@ Player remove_inventory(Player main_character, int itemID, int amount);
 
 Player add_ability(Player main_character, int abilityID);
 Player remove_ability(Player main_character, int abilityID);
-Player equip_armor(Player main_character, int itemID);
-Player unequip_armor(Player main_character, int slot);
-Player equip_weapon(Player main_character, int itemID);
-Player unequip_weapon(Player main_character, int slot);
+Player equip_item(Player main_character, int itemID);
+Player unequip_item(Player main_character, int slot);
 Player add_summon(Player main_character, int summonID);
 Player remove_summon(Player main_character, int summonID);
 NPC_Team add_team_member(NPC_Team team, int memberID, bool is_summon);
 NPC_Team remove_team_member(NPC_Team team, int memberID, bool is_summon);
 int is_team_member(NPC_Team team, int memberID, bool is_summon);
 void apply_ability_effect(Player *main_character ,Abilities player_ability);
-
+void free_team(NPC_Team *team);
+void open_inventory(Player *main_character);
+void use_item(Player *main_character, int item_id);
+Player apply_item_effects(Player main_character, Items item);
+Player remove_item_effects(Player main_character, Items item);
+Player sort_items(Player main_character);
+Player check_hunger(Player main_character);
+Player increase_hunger(Player main_character, int amount);
+Player decrease_hunger(Player main_character, int amount);
+Player heal_player(Player main_character, int amount);
+Player damage_player(Player main_character, int amount, Story *story,NPC* npcs);
+void check_hp(Player *main_character, Story *story,NPC* npcs);
 //Utilitie Functions
 Abilities* get_ability_by_id(int id);
 NPC* get_npc_by_id(int id);

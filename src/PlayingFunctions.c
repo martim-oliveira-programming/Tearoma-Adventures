@@ -86,7 +86,7 @@ Player play_chapter(Player main_character, Story *story){
     switch (story->Chapter)
     {
     case Chapter_1:{
-        printf("Chapter 1: I Can't Loose Him\n");
+        printf("-------------------------\nChapter 1: I Can't Loose Him\n-------------------------\n");
         sleep(1);
         printf("It's a cold and rainy night.\nYou are at home when you hear someone calling you.\n");
         sleep(5);
@@ -178,7 +178,7 @@ Player play_chapter(Player main_character, Story *story){
 
             choice = get_input("Should I help the miners or go back home to Mom? (Help/Back)\n");
             
-            if (strcmp(choice,"Help")== 0){//TODO Back
+            if (strcmp(choice,"Help")== 0){
                 printf("I will help you move the rock to save my Dad and the other trapped people.\n");
                 sleep(5);
                 printf("As the team finnaly moves the rock you fall into the purple crystal hole that looks like a weird passage or portal.\n");
@@ -193,9 +193,9 @@ Player play_chapter(Player main_character, Story *story){
         story->Path = 2;
         printf("%s-- You're right Mom. I'm sorry. Let's wait for the police together.\n-- I love you.\n",main_character.name);
         sleep(7);
-        printf("You stay with your Mom and try to comfort her as best as you can.\n The police arrive a few hours later and start investigating your Dad's disappearance.\n");
+        printf("You stay with your Mom and try to comfort her as best as you can.\nThe police arrive a few hours later and start investigating your Dad's disappearance.\n");
         sleep(7);
-        printf("You tell them everything you know and they promise to do their best to find him.\n The next day, the police imform you that they will search the mine your Dad was working at since it's the last place he was seen.\n");
+        printf("You tell them everything you know and they promise to do their best to find him.\nThe next day, the police imform you that they will search the mine your Dad was working at since it's the last place he was seen.\n");
         sleep(5);
         printf("You insist on going and your mom decides to come with you to keep you safe.\nBecause the police needs someone that knows your Dad to identify him if they find him, they let you both go.\n");
         sleep(5);
@@ -216,16 +216,16 @@ Player play_chapter(Player main_character, Story *story){
         printf("Mom-- I'm going in! I have to find him!\n%s-- Mom no! I'm going in!\n",main_character.name);
         sleep(5);
         printf("Both you and your mom enter the portal.\nYou feel a strange sensation in your body as you pass through it.\n");
+        main_character.HUNGER += 15;
     }
     sleep(5);   
-    printf("----------------------\nChapter 1 Completed\n-------------------\n");
+    printf("-------------------------\nChapter 1 Completed\n-------------------------\n");
     story->Chapter = Chapter_2;
     return main_character;
     break;
-}
-
+    }
     case Chapter_2:{
-        printf("Chapter 2: A New World!\n");
+        printf("-------------------------\nChapter 2: A New World!\n-------------------------\n");
         sleep(1);
         printf("%s-- Where am I? This place looks... strange.\nYou look around and see that you are in a huge grassy field.\n",main_character.name);
         sleep(5);
@@ -236,20 +236,35 @@ Player play_chapter(Player main_character, Story *story){
         if (story->Path == 1){//You came alone
             printf("%s-- Dad? Where are you?\nYou call out for your Dad but there's no answer.\n",main_character.name);
             sleep(5);
-            printf("You start to feel a bit hungry and thirsty.\nYou check your backpack");
-            
+            printf("You start to feel a bit hungry.\nYou check your backpack\n");
+            open_inventory(&main_character);
             sleep(5);
-            printf("'You eat 1 Chicken Sandwich'.\n");
-            main_character = remove_inventory(main_character,0,1);//Eat Chicken Sandwich
-            main_character.HUNGER -= 5;
+            printf("***This is the inventory. When in action you can access it anytime by typing 'I'.***\n");
+            sleep(5);
+            printf("When inside the inventory you can use an item by typing its number.\nFor example, to use the first item in the list, type '1'.\n");
+            sleep(2);
+            printf("If the item is consumable it will be eaten lowering your hunger imediatly.\nIf it's equippable you will equip it.\nIf you alredy have an item equiped on that slot you will switch them.\n");
             sleep(5);
             printf("You keep walking and exploring the area hoping to find some clue about where you are or where your Dad is.\n");
+            sleep(5);
+            printf("Type 'q' to exit the inventory.\n");
             sleep(5);
         }
         else if(story->Path == 2){//You are with Mom
             printf("%s-- Mom? Are you here?\nMOM!!\nYou call out for your Mom but there's no answer.\n",main_character.name);
             sleep(5);
             printf("It seems even though you went through the portal together, you got separated somehow.\n");
+            sleep(5);
+            printf("You start to feel a bit hungry.\nYou check your backpack");
+            open_inventory(&main_character);
+            printf("***This is the inventory. When in action you can access it anytime by typing 'I'.***\n");
+            sleep(5);
+            printf("When inside the inventory you can use an item by typing its number.\nFor example, to use the first item in the list, type '1'.\n");
+            sleep(2);
+            printf("If the item is consumable it will be eaten lowering your hunger imediatly.\nIf it's equippable you will equip it.\nIf you alredy have an item equiped on that slot you will switch them.\n");
+            sleep(5);
+            printf("Type 'q' to exit the inventory.\n");
+
             sleep(5);
         }
         else{
@@ -258,7 +273,7 @@ Player play_chapter(Player main_character, Story *story){
         }
 
         sleep(5);
-        printf("----------------------\nChapter 2 Completed\n-------------------\n");
+        printf("-------------------------\nChapter 2 Completed\n-------------------------\n");
 
         
         story->Chapter = Chapter_3;

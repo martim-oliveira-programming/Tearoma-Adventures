@@ -23,8 +23,10 @@ Abilities ALL_abilities[TOTAL_ABILITIES] = {
 //NPC {ID,Name,Ability_id,Effect Type,Rank,Level,Exp_Givven,HP,Max_HP,Damage,Speed}
 NPC ALL_summons[TOTAL_SUMMONS] = {
     {0,"Shadow Dog",0,NONE,D,1,0,3,3,4,5},
+    {1,"Fire Sprite",0,NONE,D,1,0,1,1,7,3},
 };
 
+//NPC {ID,Name,Ability_id,Effect Type,Rank,Level,Exp_Givven,HP,Max_HP,Damage,Speed}
 NPC ALL_npc[TOTAL_NPC] = {//TODO Change these Random NPC
     {0,"Mom",0,NONE,E,1,0,10,10,1,1},
     {1,"Dad",0,NONE,E,1,0,10,10,1,1},
