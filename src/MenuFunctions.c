@@ -115,6 +115,7 @@ GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs) {
         // copy loaded into caller-provided structures
         // free any existing dynamic fields in out_player if needed before overwrite
         if (out_player->name) { free(out_player->name); out_player->name = NULL; }
+        if (out_player->hair_colour) { free(out_player->hair_colour); out_player->hair_colour = NULL; }
         if (chapter_NPCs && chapter_NPCs[0].name) { free(chapter_NPCs[0].name); chapter_NPCs[0].name = NULL; }
         // shallow copy whole struct then replace dynamic pointers
         *out_story = loaded_story;
@@ -139,6 +140,7 @@ GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs) {
         if(choice)free(choice);
         // free loaded allocations because user declined
         if (loaded_player.name) free(loaded_player.name);
+        if (loaded_player.hair_colour) free(loaded_player.hair_colour);
         if (loaded_player.inventoryIDs) free(loaded_player.inventoryIDs);
         if (loaded_player.abilitiesIDs) free(loaded_player.abilitiesIDs);
         if (loaded_player.summonIDs) free(loaded_player.summonIDs);

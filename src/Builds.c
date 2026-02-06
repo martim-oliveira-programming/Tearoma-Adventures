@@ -160,15 +160,15 @@ void get_attributes(Player *main_character) {
         *main_character = add_ability(*main_character,8); //Shadow Dog Summon
         
         main_character->stats = (Attributes){
-            .DEFENCE = 0,
-            .DAMAGE = 0,
-            .MAGIC_POWER = 11,
-            .MAX_HP = 7,
+            .DEFENCE = 2,
+            .DAMAGE = 5,
+            .MAGIC_POWER = 10,
+            .MAX_HP = 5,
             .MOUNT = NULL,
             .MAX_MANA = 18,
             .SUMMONS_STORAGE = 2,
             .SPEED = 6,
-            .STEALTH = 12,
+            .STEALTH = 8,
             .WEAPON_DAMAGE = 2,
             .WEAPON_USER = true,
             .DUAL_WILDING = false,
@@ -302,9 +302,9 @@ Abilities* get_ability_by_id(int id) {
 }
 
 NPC* get_npc_by_id(int id){
-    for(int i = 0;i<TOTAL_SUMMONS;i++){
-        if (ALL_summons[i].ID == id){
-            return &ALL_summons[i];
+    for(int i = 0;i<TOTAL_NPC;i++){
+        if (ALL_npc[i].ID == id){
+            return &ALL_npc[i]; // Return pointer to the found NPC
         }
     }
     return NULL;
@@ -421,10 +421,15 @@ Player equip_item(Player main_character, int itemID) {
         }
         main_character.weapon_OFF_Hand = itemID;
     } else if (slot >= HEAD && slot <= SHOES) {
-        if (main_character.armor[slot] != -1) {
+        int armor_index = slot - HEAD; // map enum to 0-3 indices
+        if (armor_index < 0 || armor_index >= 4) {
+            printf("Invalid armor slot.\n");
+            return main_character;
+        }
+        if (main_character.armor[armor_index] != -1) {
             main_character = unequip_item(main_character, slot);
         }
-        main_character.armor[slot] = itemID;
+        main_character.armor[armor_index] = itemID;
     } else {
         printf("Invalid equip slot.\n");
         return main_character;
@@ -440,7 +445,7 @@ Player unequip_item(Player main_character, int slot) {
             printf("No weapon equipped in main hand.\n");
             return main_character;
         }
-        main_character = apply_item_effects(main_character, *get_items_by_id(main_character.weapon));
+        main_character = remove_item_effects(main_character, *get_items_by_id(main_character.weapon));
         main_character = add_inventory(main_character, main_character.weapon, 1);
         main_character.weapon = -1;
     } else if (slot == OFF_HAND) {
@@ -448,17 +453,22 @@ Player unequip_item(Player main_character, int slot) {
             printf("No weapon equipped in off hand.\n");
             return main_character;
         }
-        main_character = apply_item_effects(main_character, *get_items_by_id(main_character.weapon_OFF_Hand));
+        main_character = remove_item_effects(main_character, *get_items_by_id(main_character.weapon_OFF_Hand));
         main_character = add_inventory(main_character, main_character.weapon_OFF_Hand, 1);
         main_character.weapon_OFF_Hand = -1;
     } else if (slot >= HEAD && slot <= SHOES) {
-        if (main_character.armor[slot] == -1) {
+        int armor_index = slot - HEAD; // map enum to 0-3 indices
+        if (armor_index < 0 || armor_index >= 4) {
+            printf("Invalid armor slot.\n");
+            return main_character;
+        }
+        if (main_character.armor[armor_index] == -1) {
             printf("No armor equipped in this slot.\n");
             return main_character;
         }
-        main_character = apply_item_effects(main_character, *get_items_by_id(main_character.armor[slot]));
-        main_character = add_inventory(main_character, main_character.armor[slot], 1);
-        main_character.armor[slot] = -1;
+        main_character = remove_item_effects(main_character, *get_items_by_id(main_character.armor[armor_index]));
+        main_character = add_inventory(main_character, main_character.armor[armor_index], 1);
+        main_character.armor[armor_index] = -1;
     } else {
         printf("Invalid equip slot.\n");
         return main_character;
@@ -603,6 +613,7 @@ static const char *item_type_to_string(int type) {
 }
 
 void open_inventory(Player *main_character) {
+    while (1) {
     printf("---- Inventory ----\n");
     if (main_character->item_ammount == 0) {
         printf("Inventory is empty.\n");
@@ -626,7 +637,6 @@ void open_inventory(Player *main_character) {
         index += count;
     }
 
-    while (1) {
         char *choice = get_input("ID to use item, 'q' to exit: ");
         if (!choice) {
             break;
@@ -652,11 +662,29 @@ void use_item(Player *main_character, int item_id){
         return;
     }
     if (item->item_type == CONSUMABLE) {
+        int temp_hp = main_character->HP;
+        int temp_hunger = main_character->HUNGER;
+        if(item->effect_type != NONE){
+            if (main_character->HP == (main_character->stats.MAX_HP*10)){
+                printf("You are already at full health. Cannot use %s.\n", item->name);
+                return;
+            }
+            {*main_character = heal_player(*main_character, item->healling);
+            printf("You consumed %s and restored %d health.\n", item->name, main_character->HP - temp_hp);
+            *main_character = remove_inventory(*main_character, item_id, 1);
+            return;}
+            }
+        else{
+            if (main_character->HUNGER == 0){
+                printf("You are not hungry. Cannot use %s.\n", item->name);
+                return;
+            }else{
         *main_character = decrease_hunger(*main_character, item->healling);
+        printf("You consumed %s and restored %d hunger.\n", item->name, temp_hunger - main_character->HUNGER);
         *main_character = remove_inventory(*main_character, item_id, 1);
-        printf("You used %s and restored %d hunger.\n", item->name, item->healling);
-        
         return;
+            }
+        }
     }
     else if (item->item_type == WEAPON) {
         *main_character = equip_item(*main_character, item_id);
@@ -798,23 +826,231 @@ Player decrease_hunger(Player main_character, int amount) {
     return main_character;
 }
 
-void check_hp(Player *main_character, Story *story,NPC* npcs) {
+int check_alive(Player *main_character, Story *story,NPC* npcs) {
     if (main_character->HP <= 0) {
         printf("You have died!\n");
         load_save(story, main_character, npcs);
+        return 0; // Player is dead
     }
+    return 1; // Player is alive
 }
 
 Player heal_player(Player main_character, int heal_amount) {
     main_character.HP += heal_amount;
-    if (main_character.HP > main_character.stats.MAX_HP) {
-        main_character.HP = main_character.stats.MAX_HP;
+    if (main_character.HP > main_character.stats.MAX_HP*10) {
+        main_character.HP = (main_character.stats.MAX_HP * 10);
     }
     return main_character;
 }
 
-Player damage_player(Player main_character, int damage_amount, Story *story,NPC* npcs) {
+Player damage_player(Player main_character, int damage_amount) {
     main_character.HP -= damage_amount;
-    check_hp(&main_character, story, npcs);
+    return main_character;
+}
+
+static float rank_exp_multiplier(int rank) {
+    switch (rank) {
+        case E: return 1.0f;
+        case D: return 1.2f;
+        case C: return 1.5f;
+        case B: return 1.9f;
+        case A: return 2.4f;
+        case S: return 3.0f;
+        default: return 1.0f;
+    }
+}
+
+static int exp_reward_for_npc(NPC npc) {
+    int lvl = npc.LEVEL > 0 ? npc.LEVEL : 1;
+    int base = 5 * (lvl * lvl + 5 * lvl); // not grindy: ~30 exp at level 1
+    int reward = (int)(base * rank_exp_multiplier(npc.RANK));
+    if (reward < 10) reward = 10; // floor to keep progress moving
+    // Allow manual override if EXP_GIVEN is higher
+    if (npc.EXP_GIVEN > reward) {
+        reward = npc.EXP_GIVEN;
+    }
+    return reward;
+}
+
+int check_win(NPC npc, Player *main_character) {
+    if (npc.HP <= 0) {
+        main_character->EXP += exp_reward_for_npc(npc);
+        return 1; // NPC is defeated
+    }
+    return 0; // NPC is still alive
+}
+
+NPC damage_npc(NPC npc, int damage_amount) {
+    npc.HP -= damage_amount;
+    return npc;
+}
+
+NPC heal_npc(NPC npc, int heal_amount) {
+    npc.HP += heal_amount;
+    if (npc.HP > npc.MAX_HP) {
+        npc.HP = npc.MAX_HP;
+    }
+    return npc;
+}
+
+static int damage_calculation_internal(Player main_character, NPC npc, int ability_damage) {
+    int total_damage = main_character.stats.DAMAGE + ability_damage;
+    if (main_character.weapon >= 0) {
+        total_damage += main_character.stats.WEAPON_DAMAGE;
+    }
+    return total_damage;
+}
+
+int damage_calculation(Player main_character, NPC npc) {
+    return damage_calculation_internal(main_character, npc, 0);
+}
+
+int damage_calculation_with_ability(Player main_character, NPC npc, int ability_damage) {
+    return damage_calculation_internal(main_character, npc, ability_damage);
+}
+
+int npc_damage_calculation(NPC npc) {
+    return npc.DAMAGE;
+}
+
+int npc_damage_calculation_with_ability(NPC npc, int ability_damage) {
+    return npc.DAMAGE + ability_damage;
+}
+
+Player use_ability(Player main_character, NPC target_npc, int abilityID) {
+    if (not_in(abilityID, main_character.abilitiesIDs, main_character.abilities_ammount)) {
+        printf("Ability not found in player's abilities.\n");
+        return main_character;
+    }
+    Abilities *ability = get_ability_by_id(abilityID);
+    if (ability == NULL) {
+        printf("Invalid ability.\n");
+        return main_character;
+    }
+    if (main_character.MANA < ability->MANA_COST) {
+        printf("Not enough mana to use %s.\n", ability->NAME);
+        return main_character;
+    }
+    main_character.MANA -= ability->MANA_COST;
+    apply_ability_effect(&main_character, *ability);
+    printf("You used %s.\n", ability->NAME);
+    if(ability->DAMAGE > 0){
+        int damage = damage_calculation_with_ability(main_character, target_npc, ability->DAMAGE);
+        target_npc = damage_npc(target_npc, damage);
+        printf("You dealt %d damage to %s.\n", damage, target_npc.name);
+    }
+    return main_character;
+}
+
+Player npc_use_ability(Player main_character, NPC target_npc, int abilityID) {
+    Abilities *ability = get_ability_by_id(abilityID);
+    if (ability == NULL) {
+        printf("Invalid ability.\n");
+        return main_character;
+    }
+    int ability_id = ability->ID;
+    npc_apply_ability(target_npc, ability_id);
+    printf("%s used %s.\n", target_npc.name, ability->NAME);
+    if(ability->DAMAGE > 0){
+        int damage = npc_damage_calculation_with_ability(target_npc, ability->DAMAGE);
+        main_character = damage_player(main_character, damage);
+        printf("%s dealt %d damage to you.\n", target_npc.name, damage);
+    }
+    return main_character;
+}
+
+NPC npc_apply_ability(NPC npc, int abilityID) {
+    Abilities *ability = get_ability_by_id(abilityID);
+    if (ability == NULL) {
+        printf("Invalid ability.\n");
+        return npc;
+    }
+
+    const char *src = ability->EFFECTS ? ability->EFFECTS : "";
+    char *copy = strdup(src);
+    char *saveptr = NULL;
+    char *first = copy ? strtok_r(copy, " ", &saveptr) : NULL;
+    char *second = copy ? strtok_r(NULL, " ", &saveptr) : NULL;
+
+    if (ability->EFFECT_TYPE == BOOST) {
+        float multiplier = first ? atof(first) : 1.0f;
+        const char *Attribute = second;
+        if (Attribute) {
+            if (strcmp(Attribute, "MAX_HP") == 0) npc.MAX_HP = (int)(npc.MAX_HP * multiplier);
+            else if (strcmp(Attribute, "MAX_MANA") == 0) npc.MAX_MANA = (int)(npc.MAX_MANA * multiplier);
+            else if (strcmp(Attribute, "DAMAGE") == 0) npc.DAMAGE = (int)(npc.DAMAGE * multiplier);
+            else if (strcmp(Attribute, "SPEED") == 0) npc.SPEED = (int)(npc.SPEED * multiplier);
+        }
+    }
+    else if (ability->EFFECT_TYPE == PLUS) {
+        int boost = first ? atoi(first) : 0;
+        const char *Attribute = second;
+        if (Attribute) {
+            if (strcmp(Attribute, "MAX_HP") == 0) npc.MAX_HP += boost;
+            else if (strcmp(Attribute, "MAX_MANA") == 0) npc.MAX_MANA += boost;
+            else if (strcmp(Attribute, "DAMAGE") == 0) npc.DAMAGE += boost;
+            else if (strcmp(Attribute, "SPEED") == 0) npc.SPEED += boost;
+        }
+    }
+    else if (ability->EFFECT_TYPE == GROUP) {
+        int heal_amount = first ? atoi(first) : 0;
+        int damage_boost = second ? atoi(second) : 0;
+        if (heal_amount > 0) {
+            npc = heal_npc(npc, heal_amount);
+        }
+        if (damage_boost > 0) {
+            npc.DAMAGE += damage_boost;
+        }
+    }
+    else if (ability->EFFECT_TYPE == HEAL) {
+        npc = heal_npc(npc, ability->HEALING);
+    }
+    // SUMMON and NONE are ignored for NPC self-application
+
+    if (npc.HP > npc.MAX_HP) {
+        npc.HP = npc.MAX_HP;
+    }
+    if (copy) free(copy);
+
+    printf("%s used %s.\n", npc.name, ability->NAME);
+    return npc;
+}
+
+static int exp_required_for_next_level(int current_level) {
+    int next_level = current_level + 1;
+    return 25 * next_level * next_level + 75 * next_level; // gentle early, ramps later
+}
+
+Player level_up(Player main_character) {
+    // Loop to handle multiple level-ups if a big reward comes in
+    while (1) {
+        int required_exp = exp_required_for_next_level(main_character.LEVEL);
+        if (main_character.EXP < required_exp) {
+            break;
+        }
+        main_character.EXP -= required_exp;
+        main_character.LEVEL += 1;
+
+        // Stat growth: steady, not grindy
+        main_character.stats.MAX_HP += 2;
+        main_character.stats.MAX_MANA += 1;
+        main_character.stats.DAMAGE += 1;
+        if (main_character.LEVEL % 2 == 0) {
+            main_character.stats.SPEED += 1;
+        }
+        if (main_character.LEVEL % 5 == 0) {
+            main_character.stats.MAX_HP += 1;
+            main_character.stats.DAMAGE += 1;
+            main_character.Skill_Points += 1; // bonus at milestones
+        }
+
+        main_character.Skill_Points += 1;
+
+        // Refill resources
+        main_character.HP = main_character.stats.MAX_HP * 10;
+        main_character.MANA = main_character.stats.MAX_MANA;
+
+        printf("Congratulations! You've reached level %d!\n", main_character.LEVEL);
+    }
     return main_character;
 }

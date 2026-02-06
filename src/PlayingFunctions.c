@@ -69,9 +69,37 @@ Player character_creation() {
     main_character.armor[3] = -1; // Boots
     main_character.weapon = -1; // No weapon equipped
     main_character.weapon_OFF_Hand = -1; // No off-hand weapon equipped
-    main_character.item_ammount = 0;
     return main_character;
 }
+
+Player fight(Player main_character, NPC enemy, Story *story,NPC* npcs) {
+    while(check_alive(&main_character,story,npcs) && !check_win(enemy, &main_character)) {
+        printf("\n%s's HP: %d, MANA: %d\n", enemy.name, enemy.HP, enemy.MANA);
+        printf("\nYour HP: %d, MANA: %d\n", main_character.HP, main_character.MANA);
+        char *action = get_input("Choose your action (Attack (D)/Use Ability (A)/Use Item (I)):\n");
+        if (strcmp(action, "D") == 0) {
+            // Placeholder for attack logic
+            int damage = 10; // Example damage value
+            enemy = damage_npc(enemy, damage);
+            printf("You dealt %d damage to %s!\n", damage, enemy.name);
+        } else if (strcmp(action, "A") == 0) {
+            // Placeholder for defend logic
+            printf("You brace yourself for the next attack.\n");
+        } else if (strcmp(action, "I") == 0) {
+            // Placeholder for item usage logic
+            printf("You rummage through your inventory...\n");
+        } else {
+            printf("Invalid action. Please choose Attack, Use Ability, or Use Item.\n");
+        }
+        // Placeholder for enemy's turn logic
+        printf("%s is preparing to attack you!\n", enemy.name);
+    }
+    printf("You are fighting %s!\n", enemy.name);
+    // Placeholder for combat logic
+    // This is where you would implement the actual combat mechanics
+    return main_character; // Return the updated player state after combat
+}
+
 
 Player play_chapter(Player main_character, Story *story){
     char *choice;
@@ -225,6 +253,16 @@ Player play_chapter(Player main_character, Story *story){
     break;
     }
     case Chapter_2:{
+        NPC rival;
+        int rival_id = (main_character.gender == Boy) ? 0 : 1;
+        NPC *rival_ptr = get_npc_by_id(rival_id);
+        if (rival_ptr) {
+            rival = *rival_ptr;
+        } else {
+            printf("Error: rival NPC not found for id %d.\n", rival_id);
+            rival = (NPC){0};
+        }
+
         printf("-------------------------\nChapter 2: A New World!\n-------------------------\n");
         sleep(1);
         printf("%s-- Where am I? This place looks... strange.\nYou look around and see that you are in a huge grassy field.\n",main_character.name);
@@ -236,18 +274,19 @@ Player play_chapter(Player main_character, Story *story){
         if (story->Path == 1){//You came alone
             printf("%s-- Dad? Where are you?\nYou call out for your Dad but there's no answer.\n",main_character.name);
             sleep(5);
-            printf("You start to feel a bit hungry.\nYou check your backpack\n");
-            open_inventory(&main_character);
+            printf("You start to feel a bit uneasy.\nYou check your backpack\n");
             sleep(5);
             printf("***This is the inventory. When in action you can access it anytime by typing 'I'.***\n");
             sleep(5);
             printf("When inside the inventory you can use an item by typing its number.\nFor example, to use the first item in the list, type '1'.\n");
             sleep(2);
             printf("If the item is consumable it will be eaten lowering your hunger imediatly.\nIf it's equippable you will equip it.\nIf you alredy have an item equiped on that slot you will switch them.\n");
+            printf("Type 'q' to exit the inventory.\n");
+            sleep(5);
+            open_inventory(&main_character);
             sleep(5);
             printf("You keep walking and exploring the area hoping to find some clue about where you are or where your Dad is.\n");
-            sleep(5);
-            printf("Type 'q' to exit the inventory.\n");
+
             sleep(5);
         }
         else if(story->Path == 2){//You are with Mom
@@ -255,22 +294,72 @@ Player play_chapter(Player main_character, Story *story){
             sleep(5);
             printf("It seems even though you went through the portal together, you got separated somehow.\n");
             sleep(5);
-            printf("You start to feel a bit hungry.\nYou check your backpack");
-            open_inventory(&main_character);
+            printf("You start to feel a bit uneasy.\nYou check your backpack");
             printf("***This is the inventory. When in action you can access it anytime by typing 'I'.***\n");
             sleep(5);
             printf("When inside the inventory you can use an item by typing its number.\nFor example, to use the first item in the list, type '1'.\n");
             sleep(2);
             printf("If the item is consumable it will be eaten lowering your hunger imediatly.\nIf it's equippable you will equip it.\nIf you alredy have an item equiped on that slot you will switch them.\n");
-            sleep(5);
+            sleep(3);
             printf("Type 'q' to exit the inventory.\n");
-
+            open_inventory(&main_character);
+            printf("You keep walking and exploring the area hoping to find some clue about where you are or where your Mom is.\n");
             sleep(5);
         }
         else{
             printf("\nError: Invalid story path.\n");
             return main_character;
         }
+        printf("???-- Hello there!\nYou turn around and see a strange person looking at you.\n");
+        sleep(4);
+        printf("%s-- Who are you? Do you know where we are?\nStranger-- I am Lilly and we are on the outskirts of Volution!!\n",main_character.name);
+        sleep(5);
+        printf("%s-- Volution? What is that?\nLilly-- It's the capital of Thearoma??\nHow do you not know that?\nDid you hit your head or something?",main_character.name);
+        sleep(5);
+        printf("%s-- I don't know how I got here. I'm looking for someone but I don't even know where to start looking.\nLilly-- Who are you looking for? Maybe I can help.\n",main_character.name);
+        sleep(5);
+        printf("%s-- Did someone else seem to be new here too?\nLilly-- I don't think so... But if you're new here or don't remember how to live here I can show you around and help you get used to it.\n",main_character.name);
+        sleep(5);
+        printf("%s-- That would be great! Thank you so much!\nLilly-- No problem! Follow me!\n",main_character.name);
+        sleep(4);
+        printf("Lilly-- Have you graduated from the academy yet?\n%s-- No, I don't even know what that is.\nLilly-- Oh, you really are new here aren't you? The academy is where everyone goes to learn how to survive in this world and get a job.\n",main_character.name);
+        sleep(5);
+        printf("Lilly-- Do you know what city you're from?\n%s-- Lisbon, Portugal.\nLilly-- Where's that and how are you a teenager and haven't heard of the academy?\n");
+        sleep(5);
+        printf("%s-- Well, where I come from, we don't have an academy like this. We have schools but they are nothing like this place.\nLilly-- What do you mean?.\n",main_character.name);
+        sleep(5);
+        printf("%s-- We don't have gear like what you do. We don't fight a lot anymore. Schools are just for learning and we don't have to worry about surviving or fighting monsters.\nLilly-- Wow, that sounds like you came from a different world or something hahaha. I can't even imagine what it's like to live there.\n",main_character.name);
+        sleep(5);
+        printf("Lilly-- Hello!!\nPlease open the gates!!\nI brought a visitor!!\nThe gates open and you enter the city of Volution for the first time.\n");
+        sleep(4);
+        printf("%s-- Wow, this place is huge!!\nLilly-- Yeah, it's pretty big. We have a lot of shops and diffrent places.\n%s-- I can't wait to see everything!!\n",main_character.name,main_character.name);
+        sleep(3);
+        printf("???-- Hey Lilly!! Who's your friend??\nLilly-- Oh hey Mark!! This is %s, my new friend. %s just got here and doesn't know much about this place yet.\nMark-- Oh cool! Welcome to Volution %s!!\n",main_character.name,pronoun,main_character.name);
+        sleep(5);
+        printf("%s-- Hey, nice to meet you! ans thanks!\nMark-- No problem! If you need any help just ask for me or Lilly, we are pretty well known here so we can get you almost anything you need.\n",main_character.name);
+        sleep(4);
+        printf("Lilly-- Are you going to the academy?\nMark-- Yeah, there's the introduction class in 15 minutes.\nYou should bring %s with you, it's a good way to meet people and get used to the place.\n",main_character.name);
+        sleep(5);
+        printf("Lilly-- Great idea! Come on %s, let's go to the academy with Mark!\n",main_character.name);
+        sleep(2);
+        printf("%s-- Sure!\nYou go to the academy with Mark and Lilly and attend the introduction class.\nThe teacher explains how the academy works and what you can expect from it.\n");
+        sleep(3);
+        printf("Teacher-- I see we have a new student here today!! Welcome to the academy!!\n%s-- Thank you!\nTeacher-- So, you have any experience with fighting and magic or right?\n%s-- No, not really.\nTeacher-- Oh, really weird since the academy starts at 10 yo and you seem way older than that. But don't worry, we will help you get used to this place and teach you everything you need to know.\n",main_character.name,main_character.name);
+        sleep(5);
+        if (story->Path == 1){
+            printf("You think to yourself, 'If things work how the teacher said, I think I will have to learn a lot and become stronger if I want to find my Dad'.\nWhat a mess.\n");
+        }
+        else if (story->Path == 2){
+            printf("You think to yourself, 'If things work how the teacher said, I think I will have to learn a lot and become stronger if I want to find my parents'.\nWhat a mess.\n");
+        }
+        sleep(3);
+        printf("Teacher-- Now I'm going to call Lilly and Mark to demonstrate combat and then I will choose pairs of students to try some combat.\nLilly and Mark go to the center of the room and start demonstrating some basic combat techniques.\n");
+        sleep(4);
+        printf("Teacher-- Ok,now Marta and Laura,...,%s and %s, since you are the only 15 year-olds, you are going to fight each other!!\nYou are paired with a random (kinda good looking... What am I thinking, focus!) student  and start fighting each other.\n",main_character.name,main_character.name);
+        sleep(4);
+
+
+
 
         sleep(5);
         printf("-------------------------\nChapter 2 Completed\n-------------------------\n");

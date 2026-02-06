@@ -5,45 +5,46 @@
 #include "mechanics.h"
 #include <unistd.h> 
 
-//Abilities {Id,Name,Healing,Damage,Mana Cost,Effects,Effect Type}
+//Abilities {Id,Name,Healing,Damage,Mana Cost,Effects,Effect Type,Rank,Ability_Active,Ability_Type}
 Abilities ALL_abilities[TOTAL_ABILITIES] = {
-    {0,"NO Abilitie",0,0,0,"",NONE},
-    {1,"Speed Boost",0,0,30,"2 SPEED",BOOST},
-    {2,"Shield Bash",0,20,10,"",NONE},
-    {3,"Lethal Punch Barrage",0,30,25,"0.75 DAMAGE",BOOST},
-    {4,"Disguise",0,0,30,"3 STEALTH",BOOST},
-    {5,"Fire Bolt",0,15,15,"",NONE},
-    {6,"Basic Healing",20,0,20,"",NONE},
-    {7,"Group Healing",15,0,30,"15 0",GROUP},
-    {8,"Shadow Dog Summon",0,0,40,"1 Shadow Dog",SUMMON},
-    {9,"Strength Boost",0,0,30,"2 DAMAGE",BOOST},
-    {10,"Invisibility",0,0,5,"10 STEALTH",BOOST},
+    {0,"NO Abilitie",0,0,0,"",NONE,E,Passive,Learned},
+    {1,"Speed Boost",0,0,30,"2 SPEED",BOOST,D,Active,Learned},
+    {2,"Shield Bash",0,20,10,"",NONE,D,Active,Learned},
+    {3,"Lethal Punch Barrage",0,30,25,"0.75 DAMAGE",BOOST,C,Active,Learned},
+    {4,"Disguise",0,0,30,"3 STEALTH",BOOST,D,Active,Learned},
+    {5,"Fire Bolt",0,15,15,"",NONE,D,Active,Learned},
+    {6,"Basic Healing",20,0,20,"",NONE,D,Active,Learned},
+    {7,"Group Healing",15,0,30,"15 0",GROUP,B,Active,Learned},
+    {8,"Shadow Dog Summon",0,0,40,"0",SUMMON,C,Active,Hereditary},
+    {9,"Strength Boost",0,0,30,"2 DAMAGE",BOOST,D,Active,Learned},
+    {10,"Invisibility",0,0,5,"10 STEALTH",BOOST,C,Active,Learned},
+    {11,"Fire Spirit Summon",0,0,50,"1",SUMMON,E,Active,Learned},
 };
 
-//NPC {ID,Name,Ability_id,Effect Type,Rank,Level,Exp_Givven,HP,Max_HP,Damage,Speed}
+//NPC {ID,age,name,Ability_ids*,summonIDs*,abilities_ammount,summons_ammount,RANK,LEVEL,EXP_GIVEN,HP,MAX_HP,MANA,MAX_MANA,DAMAGE,SPEED}
 NPC ALL_summons[TOTAL_SUMMONS] = {
-    {0,"Shadow Dog",0,NONE,D,1,0,3,3,4,5},
-    {1,"Fire Sprite",0,NONE,D,1,0,1,1,7,3},
+    {0,100,"Shadow Dog", NULL, NULL, 0, 0, D, 1, 1000, 30, 3, 30, 3, 4, 5},
+    {1,4,  "Fire Spirit", NULL, NULL, 0, 0, E, 1, 100, 10, 1, 10, 1, 7, 3},
 };
 
-//NPC {ID,Name,Ability_id,Effect Type,Rank,Level,Exp_Givven,HP,Max_HP,Damage,Speed}
+//NPC {ID,age,name,Ability_ids*,summonIDs*,abilities_ammount,summons_ammount,RANK,LEVEL,EXP_GIVEN,HP,MAX_HP,MANA,MAX_MANA,DAMAGE,SPEED}
 NPC ALL_npc[TOTAL_NPC] = {//TODO Change these Random NPC
-    {0,"Mom",0,NONE,E,1,0,10,10,1,1},
-    {1,"Dad",0,NONE,E,1,0,10,10,1,1},
-    {2,"Security Guard",0,NONE,D,1,10,20,20,5,3},
-    {3,"Old Lady",0,NONE,C,1,15,15,15,3,2},
-    {4,"Mysterious Stranger",0,NONE,B,1,20,30,30,7,5},
-    {5,"Gang Member",0,NONE,C,1,15,25,25,6,4},
-    {6,"Police Officer",0,NONE,A,1,30,40,40,8,6},
-    {7,"Company Executive",0,NONE,B,1,20,30,30,5,4},
-    {8,"Mine Foreman",0,NONE,C,1,15,25,25,6,4},
-    {9,"Underground Creature",0,NONE,S,1,50,60,60,10,8},
+    {0,15,"Sofia",  (int[]){6,11}, (int[]){0,1}, 2, 2, E, 1, 20, 2, 20, 100, 0, 3, 6},
+    {1,15,"Nathan", (int[]){6,11}, (int[]){0,1}, 2, 2, E, 1, 20, 2, 20, 100, 0, 3, 6},
+    {2,0, "",       NULL, NULL, 0, 0, D, 1,10, 20, 20, 0, 0, 5, 3},
+    {3,0, "",       NULL, NULL, 0, 0, C, 1,15, 15, 15, 0, 0, 3, 2},
+    {4,0, "",       NULL, NULL, 0, 0, B, 1,20, 30, 30, 0, 0, 7, 5},
+    {5,0, "",       NULL, NULL, 0, 0, C, 1,15, 25, 25, 0, 0, 6, 4},
+    {6,0, "",       NULL, NULL, 0, 0, A, 1,30, 40, 40, 0, 0, 8, 6},
+    {7,0, "",       NULL, NULL, 0, 0, B, 1,20, 30, 30, 0, 0, 5, 4},
+    {8,0, "",       NULL, NULL, 0, 0, C, 1,15, 25, 25, 0, 0, 6, 4},
+    {9,0, "",       NULL, NULL, 0, 0, S, 1,50, 60, 60, 0, 0,10, 8},
 };
 
 //Items {ID,Name,Effect,Effect Type,Item Type,Healling,Equipable}
 Items ALL_items[TOTAL_ITEMS] = {
     {0,"Chicken Sandwich","",NONE,CONSUMABLE,10,NO},
-    {1,"Flashlight","0.3 Stealth",BOOST,KEY,0,OFF_HAND},
+    {1,"Flashlight","",NONE,KEY,0,OFF_HAND},
     {2,"Basic Dagger","3 WEAPON_DAMAGE",PLUS,WEAPON,0,MAIN_HAND},
     {3,"Secondary Dagger","2 WEAPON_DAMAGE",PLUS,WEAPON,0,OFF_HAND},
     {4,"Basic Sword","4 WEAPON_DAMAGE",PLUS,WEAPON,0,MAIN_HAND},
@@ -61,6 +62,7 @@ Items ALL_items[TOTAL_ITEMS] = {
     {16,"Ninja chestplate","4 DEFENCE",PLUS,WEAPON,0,CHEST},
     {17,"Ninja pants","3 DEFENCE",PLUS,WEAPON,0,LEGS},
     {18,"Soundless sandals","2 DEFENCE",PLUS,WEAPON,0,SHOES},
+    {19,"Potion of Healing","",HEAL,CONSUMABLE,20,NO},
 };
 
 

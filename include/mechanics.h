@@ -3,8 +3,8 @@
 #include <stdbool.h>
 #include "story.h"
 
-#define TOTAL_ABILITIES 11
-#define TOTAL_ITEMS 19
+#define TOTAL_ABILITIES 12
+#define TOTAL_ITEMS 20
 #define TOTAL_SUMMONS 2
 #define TOTAL_NPC 10
 
@@ -35,6 +35,7 @@ typedef enum{
     SUMMON,
     GROUP,
     PLUS,
+    HEAL,
 }EFFECT_TYPE;
 
 typedef enum{
@@ -67,7 +68,21 @@ typedef struct player_abilities{
     int MANA_COST;
     char *EFFECTS;
     int EFFECT_TYPE;
+    int RANK;
+    int ABILITY_ACTIVE;
+    int ABILITY_TYPE;
 }Abilities;
+
+typedef enum{
+    Inate,
+    Learned,
+    Hereditary,
+}Ability_Types;
+
+typedef enum{
+    Active,
+    Passive,
+}Ability_Active;
 
 typedef struct items{
     int ID;
@@ -95,21 +110,22 @@ typedef enum Rank{
 
 typedef struct other_characters{
     int ID;
+    int age;
     char *name;
-    int Ability_id;
-    int EFFECT_TYPE;
+    int* Ability_ids;
+    int* summonIDs;
+    int abilities_ammount;
+    int summons_ammount;
     int RANK;
     int LEVEL;
     int EXP_GIVEN;
     int HP;
     int MAX_HP;
+    int MANA;
+    int MAX_MANA;
     int DAMAGE;
     int SPEED;
 }NPC;
-
-typedef struct summoning_contracts{
-    NPC stats;
-}SUMMONS;
 
 typedef struct team {
     int *memberIDs;
@@ -179,8 +195,6 @@ Player check_hunger(Player main_character);
 Player increase_hunger(Player main_character, int amount);
 Player decrease_hunger(Player main_character, int amount);
 Player heal_player(Player main_character, int amount);
-Player damage_player(Player main_character, int amount, Story *story,NPC* npcs);
-void check_hp(Player *main_character, Story *story,NPC* npcs);
 //Utilitie Functions
 Abilities* get_ability_by_id(int id);
 NPC* get_npc_by_id(int id);
@@ -189,7 +203,21 @@ NPC *get_summon_by_id(int id);
 
 extern Abilities ALL_abilities[TOTAL_ABILITIES];
 extern NPC ALL_summons[TOTAL_SUMMONS];
+extern NPC ALL_npc[TOTAL_NPC];
 extern Items ALL_items[TOTAL_ITEMS];
+
+//Fight Functions
+Player fight(Player main_character, NPC enemy, Story *story,NPC* npcs);
+Player damage_player(Player main_character, int amount);
+int check_alive(Player *main_character, Story *story,NPC* npcs);
+int check_win(NPC npc, Player *main_character);
+NPC damage_npc(NPC npc, int damage_amount);
+int damage_calculation(Player main_character, NPC npc);
+int damage_calculation_with_ability(Player main_character, NPC npc, int ability_damage);
+int npc_damage_calculation(NPC npc);
+int npc_damage_calculation_with_ability(NPC npc, int ability_damage);
+Player use_ability(Player main_character, NPC target_npc, int abilityID);
+NPC npc_apply_ability(NPC npc, int abilityID);
 
 //Playing Functions
 Player play_chapter(Player main_character, Story *story);
