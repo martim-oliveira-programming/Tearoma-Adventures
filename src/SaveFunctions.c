@@ -38,7 +38,7 @@ int file_exists(const char* filename) {
 }
 
 /* Save everything relevant from story and main_character */
-void save_game(Story story, Player main_character, NPC* chapter_NPCs) {
+void save_game(Story story, Player main_character, int *chapter_npc_ids) {
     FILE *save_file = fopen("save.txt", "w");
     if (!save_file) {
         perror("Error saving game");
@@ -65,6 +65,15 @@ void save_game(Story story, Player main_character, NPC* chapter_NPCs) {
     fprintf(save_file, "MANA: %d\n", main_character.MANA);
     fprintf(save_file, "GOODNESS: %d\n", main_character.GOODNESS);
 
+    // Mana types
+    fprintf(save_file, "ManaTypesCount: %d\n", main_character.mana_types_ammount);
+    fprintf(save_file, "ManaTypes:");
+    for (int i = 0; i < main_character.mana_types_ammount; ++i) {
+        if (i) fprintf(save_file, ",");
+        fprintf(save_file, "%d", main_character.mana_types[i]);
+    }
+    fprintf(save_file, "\n");
+
     // Attributes (expand to whatever fields Attributes contains)
     fprintf(save_file, "STAT_DEFENCE: %d\n", main_character.stats.DEFENCE);
     fprintf(save_file, "STAT_MAX_HP: %d\n", main_character.stats.MAX_HP);
@@ -75,6 +84,7 @@ void save_game(Story story, Player main_character, NPC* chapter_NPCs) {
     fprintf(save_file, "STAT_DAMAGE: %d\n", main_character.stats.DAMAGE);
     fprintf(save_file, "STAT_SPEED: %d\n", main_character.stats.SPEED);
     fprintf(save_file, "STAT_STEALTH: %d\n", main_character.stats.STEALTH);
+    fprintf(save_file, "STAT_PRECEPTION: %d\n", main_character.stats.PRECEPTION);
     fprintf(save_file, "STAT_WEAPON_USER: %d\n", main_character.stats.WEAPON_USER ? 1 : 0);
     fprintf(save_file, "STAT_DUAL_WIELD: %d\n", main_character.stats.DUAL_WILDING);
     fprintf(save_file, "STAT_MAGIC_USER: %d\n", main_character.stats.MAGIC_USER ? 1 : 0);
@@ -111,9 +121,9 @@ void save_game(Story story, Player main_character, NPC* chapter_NPCs) {
     }
     fprintf(save_file, "\n");
 
-    // Save first NPC name if present
-    if (chapter_NPCs && chapter_NPCs[0].name) {
-        fprintf(save_file, "NPC0: %s\n", chapter_NPCs[0].name);
+    // Save first NPC id if present (single slot)
+    if (chapter_npc_ids) {
+        fprintf(save_file, "NPC0: %d\n", chapter_npc_ids[0]);
     } else {
         fprintf(save_file, "NPC0:\n");
     }
@@ -124,7 +134,7 @@ void save_game(Story story, Player main_character, NPC* chapter_NPCs) {
 /* Load everything. Caller must ensure main_character/story memory is managed.
    This will strdup names and allocate arrays for inventory/abilities/summons.
 */
-int load_save(Story *story, Player *main_character, NPC *chapter_NPCs) {
+int load_save(Story *story, Player *main_character, int *chapter_npc_ids) {
     FILE *save_file = fopen("save.txt", "r");
     if (!save_file) {
         // no save
@@ -134,10 +144,11 @@ int load_save(Story *story, Player *main_character, NPC *chapter_NPCs) {
     // free previous dynamic arrays/names if present to avoid leaks
     if (main_character->name) { free(main_character->name); main_character->name = NULL; }
     if (main_character->hair_colour) { free(main_character->hair_colour); main_character->hair_colour = NULL; }
-    if (chapter_NPCs && chapter_NPCs[0].name) { free(chapter_NPCs[0].name); chapter_NPCs[0].name = NULL; }
+    // chapter_npc_ids holds IDs, nothing to free
     if (main_character->inventoryIDs) { free(main_character->inventoryIDs); main_character->inventoryIDs = NULL; main_character->item_ammount = 0; }
     if (main_character->abilitiesIDs) { free(main_character->abilitiesIDs); main_character->abilitiesIDs = NULL; main_character->abilities_ammount = 0; }
     if (main_character->summonIDs) { free(main_character->summonIDs); main_character->summonIDs = NULL; main_character->summons_ammount = 0; }
+    if (main_character->mana_types) { free(main_character->mana_types); main_character->mana_types = NULL; main_character->mana_types_ammount = 0; }
 
     // reset equipment to defaults before loading values
     main_character->weapon = -1;
@@ -183,6 +194,8 @@ int load_save(Story *story, Player *main_character, NPC *chapter_NPCs) {
             main_character->MANA = atoi(line + 6);
         } else if (strncmp(line, "GOODNESS: ", 11) == 0) {
             main_character->GOODNESS = atoi(line + 11);
+        } else if (strncmp(line, "ManaTypesCount: ", 16) == 0) {
+            main_character->mana_types_ammount = atoi(line + 16);
         } else if (strncmp(line, "STAT_DEFENCE: ", 14) == 0) {
             main_character->stats.DEFENCE = atoi(line + 14);
         } else if (strncmp(line, "STAT_MAX_HP: ", 13) == 0) {
@@ -201,6 +214,8 @@ int load_save(Story *story, Player *main_character, NPC *chapter_NPCs) {
             main_character->stats.SPEED = atoi(line + 12);
         } else if (strncmp(line, "STAT_STEALTH: ", 14) == 0) {
             main_character->stats.STEALTH = atoi(line + 14);
+        } else if (strncmp(line, "STAT_PRECEPTION: ", 18) == 0) {
+            main_character->stats.PRECEPTION = atoi(line + 18);
         } else if (strncmp(line, "STAT_WEAPON_USER: ", 18) == 0) {
             main_character->stats.WEAPON_USER = atoi(line + 18) ? true : false;
         } else if (strncmp(line, "STAT_DUAL_WIELD: ", 17) == 0) {
@@ -233,8 +248,13 @@ int load_save(Story *story, Player *main_character, NPC *chapter_NPCs) {
             int count = parse_int_list(line + 8, &arr);
             main_character->summonIDs = arr;
             main_character->summons_ammount = count;
+        } else if (strncmp(line, "ManaTypes:", 10) == 0) {
+            int *arr = NULL;
+            int count = parse_int_list(line + 10, &arr);
+            main_character->mana_types = arr;
+            main_character->mana_types_ammount = count;
         } else if (strncmp(line, "NPC0: ", 6) == 0) {
-            if (chapter_NPCs) chapter_NPCs[0].name = strdup(line + 6);
+            if (chapter_npc_ids) chapter_npc_ids[0] = atoi(line + 6);
         }
     }
 

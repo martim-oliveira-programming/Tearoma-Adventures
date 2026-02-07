@@ -7,38 +7,38 @@
 
 //Abilities {Id,Name,Healing,Damage,Mana Cost,Effects,Effect Type,Rank,Ability_Active,Ability_Type}
 Abilities ALL_abilities[TOTAL_ABILITIES] = {
-    {0,"NO Abilitie",0,0,0,"",NONE,E,Passive,Learned},
-    {1,"Speed Boost",0,0,30,"2 SPEED",BOOST,D,Active,Learned},
-    {2,"Shield Bash",0,20,10,"",NONE,D,Active,Learned},
-    {3,"Lethal Punch Barrage",0,30,25,"0.75 DAMAGE",BOOST,C,Active,Learned},
-    {4,"Disguise",0,0,30,"3 STEALTH",BOOST,D,Active,Learned},
-    {5,"Fire Bolt",0,15,15,"",NONE,D,Active,Learned},
-    {6,"Basic Healing",20,0,20,"",NONE,D,Active,Learned},
-    {7,"Group Healing",15,0,30,"15 0",GROUP,B,Active,Learned},
-    {8,"Shadow Dog Summon",0,0,40,"0",SUMMON,C,Active,Hereditary},
-    {9,"Strength Boost",0,0,30,"2 DAMAGE",BOOST,D,Active,Learned},
-    {10,"Invisibility",0,0,5,"10 STEALTH",BOOST,C,Active,Learned},
-    {11,"Fire Spirit Summon",0,0,50,"1",SUMMON,E,Active,Learned},
+    {0,"NO Abilitie",0,0,0,"",NONE,E,BASE,Passive,Learned},
+    {1,"Speed Boost",0,0,30,"2 SPEED",BOOST,D,BASE,Active,Learned},
+    {2,"Shield Bash",0,20,10,"",NONE,D,BASE,Active,Learned},
+    {3,"Lethal Punch Barrage",0,30,25,"0.75 DAMAGE",BOOST,C,BASE,Active,Learned},
+    {4,"Disguise",0,0,30,"3 STEALTH",BOOST,D,BASE,Active,Learned},
+    {5,"Fire Bolt",0,15,15,"",NONE,D,FIRE,Active,Learned},
+    {6,"Basic Healing",20,0,20,"",NONE,D,BASE,Active,Learned},
+    {7,"Group Healing",15,0,30,"15 0",GROUP,B,BASE,Active,Learned},
+    {8,"Shadow Dog Summon",0,0,40,"0",SUMMON,C,DARK,Active,Hereditary},
+    {9,"Strength Boost",0,0,30,"2 DAMAGE",BOOST,D,BASE,Active,Learned},
+    {10,"Invisibility",0,0,5,"10 STEALTH",BOOST,C,BASE,Active,Learned},
+    {11,"Fire Spirit Summon",0,0,50,"1",SUMMON,E,BASE,Active,Learned},
 };
 
-//NPC {ID,age,name,Ability_ids*,summonIDs*,abilities_ammount,summons_ammount,RANK,LEVEL,EXP_GIVEN,HP,MAX_HP,MANA,MAX_MANA,DAMAGE,SPEED}
+//NPC {ID,age,name,Ability_ids*,summonIDs*,abilities_ammount,summons_ammount,RANK,LEVEL,EXP_GIVEN,HP,MAX_HP,MANA,MAX_MANA,DAMAGE,DEFENCE,SPEED}
 NPC ALL_summons[TOTAL_SUMMONS] = {
-    {0,100,"Shadow Dog", NULL, NULL, 0, 0, D, 1, 1000, 30, 3, 30, 3, 4, 5},
-    {1,4,  "Fire Spirit", NULL, NULL, 0, 0, E, 1, 100, 10, 1, 10, 1, 7, 3},
+    {0,100,"Shadow Dog", NULL, NULL, 0, 0, D, 1, 1000, 30, 30, 30, 30, 4, 2, 5},
+    {1,4,  "Fire Spirit", NULL, NULL, 0, 0, E, 1, 100, 10, 10, 10, 10, 7, 1, 3},
 };
 
-//NPC {ID,age,name,Ability_ids*,summonIDs*,abilities_ammount,summons_ammount,RANK,LEVEL,EXP_GIVEN,HP,MAX_HP,MANA,MAX_MANA,DAMAGE,SPEED}
+//NPC {ID,age,name,Ability_ids*,summonIDs*,abilities_ammount,summons_ammount,RANK,LEVEL,EXP_GIVEN,HP,MAX_HP,MANA,MAX_MANA,DAMAGE,DEFENCE,SPEED}
 NPC ALL_npc[TOTAL_NPC] = {//TODO Change these Random NPC
-    {0,15,"Sofia",  (int[]){6,11}, (int[]){0,1}, 2, 2, E, 1, 20, 2, 20, 100, 0, 3, 6},
-    {1,15,"Nathan", (int[]){6,11}, (int[]){0,1}, 2, 2, E, 1, 20, 2, 20, 100, 0, 3, 6},
-    {2,0, "",       NULL, NULL, 0, 0, D, 1,10, 20, 20, 0, 0, 5, 3},
-    {3,0, "",       NULL, NULL, 0, 0, C, 1,15, 15, 15, 0, 0, 3, 2},
-    {4,0, "",       NULL, NULL, 0, 0, B, 1,20, 30, 30, 0, 0, 7, 5},
-    {5,0, "",       NULL, NULL, 0, 0, C, 1,15, 25, 25, 0, 0, 6, 4},
-    {6,0, "",       NULL, NULL, 0, 0, A, 1,30, 40, 40, 0, 0, 8, 6},
-    {7,0, "",       NULL, NULL, 0, 0, B, 1,20, 30, 30, 0, 0, 5, 4},
-    {8,0, "",       NULL, NULL, 0, 0, C, 1,15, 25, 25, 0, 0, 6, 4},
-    {9,0, "",       NULL, NULL, 0, 0, S, 1,50, 60, 60, 0, 0,10, 8},
+    {0,15,"Sofia",  (int[]){6,11}, (int[]){0,1}, 2, 2, E, 1, 20, 20, 20, 100, 100, 3, 2, 6},
+    {1,15,"Nathan", (int[]){6,11}, (int[]){0,1}, 2, 2, E, 1, 20, 20, 20, 100, 100, 3, 2, 6},
+    {2,0, "",       NULL, NULL, 0, 0, D, 1,10, 20, 20, 0, 0, 5, 1, 3},
+    {3,0, "",       NULL, NULL, 0, 0, C, 1,15, 15, 15, 0, 0, 3, 1, 2},
+    {4,0, "",       NULL, NULL, 0, 0, B, 1,20, 30, 30, 0, 0, 7, 2, 5},
+    {5,0, "",       NULL, NULL, 0, 0, C, 1,15, 25, 25, 0, 0, 6, 2, 4},
+    {6,0, "",       NULL, NULL, 0, 0, A, 1,30, 40, 40, 0, 0, 8, 3, 6},
+    {7,0, "",       NULL, NULL, 0, 0, B, 1,20, 30, 30, 0, 0, 5, 2, 4},
+    {8,0, "",       NULL, NULL, 0, 0, C, 1,15, 25, 25, 0, 0, 6, 2, 4},
+    {9,0, "",       NULL, NULL, 0, 0, S, 1,50, 60, 60, 0, 0,10, 4, 8},
 };
 
 //Items {ID,Name,Effect,Effect Type,Item Type,Healling,Equipable}

@@ -90,15 +90,15 @@ GameState NewGame() {
     }
 }
 
-GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs) {
+GameState Continue(Story *out_story, Player *out_player, int *chapter_npc_ids) {
     char *choice;
     printf("Loading your saved game...\n");
     
     Story loaded_story = {0};
     Player loaded_player = {0};
-    NPC loaded_npcs[1] = {0};
+    int loaded_npc_ids[1] = {-1};
     
-    int found_file = load_save(&loaded_story, &loaded_player, loaded_npcs);
+    int found_file = load_save(&loaded_story, &loaded_player, loaded_npc_ids);
     if (!found_file) {
         printf("Select NewGame to start a New Game.\nReturning to Menu...\n");
         return MENU;
@@ -116,11 +116,10 @@ GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs) {
         // free any existing dynamic fields in out_player if needed before overwrite
         if (out_player->name) { free(out_player->name); out_player->name = NULL; }
         if (out_player->hair_colour) { free(out_player->hair_colour); out_player->hair_colour = NULL; }
-        if (chapter_NPCs && chapter_NPCs[0].name) { free(chapter_NPCs[0].name); chapter_NPCs[0].name = NULL; }
         // shallow copy whole struct then replace dynamic pointers
         *out_story = loaded_story;
         *out_player = loaded_player;
-        if (chapter_NPCs) chapter_NPCs[0] = loaded_npcs[0];
+        if (chapter_npc_ids) chapter_npc_ids[0] = loaded_npc_ids[0];
 
         // show minimal info
         printf("\n--- Loaded Game ---\n");
@@ -131,7 +130,7 @@ GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs) {
         usleep(200000);
         printf("Chapter: %d\n", out_story->Chapter);
         usleep(200000);
-        printf("NPC: %s\n", (chapter_NPCs && chapter_NPCs[0].name) ? chapter_NPCs[0].name : "(none)");
+        printf("NPC ID: %d\n", (chapter_npc_ids) ? chapter_npc_ids[0] : -1);
         usleep(1000000);
 
         if (out_story->Chapter != 0){if(choice)free(choice);}
@@ -144,7 +143,6 @@ GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs) {
         if (loaded_player.inventoryIDs) free(loaded_player.inventoryIDs);
         if (loaded_player.abilitiesIDs) free(loaded_player.abilitiesIDs);
         if (loaded_player.summonIDs) free(loaded_player.summonIDs);
-        if (loaded_npcs[0].name) free(loaded_npcs[0].name);
         return MENU;
     }
 }

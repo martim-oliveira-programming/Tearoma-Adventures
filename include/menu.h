@@ -20,7 +20,7 @@ char* get_input(char* input);
 int menu_selection();
 int NewGame();
 int Commands();
-GameState Continue(Story *out_story, Player *out_player, NPC *chapter_NPCs);
+GameState Continue(Story *out_story, Player *out_player, int *chapter_npc_ids);
 int QuitGame();
 
 #endif

@@ -6,12 +6,14 @@
 #include "save.h"
 #include "mechanics.h"
 #include <unistd.h> 
+#include <time.h>
 
 int main() {
+    srand(time(NULL)); // Seed the random number generator
     GameState current_state = MENU;
     Story story = {0}; // Initialize story
     Player main_character = {0};
-    NPC chapter_npcs[1] = {0};
+    int chapter_npc_ids[1] = {-1}; // Placeholder for NPC IDs relevant to the current chapter
 
     // Main game loop
     while (current_state != QUIT) {
@@ -28,24 +30,23 @@ int main() {
                     main_character = character_creation(); // Create the player's character
                     story.Chapter = Chapter_1;
                     story.Path = 0;
-                    save_game(story, main_character, chapter_npcs);
+                    save_game(story, main_character, chapter_npc_ids);
                 } else {
                     // Load existing game
-                    load_save(&story, &main_character, chapter_npcs);
+                    load_save(&story, &main_character, chapter_npc_ids);
                 }
                 printf("Starting game -- Chapter %d -- Hello %s\n", story.Chapter + 1, main_character.name);
 
                 // Ask Continue (may return MENU, PLAYING, QUIT, etc.)
-                current_state = Continue(&story, &main_character, chapter_npcs);
+                current_state = Continue(&story, &main_character, chapter_npc_ids);
 
                 if (current_state == PLAYING) {
                     // actually play the chapter and persist changes
-                    main_character = play_chapter(main_character, &story);
-                    save_game(story, main_character, chapter_npcs);
+                    main_character = play_chapter(main_character, &story, chapter_npc_ids);
+                    save_game(story, main_character, chapter_npc_ids);
                 }
                 break;
             }
-// ...existing code...
             case QUIT:
                 break;
         }
@@ -53,7 +54,7 @@ int main() {
     printf("\nGoodbye!\n\n");
     // Cleanup
     if (main_character.name) free(main_character.name);
-    if (chapter_npcs[0].name) free(chapter_npcs[0].name);
+    // chapter_npc_ids are plain ints; nothing to free
     return 0;
 }
  

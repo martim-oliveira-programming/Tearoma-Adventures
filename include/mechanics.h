@@ -7,6 +7,8 @@
 #define TOTAL_ITEMS 20
 #define TOTAL_SUMMONS 2
 #define TOTAL_NPC 10
+#define MAX_EQUIPPED_ITEMS 5
+
 
 typedef enum{
     Assassin,
@@ -18,6 +20,20 @@ typedef enum{
     Summoner,
     Balanced,
 }Builds;
+
+typedef enum{
+    BASE,
+    FIRE,
+    WATER,
+    EARTH,
+    AIR,
+    ELECTIC,
+    ICE,
+    LAVA,
+    STORM,
+    LIGHT,
+    DARK,
+}Mana_Types;
 
 typedef enum{
     NO,
@@ -55,6 +71,7 @@ typedef struct initial_build_attributes{
     int DAMAGE;
     int SPEED;
     int STEALTH;
+    int PRECEPTION;
     bool WEAPON_USER;
     bool DUAL_WILDING;
     bool MAGIC_USER;
@@ -69,6 +86,7 @@ typedef struct player_abilities{
     char *EFFECTS;
     int EFFECT_TYPE;
     int RANK;
+    int MANA_TYPE;
     int ABILITY_ACTIVE;
     int ABILITY_TYPE;
 }Abilities;
@@ -124,6 +142,7 @@ typedef struct other_characters{
     int MANA;
     int MAX_MANA;
     int DAMAGE;
+    int DEFENCE;
     int SPEED;
 }NPC;
 
@@ -145,6 +164,9 @@ typedef struct player {
     int* summonIDs;
     int* abilitiesIDs;
     int* inventoryIDs;
+    int* equipped_items; // Array to track equipped items (size 4 for armor slots + 1 for weapon)
+    int* mana_types;
+    int mana_types_ammount;
     int item_ammount;
     int abilities_ammount;
     int summons_ammount;
@@ -168,13 +190,12 @@ Player character_creation();
 Builds parse_build(const char *s);
 void get_attributes(Player *main_character);
 const char *gender_to_string(Gender g);
-const char *build_to_string(Builds b);
 
 //Inventory Management
 Player add_inventory(Player main_character, int itemID, int amount);
 Player remove_inventory(Player main_character, int itemID, int amount);
 
-
+//Abilities and Summons Management
 Player add_ability(Player main_character, int abilityID);
 Player remove_ability(Player main_character, int abilityID);
 Player equip_item(Player main_character, int itemID);
@@ -187,7 +208,10 @@ int is_team_member(NPC_Team team, int memberID, bool is_summon);
 void apply_ability_effect(Player *main_character ,Abilities player_ability);
 void free_team(NPC_Team *team);
 void open_inventory(Player *main_character);
+int open_abilities(Player *main_character);
 void use_item(Player *main_character, int item_id);
+Player use_ability(Player main_character, NPC *target_npc, int abilityID);
+NPC npc_apply_ability(NPC npc, int abilityID);
 Player apply_item_effects(Player main_character, Items item);
 Player remove_item_effects(Player main_character, Items item);
 Player sort_items(Player main_character);
@@ -195,6 +219,11 @@ Player check_hunger(Player main_character);
 Player increase_hunger(Player main_character, int amount);
 Player decrease_hunger(Player main_character, int amount);
 Player heal_player(Player main_character, int amount);
+Player restore_mana(Player main_character);
+Player add_mana_type(Player main_character, int mana_type);
+Player remove_mana_type(Player main_character, int mana_type);
+int exp_reward_for_npc(NPC npc);
+float rank_exp_multiplier(int rank);
 //Utilitie Functions
 Abilities* get_ability_by_id(int id);
 NPC* get_npc_by_id(int id);
@@ -206,20 +235,8 @@ extern NPC ALL_summons[TOTAL_SUMMONS];
 extern NPC ALL_npc[TOTAL_NPC];
 extern Items ALL_items[TOTAL_ITEMS];
 
-//Fight Functions
-Player fight(Player main_character, NPC enemy, Story *story,NPC* npcs);
-Player damage_player(Player main_character, int amount);
-int check_alive(Player *main_character, Story *story,NPC* npcs);
-int check_win(NPC npc, Player *main_character);
-NPC damage_npc(NPC npc, int damage_amount);
-int damage_calculation(Player main_character, NPC npc);
-int damage_calculation_with_ability(Player main_character, NPC npc, int ability_damage);
-int npc_damage_calculation(NPC npc);
-int npc_damage_calculation_with_ability(NPC npc, int ability_damage);
-Player use_ability(Player main_character, NPC target_npc, int abilityID);
-NPC npc_apply_ability(NPC npc, int abilityID);
 
 //Playing Functions
-Player play_chapter(Player main_character, Story *story);
+Player play_chapter(Player main_character, Story *story, int *chapter_npc_ids);
 
 #endif

@@ -1,6 +1,6 @@
 # 🌌 Tearoma Adventures
 
-**Tearoma Adventures** is an RPG inspired by tabletop classics like *Dungeons & Dragons*, where you forge your own path through story and choice.
+**Tearoma Adventures** is an RPG inspired by tabletop classics like *Dungeons & Dragons*, where you forge your own path through story and choice. **Tearoma Adventures** has many heavily inspired concepts from famous sources: *Naruto*, *Bleach* and *JJK*.
 
 ---
 
