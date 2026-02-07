@@ -10,7 +10,10 @@
 #include <unistd.h> 
 #include <time.h> 
 
+static bool fight_reloaded = false;
+//TODO: add sleep() in between fight actions to make it feel more dynamic and less like a wall of text.
 Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids,bool can_run) {
+    fight_reloaded = false; // reset flag at start of fight
     int turn = 1;
     main_character.HUNGER += 5; // Fighting increases hunger
     while(check_alive(&main_character,story,chapter_npc_ids) && !check_win(enemy, &main_character)) {
@@ -102,7 +105,8 @@ Player my_turn(Player main_character,NPC *enemy,Story *story,int* chapter_npc_id
 }
 
 Player enemy_turn(Player main_character, NPC enemy) {
-    // Placeholder for enemy's turn logic
+    //TODO: Make enemy AI smarter by choosing between normal attack and abilities based on the situation 
+    
     printf("%s is preparing to attack you!\n", enemy.name);
     int damage = npc_damage_calculation(enemy, main_character);
     main_character = damage_player(main_character, damage);
@@ -131,9 +135,14 @@ int check_alive(Player *main_character, Story *story,int* chapter_npc_ids) {
     if (main_character->HP <= 0) {
         printf("You have died!\n");
         load_save(story, main_character, chapter_npc_ids);
+        fight_reloaded = true; // signal caller that we reloaded a save
         return 0; // Player is dead
     }
     return 1; // Player is alive
+}
+
+bool fight_reloaded_from_death(void) {
+    return fight_reloaded;
 }
 
 int check_win(NPC npc, Player *main_character) {

@@ -10,17 +10,17 @@ HUNGER: 13
 RANK: 0
 SkillPoints: 0
 LEVEL: 0
-EXP: 0
+EXP: 30
 HP: 50
 MANA: 18
 GOODNESS: 0
 ManaTypesCount: 1
 ManaTypes:0
-STAT_DEFENCE: 2
+STAT_DEFENCE: 3
 STAT_MAX_HP: 5
 STAT_MAX_MANA: 18
 STAT_SUMMONS_STORAGE: 0
-STAT_MAGIC_POWER: 10
+STAT_MAGIC_POWER: 13
 STAT_WEAPON_DAMAGE: 2
 STAT_DAMAGE: 5
 STAT_SPEED: 6
@@ -29,11 +29,11 @@ STAT_PRECEPTION: 0
 STAT_WEAPON_USER: 1
 STAT_DUAL_WIELD: 0
 STAT_MAGIC_USER: 1
-Weapon: -1
+Weapon: 11
 WeaponOff: -1
-Armor:-1,-1,-1,-1
-InventoryCount: 5
-Inventory:0,0,1,6,11
+Armor:6,-1,-1,-1
+InventoryCount: 2
+Inventory:0,1
 AbilitiesCount: 2
 Abilities:6,8
 SummonsCount: 0

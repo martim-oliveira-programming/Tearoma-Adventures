@@ -11,6 +11,7 @@ Player damage_player(Player main_character, int amount);
 int priority_calculation(Player main_character, NPC npc,int turn);
 int check_alive(Player *main_character, Story *story,int* chapter_npc_ids);
 int check_win(NPC npc, Player *main_character);
+bool fight_reloaded_from_death(void);
 NPC damage_npc(NPC npc, int damage_amount);
 int damage_calculation(Player main_character, NPC npc);
 int damage_calculation_with_ability(Player main_character, NPC npc, int ability_damage);

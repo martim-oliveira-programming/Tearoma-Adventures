@@ -27,6 +27,7 @@ NPC ALL_summons[TOTAL_SUMMONS] = {
     {1,4,  "Fire Spirit", NULL, NULL, 0, 0, E, 1, 100, 10, 10, 10, 10, 7, 1, 3},
 };
 
+//TODO Balance the Rival
 //NPC {ID,age,name,Ability_ids*,summonIDs*,abilities_ammount,summons_ammount,RANK,LEVEL,EXP_GIVEN,HP,MAX_HP,MANA,MAX_MANA,DAMAGE,DEFENCE,SPEED}
 NPC ALL_npc[TOTAL_NPC] = {//TODO Change these Random NPC
     {0,15,"Sofia",  (int[]){6,11}, (int[]){0,1}, 2, 2, E, 1, 20, 20, 20, 100, 100, 3, 2, 6},
@@ -66,3 +67,4 @@ Items ALL_items[TOTAL_ITEMS] = {
 };
 
 
+//TODO: Binding Vows, MANA bottle, Summons (and teams) actually working.

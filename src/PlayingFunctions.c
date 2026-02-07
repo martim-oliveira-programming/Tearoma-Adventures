@@ -338,8 +338,14 @@ Player play_chapter(Player main_character, Story *story, int *chapter_npc_ids) {
         sleep(4);
         main_character = fight(main_character, rival, story, NULL, false);
 
+        // If player died and we reloaded a save, return immediately to let the main loop restart from loaded state
+        if (fight_reloaded_from_death()) {
+            return main_character;
+        }
+        //TODO: If player died and we reloaded a save, we should probably also reset the chapter NPCs to their state at the start of the chapter, but for now we will just return to the main loop and let it reload everything from the save file which should include resetting the chapter NPCs as well.
+        //TODO: Continue implementing the rest of the chapter after the fight, 
 
-
+        
         sleep(5);
         printf("-------------------------\nChapter 2 Completed\n-------------------------\n");
 
