@@ -11,9 +11,10 @@
 #include <time.h> 
 
 static bool fight_reloaded = false;
-//TODO: add sleep() in between fight actions to make it feel more dynamic and less like a wall of text.
+
 Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids,bool can_run) {
     fight_reloaded = false; // reset flag at start of fight
+    Attributes pre_fight_stats = main_character.stats; // snapshot to clear temporary ability buffs at fight end
     int turn = 1;
     main_character.HUNGER += 5; // Fighting increases hunger
     while(check_alive(&main_character,story,chapter_npc_ids) && !check_win(enemy, &main_character)) {
@@ -26,12 +27,14 @@ Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids
         }
         
         printf("\n\nYour HP: %d, MANA: %d\n", main_character.HP, main_character.MANA);
+        sleep(1);
 
         int priority = priority_calculation(main_character, enemy, turn);
 
-        if(priority >= 1) { // Player goes first (or twice)
+        if(priority >= 1 || (priority == 0 && turn%2!=0)) { // Player goes first, ties favor the player on the odd turns
             printf("\nIt's your turn first!\n");
             main_character = my_turn(main_character,&enemy,story,chapter_npc_ids,can_run);
+            sleep(1);
             if(check_win(enemy, &main_character)) {
                 printf("You defeated %s!\n", enemy.name);
                 break;
@@ -40,6 +43,7 @@ Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids
             if(priority == 2) {
                 printf("\nYour speed advantage lets you act again!\n");
                 main_character = my_turn(main_character,&enemy,story,chapter_npc_ids,can_run);
+                sleep(1);
                 if(check_win(enemy, &main_character)) {
                     printf("You defeated %s!\n", enemy.name);
                     break;
@@ -49,7 +53,8 @@ Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids
             sleep(2);
             printf("\nIt's %s's turn!\n", enemy.name);
             main_character = enemy_turn(main_character, enemy);
-        } else { // NPC goes first
+            sleep(1);
+        } else { // NPC goes first or ties favor the NPC on even turns
             printf("\n%s is faster and takes the first turn!\n", enemy.name);
             main_character = enemy_turn(main_character, enemy);
             if(!check_alive(&main_character,story,chapter_npc_ids)) {
@@ -59,9 +64,17 @@ Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids
             sleep(2);
             printf("\nIt's your turn!\n");
             main_character = my_turn(main_character,&enemy,story,chapter_npc_ids,can_run);
+            sleep(1);
         }
 
         turn++;
+    }
+    main_character.stats = pre_fight_stats; // remove temporary ability effects
+    if (main_character.HP > main_character.stats.MAX_HP * 10) {
+        main_character.HP = main_character.stats.MAX_HP * 10;
+    }
+    if (main_character.MANA > main_character.stats.MAX_MANA) {
+        main_character.MANA = main_character.stats.MAX_MANA;
     }
     main_character = restore_mana(main_character); // Regenerate some mana after the fight
     return main_character; // Return the updated player state after combat
@@ -106,9 +119,12 @@ Player my_turn(Player main_character,NPC *enemy,Story *story,int* chapter_npc_id
 
 Player enemy_turn(Player main_character, NPC enemy) {
     //TODO: Make enemy AI smarter by choosing between normal attack and abilities based on the situation 
-    
+    Abilities *enemy_ability = get_ability_by_id(enemy.Ability_ids[rand() % enemy.abilities_ammount]);
     printf("%s is preparing to attack you!\n", enemy.name);
     int damage = npc_damage_calculation(enemy, main_character);
+    
+    
+    
     main_character = damage_player(main_character, damage);
     printf("%s dealt %d damage to you!\n", enemy.name, damage);
     return main_character;
@@ -124,11 +140,13 @@ int priority_calculation(Player main_character, NPC npc,int turn) {
     if (player_speed/2 > npc_speed){
         return 2; //Player moves twice before NPC
     }
-    else if (player_speed >= npc_speed) {
+    else if (player_speed > npc_speed) {
         return 1; // Player goes first
-    } else {
+    } else if (npc_speed > player_speed) {
         return -1; // NPC goes first
-    } 
+    } else {
+        return 0; // Tie, decide randomly
+    }
 }
 
 int check_alive(Player *main_character, Story *story,int* chapter_npc_ids) {
@@ -173,11 +191,23 @@ NPC damage_npc(NPC npc, int damage_amount) { //Always call damage_amount with th
     return npc;
 }
 
-int damage_calculation_internal(Player main_character, NPC npc, int ability_damage) {
-    int total_damage = main_character.stats.DAMAGE + ability_damage;
-    if (main_character.weapon >= 0) {
+int damage_calculation_internal(Player main_character, NPC npc, int ability_damage, int ability_class,int ability_element) {
+    int total_damage = ability_damage;
+    if (ability_class == -1) { // Basic attack, add weapon damage if applicable
+        total_damage += main_character.stats.DAMAGE; // Basic attacks scale with overall damage stat
+    }
+    if (ability_damage > 0 && ability_class == Magic) { // Only add magic power for magic abilities
+        total_damage += main_character.stats.MAGIC_POWER; // Abilities scale with magic power
+        }
+    if (main_character.weapon >= 0 && ability_class == Melee) { // Only add weapon damage for melee abilities or basic attacks
         total_damage += main_character.stats.WEAPON_DAMAGE;
     }
+    if (ability_class == Infused) { // Infused abilities scale with both weapon damage and magic power
+        total_damage += main_character.stats.WEAPON_DAMAGE;
+        total_damage += main_character.stats.MAGIC_POWER;
+    }
+    total_damage *= elemental_chart[ability_element][npc.ELEMENTAL_AFFINITY]; // Apply elemental multiplier
+
     total_damage -= npc.DEFENCE;
     if (total_damage < 0) {
         total_damage = 0;
@@ -186,11 +216,11 @@ int damage_calculation_internal(Player main_character, NPC npc, int ability_dama
 }
 
 int damage_calculation(Player main_character, NPC npc) {
-    return damage_calculation_internal(main_character, npc, 0);
+    return damage_calculation_internal(main_character, npc, 0,-1,0);
 }
 
-int damage_calculation_with_ability(Player main_character, NPC npc, int ability_damage) {
-    return damage_calculation_internal(main_character, npc, ability_damage);
+int damage_calculation_with_ability(Player main_character, NPC npc, int ability_damage, int ability_class,int ability_element) {
+    return damage_calculation_internal(main_character, npc, ability_damage, ability_class, ability_element);
 }
 
 int npc_damage_calculation(NPC npc, Player main_character) {
@@ -199,4 +229,9 @@ int npc_damage_calculation(NPC npc, Player main_character) {
 
 int npc_damage_calculation_with_ability(NPC npc, int ability_damage, Player main_character) {
     return npc.DAMAGE + ability_damage - main_character.stats.DEFENCE;
+}
+
+int heal_calculation(Player main_character, int heal_amount) {
+    heal_amount += main_character.stats.MAGIC_POWER / 2; // Healing scales with magic power
+    return heal_amount; // Return integer heal; integer division already floors
 }

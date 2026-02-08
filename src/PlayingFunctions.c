@@ -27,6 +27,7 @@ Player character_creation() {
     main_character.age = 15;
     main_character.RANK = E;
     main_character.stats.PRECEPTION = 3;
+    main_character.team_memberIDs = malloc(1 * sizeof(int));
     main_character.inventoryIDs= malloc(1 * sizeof(int));
     main_character.abilitiesIDs= malloc(1 * sizeof(int));
     main_character.summonIDs= malloc(1 * sizeof(int));
@@ -34,6 +35,7 @@ Player character_creation() {
     main_character.mana_types = malloc(1 * sizeof(int));
     main_character = add_mana_type(main_character, BASE); // Start with Dorment mana type
     main_character.mana_types_ammount = 1;
+    main_character.team_size = 0;
     main_character.item_ammount = 0;
     main_character.HUNGER = 0;
     main_character.Skill_Points = 0;
@@ -234,6 +236,7 @@ Player play_chapter(Player main_character, Story *story, int *chapter_npc_ids) {
     case Chapter_2:{
         NPC rival;
         int rival_id = (main_character.gender == Boy) ? 0 : 1;
+        chapter_npc_ids[0] = rival_id; // Store rival's ID for later reference
         NPC *rival_ptr = get_npc_by_id(rival_id);
         if (rival_ptr) {
             rival = *rival_ptr;

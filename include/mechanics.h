@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "story.h"
 
-#define TOTAL_ABILITIES 12
+#define TOTAL_ABILITIES 13
 #define TOTAL_ITEMS 20
 #define TOTAL_SUMMONS 2
 #define TOTAL_NPC 10
@@ -33,7 +33,8 @@ typedef enum{
     STORM,
     LIGHT,
     DARK,
-}Mana_Types;
+    ELEMENTAL_AFFINITY_COUNT, // Keep this as the last element to track the count of affinities
+}Elemental_Affinity;
 
 typedef enum{
     NO,
@@ -87,8 +88,9 @@ typedef struct player_abilities{
     int EFFECT_TYPE;
     int RANK;
     int MANA_TYPE;
-    int ABILITY_ACTIVE;
+    int ABILITY_CLASS;
     int ABILITY_TYPE;
+    char *DESCRIPTION;
 }Abilities;
 
 typedef enum{
@@ -98,9 +100,12 @@ typedef enum{
 }Ability_Types;
 
 typedef enum{
-    Active,
-    Passive,
-}Ability_Active;
+    Melee,
+    Magic,
+    Infused,
+    Summon,
+    Support,
+}Ability_Class;
 
 typedef struct items{
     int ID;
@@ -144,13 +149,8 @@ typedef struct other_characters{
     int DAMAGE;
     int DEFENCE;
     int SPEED;
+    int ELEMENTAL_AFFINITY;
 }NPC;
-
-typedef struct team {
-    int *memberIDs;
-    int *summonIDs;
-    int size;
-}NPC_Team;
 
 typedef struct player {
     // Basic info
@@ -182,7 +182,8 @@ typedef struct player {
     int MANA;
     int GOODNESS;
     Attributes stats;  // Contains all build-specific attributes
-    NPC_Team *team;
+    int *team_memberIDs; // IDs of NPCs in the player's team
+    int team_size;
 } Player;
 
 //Build Character Functions
@@ -202,13 +203,16 @@ Player equip_item(Player main_character, int itemID);
 Player unequip_item(Player main_character, int slot);
 Player add_summon(Player main_character, int summonID);
 Player remove_summon(Player main_character, int summonID);
-NPC_Team add_team_member(NPC_Team team, int memberID, bool is_summon);
-NPC_Team remove_team_member(NPC_Team team, int memberID, bool is_summon);
-int is_team_member(NPC_Team team, int memberID, bool is_summon);
+char* team_names(Player main_character);
+Player add_team_member(Player main_character, int memberID, bool is_summon);
+Player remove_team_member(Player main_character, int memberID, bool is_summon);
+int is_team_member(Player main_character, int memberID, bool is_summon);
 void apply_ability_effect(Player *main_character ,Abilities player_ability);
-void free_team(NPC_Team *team);
+void free_team(Player *main_character);
 void open_inventory(Player *main_character);
 int open_abilities(Player *main_character);
+int player_stats(Player main_character);
+int open_player_menu(Player *main_character);
 void use_item(Player *main_character, int item_id);
 Player use_ability(Player main_character, NPC *target_npc, int abilityID);
 NPC npc_apply_ability(NPC npc, int abilityID);
@@ -224,6 +228,7 @@ Player add_mana_type(Player main_character, int mana_type);
 Player remove_mana_type(Player main_character, int mana_type);
 int exp_reward_for_npc(NPC npc);
 float rank_exp_multiplier(int rank);
+
 //Utilitie Functions
 Abilities* get_ability_by_id(int id);
 NPC* get_npc_by_id(int id);
@@ -234,6 +239,7 @@ extern Abilities ALL_abilities[TOTAL_ABILITIES];
 extern NPC ALL_summons[TOTAL_SUMMONS];
 extern NPC ALL_npc[TOTAL_NPC];
 extern Items ALL_items[TOTAL_ITEMS];
+extern const float elemental_chart[ELEMENTAL_AFFINITY_COUNT][ELEMENTAL_AFFINITY_COUNT];
 
 
 //Playing Functions

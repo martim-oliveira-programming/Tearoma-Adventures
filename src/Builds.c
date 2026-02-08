@@ -13,7 +13,8 @@ void get_attributes(Player *main_character) {
     if (main_character->build == Assassin) {
         *main_character = add_inventory(*main_character,2,1); //Basic Dagger
         *main_character = add_inventory(*main_character,3,1); //Secondary Dagger
-        *main_character = add_ability(*main_character,10); //Invisibility
+        *main_character = add_ability(*main_character,1); //Speed Boost
+        *main_character = add_ability(*main_character,4); //Disguise
         
         main_character->stats = (Attributes){
             .DEFENCE = 0,
@@ -158,7 +159,7 @@ void get_attributes(Player *main_character) {
         *main_character = add_inventory(*main_character,11,1); //Basic Grimoire
 
         *main_character = add_ability(*main_character,6); //Basic Healing
-        *main_character = add_ability(*main_character,8); //Shadow Dog Summon
+        *main_character = add_ability(*main_character,11); //Fire Spirit Summon
         
         main_character->stats = (Attributes){
             .DEFENCE = 2,
@@ -234,8 +235,7 @@ void apply_ability_effect(Player *main_character ,Abilities player_ability){
     else if (player_ability.EFFECT_TYPE == SUMMON) {
         int summon_id = first ? atoi(first) : -1;
         if (summon_id != -1) {
-            *main_character->team = add_team_member(*(main_character->team), summon_id, true);
-        
+            *main_character = add_team_member(*main_character, summon_id, true);
         }
     }
 
@@ -261,8 +261,8 @@ void apply_ability_effect(Player *main_character ,Abilities player_ability){
             if (main_character->HP > main_character->stats.MAX_HP) {
                 main_character->HP = main_character->stats.MAX_HP;
             }
-            for (int i = 0; i < main_character->team->size; i++) {
-                NPC *member = get_npc_by_id(main_character->team->memberIDs[i]);
+            for (int i = 0; i < main_character->team_size; i++) {
+                NPC *member = get_npc_by_id(main_character->team_memberIDs[i]);
                 if (member) {
                     member->HP += team_heal;
                     if (member->HP > member->MAX_HP) {
@@ -273,8 +273,8 @@ void apply_ability_effect(Player *main_character ,Abilities player_ability){
     }
         if (team_boost > 0) {
             main_character->stats.DAMAGE += team_boost;
-            for (int i = 0; i < main_character->team->size; i++) {
-                NPC *member = get_npc_by_id(main_character->team->memberIDs[i]);
+            for (int i = 0; i < main_character->team_size; i++) {
+                NPC *member = get_npc_by_id(main_character->team_memberIDs[i]);
                 if (member) {
                     member->DAMAGE += team_boost;
                 }
@@ -532,76 +532,92 @@ const char *gender_to_string(Gender g){
     }
 }
 
-NPC_Team add_team_member(NPC_Team team, int memberID, bool is_summon) {
-    if (is_summon) {
-        team.summonIDs = realloc(team.summonIDs, (team.size + 1) * sizeof(int));
-        team.summonIDs[team.size] = memberID;
-
-    } else {
-    team.memberIDs = realloc(team.memberIDs, (team.size + 1) * sizeof(int));
-    team.memberIDs[team.size] = memberID;
+Player add_team_member(Player main_character, int memberID, bool is_summon) {
+    (void)is_summon; // Summons and members share the same list in Player
+    int new_size = main_character.team_size + 1;
+    int *new_ids = realloc(main_character.team_memberIDs, new_size * sizeof(int));
+    if (!new_ids) {
+        return main_character;
     }
-    team.size += 1;
-    return team;
+    main_character.team_memberIDs = new_ids;
+    main_character.team_memberIDs[main_character.team_size] = memberID;
+    main_character.team_size = new_size;
+    return main_character;
 }
 
-NPC_Team remove_team_member(NPC_Team team, int memberID, bool is_summon) {
-    if (is_summon) {
-        for (int i = 0; i < team.size; i++) {
-            if (team.summonIDs[i] == memberID) {
-                // Shift left
-                for (int k = i; k < team.size - 1; k++) {
-                    team.summonIDs[k] = team.summonIDs[k + 1];
+Player remove_team_member(Player main_character, int memberID, bool is_summon) {
+    (void)is_summon;
+    int removed = 0;
+    for (int i = 0; i < main_character.team_size; i++) {
+        if (main_character.team_memberIDs[i] == memberID) {
+            for (int k = i; k < main_character.team_size - 1; k++) {
+                main_character.team_memberIDs[k] = main_character.team_memberIDs[k + 1];
+            }
+            main_character.team_size -= 1;
+            if (main_character.team_size == 0) {
+                free(main_character.team_memberIDs);
+                main_character.team_memberIDs = NULL;
+            } else {
+                int *shrunk = realloc(main_character.team_memberIDs, main_character.team_size * sizeof(int));
+                if (shrunk) {
+                    main_character.team_memberIDs = shrunk;
                 }
-                team.size -= 1;
-                team.summonIDs = realloc(team.summonIDs, team.size * sizeof(int));
-                break;
             }
-        }
-    } else {
-    for (int i = 0; i < team.size; i++) {
-        if (team.memberIDs[i] == memberID) {
-            // Shift left
-            for (int k = i; k < team.size - 1; k++) {
-                team.memberIDs[k] = team.memberIDs[k + 1];
-            }
-            team.size -= 1;
-            team.memberIDs = realloc(team.memberIDs, team.size * sizeof(int));
+            removed = 1;
             break;
         }
     }
-}
-    team.size -= 1;
-    return team;
+    (void)removed; // silence unused warning if not used later
+    return main_character;
 }
 
-int is_team_member(NPC_Team team, int memberID, bool is_summon) {
-    if (is_summon) {
-        for (int i = 0; i < team.size; i++) {
-            if (team.summonIDs[i] == memberID) {
-                return 1; // Found
+int is_team_member(Player main_character, int memberID, bool is_summon) {
+    (void)is_summon;
+    for (int i = 0; i < main_character.team_size; i++) {
+        if (main_character.team_memberIDs[i] == memberID) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void free_team(Player *main_character) {
+    if (!main_character) return;
+    if (main_character->team_memberIDs) {
+        free(main_character->team_memberIDs);
+        main_character->team_memberIDs = NULL;
+    }
+    main_character->team_size = 0;
+}
+
+char* team_names(Player main_character) {
+    if (main_character.team_size == 0) {
+        return strdup("No team members.");
+    }
+    size_t buffer_size = 256;
+    char *buffer = malloc(buffer_size);
+    if (!buffer) return NULL;
+    buffer[0] = '\0';
+    for (int i = 0; i < main_character.team_size; i++) {
+        int member_id = main_character.team_memberIDs[i];
+        NPC *member = get_npc_by_id(member_id);
+        const char *name = member ? member->name : "Unknown";
+        size_t needed = strlen(name) + 3; // for ", " or null terminator
+        if (strlen(buffer) + needed >= buffer_size) {
+            buffer_size *= 2;
+            char *new_buffer = realloc(buffer, buffer_size);
+            if (!new_buffer) {
+                free(buffer);
+                return NULL;
             }
+            buffer = new_buffer;
         }
-    } else {
-    for (int i = 0; i < team.size; i++) {
-        if (team.memberIDs[i] == memberID) {
-            return 1; // Found
+        strcat(buffer, name);
+        if (i < main_character.team_size - 1) {
+            strcat(buffer, ", ");
         }
     }
-}
-    return 0; // Not found
-}
-
-void free_team(NPC_Team *team) {
-    if (team->memberIDs) {
-        free(team->memberIDs);
-        team->memberIDs = NULL;
-    }
-    if (team->summonIDs) {
-        free(team->summonIDs);
-        team->summonIDs = NULL;
-    }
-    team->size = 0;
+    return buffer;
 }
 
 static const char *item_type_to_string(int type) {
@@ -729,7 +745,7 @@ int open_abilities(Player *main_character) {
         for (int i = 0; i < main_character->abilities_ammount; i++) {
             Abilities *ability = get_ability_by_id(main_character->abilitiesIDs[i]);
             if (ability) {
-                printf("%d. ID: %d - %s - %d MANA - %d Damage\n", i + 1, ability->ID, ability->NAME, ability->MANA_COST, ability->DAMAGE);
+                printf("%d. ID: %d - %s - %d MANA - %d Damage - %s\n", i + 1, ability->ID, ability->NAME, ability->MANA_COST, ability->DAMAGE,ability->DESCRIPTION);
             } else {
                 printf("%d. Unknown Ability (ID: %d)\n", i + 1, main_character->abilitiesIDs[i]);
             }
@@ -752,6 +768,133 @@ int open_abilities(Player *main_character) {
         return ability_id;
     }
     return -1; // Safety net if loop exits unexpectedly
+}
+
+int open_player_menu(Player *main_character) {
+    while (1) {
+        printf("---- Player Menu ----\n");
+        printf("1. View Stats\n");
+        printf("2. Open Inventory\n");
+        printf("3. Use Ability\n");
+        printf("4. Exit Menu\n");
+
+        char *choice = get_input("Enter your choice: ");
+        if (!choice) {
+            break;
+        }
+        if (choice[0] == '4' && choice[1] == '\0') {
+            free(choice);
+            break;
+        }
+        int option = atoi(choice);
+        free(choice);
+
+        switch (option) {
+            case 1:
+                player_stats(*main_character);
+                break;
+            case 2:
+                open_inventory(main_character);
+                break;
+            case 3: {
+                int ability_id = open_abilities(main_character);
+                if (ability_id != -1) {
+                    Abilities *ability = get_ability_by_id(ability_id);
+                    if (ability) {
+                        apply_ability_effect(main_character, *ability);
+                        main_character->MANA -= ability->MANA_COST;
+                        if (main_character->MANA < 0) main_character->MANA = 0;
+                        printf("You used %s.\n", ability->NAME);
+                    }
+                }
+                break;
+            }
+            default:
+                printf("Invalid option. Please try again.\n");
+                break;
+        }
+    }
+    return 0; // Return value can be used for future expansions
+}
+
+void print_player_info(Player main_character) {
+    printf("You have %d€.\n", main_character.money);
+    printf("Hunger: %d/100\n\n", main_character.HUNGER);
+    printf("You have %d Skill Points to use.\n", main_character.Skill_Points);
+    
+    printf("---- Player Stats ----\n");
+    printf("1. HP: %d/%d\n", main_character.HP, main_character.stats.MAX_HP);
+    printf("2. Mana: %d/%d\n", main_character.MANA, main_character.stats.MAX_MANA);
+    printf("3. Damage: %d\n", main_character.stats.DAMAGE);
+    printf("4. Magic Power: %d\n", main_character.stats.MAGIC_POWER);
+    printf("5. Defence: %d\n", main_character.stats.DEFENCE);
+    printf("6. Speed: %d\n", main_character.stats.SPEED);
+    printf("7. Stealth: %d\n", main_character.stats.STEALTH);
+    printf("8. Weapon Damage: %d\n", main_character.stats.WEAPON_DAMAGE);
+}
+
+int player_stats(Player main_character) {
+    int Sp = main_character.Skill_Points;
+    char* choice;
+    print_player_info(main_character);  
+    while (Sp > 0) {
+        print_player_info(main_character);
+        choice = get_input("Enter the number of the stat you want to increase (or 'q' to exit): ");
+        if (!choice) {
+            return 0;
+        }
+        if (choice[0] == 'q' && choice[1] == '\0') {
+            free(choice);
+            return 0;
+        }
+        int stat_choice = atoi(choice);
+        free(choice);
+        if (stat_choice < 1 || stat_choice > 8) {
+            printf("Invalid choice.\n");
+        }
+        switch (stat_choice)
+        {
+        case 1:
+            main_character.stats.MAX_HP += 1;
+            main_character.HP += 10;
+            Sp -= 1;
+            break;
+        
+        case 2:
+            main_character.stats.MAX_MANA += 1;
+            main_character.MANA += 10;
+            Sp -= 1;
+            break;
+        case 3:
+            main_character.stats.DAMAGE += 1;
+            Sp -= 1;
+            break;
+        case 4:
+            main_character.stats.MAGIC_POWER += 1;
+            Sp -= 1;
+            break;
+        case 5:
+            main_character.stats.DEFENCE += 1;
+            Sp -= 1;
+            break;
+        case 6:
+            main_character.stats.SPEED += 1;
+            Sp -= 1;
+            break;
+        case 7:
+            main_character.stats.STEALTH += 1;
+            Sp -= 1;
+            break;
+        case 8:           
+            main_character.stats.WEAPON_DAMAGE += 1;
+            Sp -= 1;
+            break;
+        
+        default:
+            break;
+        }
+    }
+    return 0;
 }
 
 Player apply_item_effects(Player main_character, Items item) {
@@ -897,6 +1040,7 @@ Player decrease_hunger(Player main_character, int amount) {
 }
 
 Player heal_player(Player main_character, int heal_amount) {
+    heal_amount = heal_calculation(main_character, heal_amount);
     main_character.HP += heal_amount;
     if (main_character.HP > main_character.stats.MAX_HP*10) {
         main_character.HP = (main_character.stats.MAX_HP * 10);
@@ -971,10 +1115,15 @@ Player use_ability(Player main_character, NPC *target_npc, int abilityID) {
     printf("You used %s.\n", ability->NAME);
     
     if (target_npc && ability->DAMAGE > 0) {
-        int damage = damage_calculation_with_ability(main_character, *target_npc, ability->DAMAGE);
+        int damage = damage_calculation_with_ability(main_character, *target_npc, ability->DAMAGE, ability->ABILITY_CLASS, ability->MANA_TYPE);
         *target_npc = damage_npc(*target_npc, damage);
         printf("You dealt %d damage to %s.\n", damage, target_npc->name);
     }
+    if (ability->HEALING > 0) {
+        main_character = heal_player(main_character, ability->HEALING);
+        printf("You healed yourself for %d HP.\n", ability->HEALING);
+    }
+
     return main_character;
 }
 
