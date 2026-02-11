@@ -18,6 +18,9 @@ int damage_calculation_with_ability(Player main_character, NPC npc, int ability_
 int heal_calculation(Player main_character, int heal_amount);
 int npc_damage_calculation(NPC npc, Player main_character);
 int npc_damage_calculation_with_ability(NPC npc, int ability_damage, Player main_character);
+int damage_calculation_team_member(NPC member, NPC enemy);
+int team_damage_calculation_with_ability(NPC member, int ability_damage, NPC enemy);
+NPC team_member_action(NPC atack, NPC enemy);
 
 
 #endif

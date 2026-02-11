@@ -43,32 +43,63 @@ NPC ALL_summons[TOTAL_SUMMONS] = {
 };
 
 
-//Items {ID,Name,Effect,Effect Type,Item Type,Healling,Equipable}
+//Items {ID, Name, Description}
 Items ALL_items[TOTAL_ITEMS] = {
-    {0,"Chicken Sandwich","",NONE,CONSUMABLE,10,NO},
-    {1,"Flashlight","",NONE,KEY,0,OFF_HAND},
-    {2,"Basic Dagger","3 WEAPON_DAMAGE",PLUS,WEAPON,0,MAIN_HAND},
-    {3,"Secondary Dagger","2 WEAPON_DAMAGE",PLUS,WEAPON,0,OFF_HAND},
-    {4,"Basic Sword","4 WEAPON_DAMAGE",PLUS,WEAPON,0,MAIN_HAND},
-    {5,"Basic Shield","3 DEFENCE",PLUS,WEAPON,0,OFF_HAND},
-    {6,"Leather Helmet","1 DEFENCE",PLUS,WEAPON,0,HEAD},
-    {7,"Leather Chestplate","3 DEFENCE",PLUS,WEAPON,0,CHEST},
-    {8,"Leather Pants","2 DEFENCE",PLUS,WEAPON,0,LEGS},
-    {9,"Leather Boots","1 DEFENCE",PLUS,WEAPON,0,SHOES},
-    {10,"Headband","3 DEFENCE",PLUS,WEAPON,0,HEAD},
-    {11,"Basic Grimoire","3 MAGIC_POWER",PLUS,WEAPON,0,MAIN_HAND},
-    {12,"Healer's Glove","2 MAX_MANA",PLUS,WEAPON,0,MAIN_HAND},
-    {13,"Mage's Robe","3 MAGIC_POWER",PLUS,WEAPON,0,CHEST},
-    {14,"Basic Katana","5 WEAPON_DAMAGE",PLUS,WEAPON,0,MAIN_HAND},
-    {15,"Shuriken","3 WEAPON_DAMAGE",PLUS,WEAPON,0,OFF_HAND},
-    {16,"Ninja chestplate","4 DEFENCE",PLUS,WEAPON,0,CHEST},
-    {17,"Ninja pants","3 DEFENCE",PLUS,WEAPON,0,LEGS},
-    {18,"Soundless sandals","2 DEFENCE",PLUS,WEAPON,0,SHOES},
-    {19,"Potion of Healing","",HEAL,CONSUMABLE,20,NO},
+    {0,  "Chicken Sandwich", "A filling sandwich that restores some health."},
+    {1,  "Flashlight",        "A handy light source for dark places."},
+    {2,  "Basic Dagger",      "A light dagger favored by rogues."},
+    {3,  "Secondary Dagger",  "A small off-hand dagger."},
+    {4,  "Basic Sword",       "A simple but reliable sword."},
+    {5,  "Basic Shield",      "A wooden shield that offers modest protection."},
+    {6,  "Leather Helmet",    "Light head protection made of leather."},
+    {7,  "Leather Chestplate","Sturdy leather armor for the torso."},
+    {8,  "Leather Pants",     "Leather leg guards for basic defense."},
+    {9,  "Leather Boots",     "Boots that offer grip and slight protection."},
+    {10, "Headband",          "A headband that bolsters focus."},
+    {11, "Basic Grimoire",    "A beginner's spellbook containing simple incantations."},
+    {12, "Healer's Glove",    "A glove imbued to aid restorative magic."},
+    {13, "Mage's Robe",       "Robes that enhance magical aptitude."},
+    {14, "Basic Katana",      "A sharp katana suited for swift strikes."},
+    {15, "Shuriken",          "Throwing stars for quick, precise attacks."},
+    {16, "Ninja chestplate",  "Light armor tailored for agility."},
+    {17, "Ninja pants",       "Flexible pants aiding silent movement."},
+    {18, "Soundless sandals", "Sandals that muffle footsteps."},
+    {19, "Potion of Healing", "A potion that restores 30 health when consumed."},
+    {20, "Mana Bottle",       "A bottle that restores 30 mana when consumed."},
+};
+
+Weapon ALL_weapons[TOTAL_WEAPONS] = {
+    {ALL_items[2], MAIN_HAND, "3 WEAPON_DAMAGE"},
+    {ALL_items[3], OFF_HAND, "2 WEAPON_DAMAGE"},
+    {ALL_items[4], MAIN_HAND, "4 WEAPON_DAMAGE"},
+    {ALL_items[5], OFF_HAND, "3 DEFENCE"},
+    {ALL_items[6], HEAD, "1 DEFENCE"},
+    {ALL_items[7], CHEST, "3 DEFENCE"},
+    {ALL_items[8], LEGS, "2 DEFENCE"},
+    {ALL_items[9], SHOES, "1 DEFENCE"},
+    {ALL_items[10], HEAD, "3 DEFENCE"},
+    {ALL_items[11], MAIN_HAND, "3 MAGIC_POWER"},
+    {ALL_items[12], MAIN_HAND, "2 MAX_MANA"},
+    {ALL_items[13], CHEST, "3 MAGIC_POWER"},
+    {ALL_items[14], MAIN_HAND, "5 WEAPON_DAMAGE"},
+    {ALL_items[15], OFF_HAND, "3 WEAPON_DAMAGE"},
+    {ALL_items[16], CHEST, "4 DEFENCE"},
+    {ALL_items[17], LEGS, "3 DEFENCE"},
+    {ALL_items[18], SHOES, "2 DEFENCE"},
+};
+
+Consumable ALL_consumables[TOTAL_CONSUMABLES] = {
+    {ALL_items[0], 5, 0, 20},
+    {ALL_items[19], 30, 0,0}, 
+    {ALL_items[20], 0, 30,0},
+};
+
+Key_Item ALL_key_items[TOTAL_KEY_ITEMS] = {
+    {ALL_items[1], "Can be used to light up dark areas."},
 };
 
 
-//TODO: Binding Vows, MANA bottle, Summons (and teams) actually working.
+//TODO: Binding Vows, Summons (and teams) actually working.
 
 const float elemental_chart[ELEMENTAL_AFFINITY_COUNT][ELEMENTAL_AFFINITY_COUNT] = { // Advantage multiplier chart: [Attacker][Defender]
 /* ATK \ DEF */

@@ -27,6 +27,20 @@ Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids
         }
         
         printf("\n\nYour HP: %d, MANA: %d\n", main_character.HP, main_character.MANA);
+        if (main_character.team_size > 0) {
+            printf("Team Status:\n");
+            for (int i = 0; i < main_character.team_size; i++) {
+                int member_id = main_character.team_memberIDs[i];
+                NPC member = (member_id >= 100) ? get_summon_by_id(member_id) : get_npc_by_id(member_id);
+                if (member.ID >= 0) {
+                    printf("  %s - HP: %d/%d", member.name, member.HP, member.MAX_HP);
+                    if (member.MAX_MANA > 0) {
+                        printf(", MANA: %d/%d", member.MANA, member.MAX_MANA);
+                    }
+                    printf("\n");
+                }
+            }
+        }
         sleep(1);
 
         int priority = priority_calculation(main_character, enemy, turn);
@@ -92,7 +106,10 @@ Player my_turn(Player main_character,NPC *enemy,Story *story,int* chapter_npc_id
             int abilityID = open_abilities(&main_character);
             if (abilityID >= 0) {
                 main_character = use_ability(main_character, enemy, abilityID);
-                printf("You used %s!\n", get_ability_by_id(abilityID)->NAME);
+                Abilities used = get_ability_by_id(abilityID);
+                if (used.ID >= 0) {
+                    printf("You used %s!\n", used.NAME);
+                }
             }
         } 
         else if (strcmp(action, "I") == 0) {
@@ -114,19 +131,88 @@ Player my_turn(Player main_character,NPC *enemy,Story *story,int* chapter_npc_id
         else {
             printf("Invalid action. Please choose Attack, Use Ability, Use Item, or Run.\n");
         }
+    free(action);
+
+
     return main_character;
 }
 
+Player team_turn(Player main_character,NPC enemy) {
+    if(main_character.team_size == 0){
+        return main_character; // No team members to act
+    }
+    printf("\nYour team members take their actions!\n");
+    for(int i = 0; i < main_character.team_size; i++){
+        int memberID = main_character.team_memberIDs[i];
+        if(is_team_member(main_character, memberID, true)){ // Check if it's a summon
+            NPC summon = get_summon_by_id(memberID);
+            printf("%s the summon attacks!\n", summon.name);
+            // Placeholder for summon attack logic
+            summon = team_member_action(summon, enemy);
+             if(check_win(enemy, &main_character)) {
+                printf("Your summon %s defeated %s!\n", summon.name, enemy.name);
+                break;
+             }
+        } 
+        else if (is_team_member(main_character,memberID, false)){ // Check if it's an NPC ally
+            NPC ally = get_npc_by_id(memberID);
+            printf("%s the ally attacks!\n", ally.name);
+            // Placeholder for ally attack logic
+            ally = team_member_action(ally, enemy);
+             if(check_win(enemy, &main_character)) {
+                printf("Your ally %s defeated %s!\n", ally.name, enemy.name);
+                break;
+             }
+        }
+    }
+    return main_character;
+}
+
+NPC team_member_action(NPC member, NPC enemy) {
+    printf("%s is taking action against %s!\n", member.name, enemy.name);
+    // Placeholder for team member action logic (could be a basic attack or using an ability)
+    int damage = damage_calculation_team_member(member, enemy);
+    enemy = damage_npc(enemy, damage);
+    printf("%s dealt %d damage to %s!\n", member.name, damage, enemy.name);
+    return member; // Return updated member state if needed
+}
+
 Player enemy_turn(Player main_character, NPC enemy) {
-    //TODO: Make enemy AI smarter by choosing between normal attack and abilities based on the situation 
-    Abilities *enemy_ability = get_ability_by_id(enemy.Ability_ids[rand() % enemy.abilities_ammount]);
+    int random_value = rand() % 100; // Random number between 0 and 99 for decision making
+    int attack_member = rand() % (main_character.team_size + 1); // Randomly decide to attack player or a team member
     printf("%s is preparing to attack you!\n", enemy.name);
     int damage = npc_damage_calculation(enemy, main_character);
-    
-    
-    
+    for (int i = 0; i < enemy.abilities_ammount; i++) {
+        Abilities ability = get_ability_by_id(enemy.Ability_ids[i]);
+        if (ability.ID >= 0 && ability.DAMAGE > 0) {
+            int potential_damage = npc_damage_calculation_with_ability(enemy, ability.DAMAGE, main_character);
+            if (potential_damage > damage) {
+                damage = potential_damage;
+            }
+        }
+    }  
+    if (random_value % 2 ==0 || main_character.team_size == 0 ){
     main_character = damage_player(main_character, damage);
     printf("%s dealt %d damage to you!\n", enemy.name, damage);
+    }else{ // Attack a team member instead
+        if (attack_member > 0 && attack_member <= main_character.team_size) {
+            int memberID = main_character.team_memberIDs[attack_member - 1];
+            if (is_team_member(main_character, memberID, true)) { // Summon
+                NPC summon = get_summon_by_id(memberID);
+                int team_damage = damage_calculation_team_member(enemy, summon);
+                summon = damage_npc(summon, team_damage);
+                printf("%s attacked your summon %s for %d damage!\n", enemy.name, summon.name, team_damage);
+            } else if (is_team_member(main_character, memberID, false)) { // NPC ally
+                NPC ally = get_npc_by_id(memberID);
+                int team_damage = damage_calculation_team_member(enemy, ally);
+                ally = damage_npc(ally, team_damage);
+                printf("%s attacked your ally %s for %d damage!\n", enemy.name, ally.name, team_damage);
+            }
+        } else {
+            main_character = damage_player(main_character, damage);
+            printf("%s dealt %d damage to you!\n", enemy.name, damage);
+        }
+    }
     return main_character;
 }
 
@@ -171,6 +257,16 @@ int check_win(NPC npc, Player *main_character) {
     return 0; // NPC is still alive
 }
 
+int check_ally_alive(Player *main_character, NPC ally) {
+    if (ally.HP <= 0) {
+        printf("Your ally %s has been defeated!\n", ally.name);
+        *main_character = remove_team_member(*main_character, ally.ID, false);
+        *main_character = remove_summon(*main_character, ally.ID); // In case the ally was a summon, you loose them too
+        return 0; // Ally is dead
+    }
+    return 1; // Ally is alive
+}
+
 Player damage_player(Player main_character, int damage_amount) {
     int dodge_chance = main_character.stats.STEALTH;
     if (dodge_chance < 0) dodge_chance = 0;
@@ -189,6 +285,22 @@ Player damage_player(Player main_character, int damage_amount) {
 NPC damage_npc(NPC npc, int damage_amount) { //Always call damage_amount with the damage_calculation functions.
     npc.HP -= damage_amount;
     return npc;
+}
+
+int damage_calculation_team_member(NPC member, NPC enemy) {
+    int damage = member.DAMAGE - enemy.DEFENCE;
+    if (damage < 0) {
+        damage = 0;
+    }
+    return damage;
+}
+
+int team_damage_calculation_with_ability(NPC member, int ability_damage, NPC enemy) {
+    int damage = member.DAMAGE + ability_damage - enemy.DEFENCE;
+    if (damage < 0) {
+        damage = 0;
+    }
+    return damage;
 }
 
 int damage_calculation_internal(Player main_character, NPC npc, int ability_damage, int ability_class,int ability_element) {

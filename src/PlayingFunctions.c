@@ -237,10 +237,8 @@ Player play_chapter(Player main_character, Story *story, int *chapter_npc_ids) {
         NPC rival;
         int rival_id = (main_character.gender == Boy) ? 0 : 1;
         chapter_npc_ids[0] = rival_id; // Store rival's ID for later reference
-        NPC *rival_ptr = get_npc_by_id(rival_id);
-        if (rival_ptr) {
-            rival = *rival_ptr;
-        } else {
+        rival = get_npc_by_id(rival_id);
+        if (rival.ID < 0) {
             printf("Error: rival NPC not found for id %d.\n", rival_id);
             rival = (NPC){0};
         }

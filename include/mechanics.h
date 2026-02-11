@@ -4,10 +4,14 @@
 #include "story.h"
 
 #define TOTAL_ABILITIES 13
-#define TOTAL_ITEMS 20
+#define TOTAL_ITEMS 21
+#define TOTAL_WEAPONS 17
+#define TOTAL_CONSUMABLES 3
+#define TOTAL_KEY_ITEMS 1
 #define TOTAL_SUMMONS 2
 #define TOTAL_NPC 10
 #define MAX_EQUIPPED_ITEMS 5
+     // e.g. "3 DEFENCE" (effect_type always PLUS for weapons)
 
 
 typedef enum{
@@ -109,13 +113,27 @@ typedef enum{
 
 typedef struct items{
     int ID;
-    char *name;
-    const char *effect;
-    int effect_type;
-    int item_type;
-    int healling;
-    int equipable;
+    char *name; 
+    const char *description;
 }Items;
+
+typedef struct weapon{
+    Items item;
+    int equip_slot; // MAIN_HAND, OFF_HAND, HEAD, CHEST, LEGS, SHOES
+    const char *effect;
+}Weapon;
+
+typedef struct consumable{
+    Items item;
+    int healling;
+    int mana_restoration;
+    int hunger_restoration;
+}Consumable;
+
+typedef struct key_item{
+    Items item;
+    const char *use_description;
+}Key_Item;
 
 typedef enum gender{
     Boy,
@@ -217,7 +235,8 @@ void use_item(Player *main_character, int item_id);
 Player use_ability(Player main_character, NPC *target_npc, int abilityID);
 NPC npc_apply_ability(NPC npc, int abilityID);
 Player apply_item_effects(Player main_character, Items item);
-Player remove_item_effects(Player main_character, Items item);
+Player apply_weapon_effects(Player main_character, Weapon weapon);
+Player remove_weapon_effects(Player main_character, Weapon weapon);
 Player sort_items(Player main_character);
 Player check_hunger(Player main_character);
 Player increase_hunger(Player main_character, int amount);
@@ -230,15 +249,18 @@ int exp_reward_for_npc(NPC npc);
 float rank_exp_multiplier(int rank);
 
 //Utilitie Functions
-Abilities* get_ability_by_id(int id);
-NPC* get_npc_by_id(int id);
-Items* get_items_by_id(int id);
-NPC *get_summon_by_id(int id);
+Abilities get_ability_by_id(int id);
+NPC get_npc_by_id(int id);
+Items get_items_by_id(int id);
+NPC get_summon_by_id(int id);
 
 extern Abilities ALL_abilities[TOTAL_ABILITIES];
 extern NPC ALL_summons[TOTAL_SUMMONS];
 extern NPC ALL_npc[TOTAL_NPC];
 extern Items ALL_items[TOTAL_ITEMS];
+extern Weapon ALL_weapons[TOTAL_WEAPONS];
+extern Consumable ALL_consumables[TOTAL_CONSUMABLES];
+extern Key_Item ALL_key_items[TOTAL_KEY_ITEMS];
 extern const float elemental_chart[ELEMENTAL_AFFINITY_COUNT][ELEMENTAL_AFFINITY_COUNT];
 
 
