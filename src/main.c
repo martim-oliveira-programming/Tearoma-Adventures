@@ -33,7 +33,14 @@ int main() {
                     save_game(story, main_character, chapter_npc_ids);
                 } else {
                     // Load existing game
-                    load_save(&story, &main_character, chapter_npc_ids);
+                    int status = load_save(&story, &main_character, chapter_npc_ids);
+                    if (!status) {
+                        printf("Save load failed. Starting new game.\n");
+                        main_character = character_creation();
+                        story.Chapter = Chapter_1;
+                        story.Path = 0;
+                        save_game(story, main_character, chapter_npc_ids);
+                    }
                 }
                 printf("Starting game -- Chapter %d -- Hello %s\n", story.Chapter + 1, main_character.name);
 

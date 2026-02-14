@@ -98,8 +98,8 @@ GameState Continue(Story *out_story, Player *out_player, int *chapter_npc_ids) {
     Player loaded_player = {0};
     int loaded_npc_ids[1] = {-1};
     
-    int found_file = load_save(&loaded_story, &loaded_player, loaded_npc_ids);
-    if (!found_file) {
+    int load_status = load_save(&loaded_story, &loaded_player, loaded_npc_ids);
+    if (!load_status) {
         printf("Select NewGame to start a New Game.\nReturning to Menu...\n");
         return MENU;
     }

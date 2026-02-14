@@ -31,6 +31,29 @@ static int parse_int_list(const char *src, int **out_arr) {
     return idx;
 }
 
+static int parse_active_effects(const char *src, ActiveAbilityEffect *out_arr, int max_count) {
+    if (!src || !out_arr || max_count <= 0) return 0;
+    char *copy = strdup(src);
+    if (!copy) return 0;
+    int count = 0;
+    char *save = NULL;
+    char *pair = strtok_r(copy, ",", &save);
+    while (pair && count < max_count) {
+        char *colon = strchr(pair, ':');
+        if (colon) {
+            *colon = '\0';
+            int ability_id = atoi(pair);
+            int turns = atoi(colon + 1);
+            out_arr[count].ability_id = ability_id;
+            out_arr[count].turns_remaining = turns;
+            count++;
+        }
+        pair = strtok_r(NULL, ",", &save);
+    }
+    free(copy);
+    return count;
+}
+
 int file_exists(const char* filename) {
     FILE* file = fopen(filename, "r");
     if (file) { fclose(file); return 1; }
@@ -66,11 +89,11 @@ void save_game(Story story, Player main_character, int *chapter_npc_ids) {
     fprintf(save_file, "GOODNESS: %d\n", main_character.GOODNESS);
 
     // Mana types
-    fprintf(save_file, "ManaTypesCount: %d\n", main_character.mana_types_ammount);
+    fprintf(save_file, "ManaTypesCount: %d\n", main_character.mana_elements_ammount);
     fprintf(save_file, "ManaTypes:");
-    for (int i = 0; i < main_character.mana_types_ammount; ++i) {
+    for (int i = 0; i < main_character.mana_elements_ammount; ++i) {
         if (i) fprintf(save_file, ",");
-        fprintf(save_file, "%d", main_character.mana_types[i]);
+        fprintf(save_file, "%d", main_character.mana_elements[i]);
     }
     fprintf(save_file, "\n");
 
@@ -84,10 +107,19 @@ void save_game(Story story, Player main_character, int *chapter_npc_ids) {
     fprintf(save_file, "STAT_DAMAGE: %d\n", main_character.stats.DAMAGE);
     fprintf(save_file, "STAT_SPEED: %d\n", main_character.stats.SPEED);
     fprintf(save_file, "STAT_STEALTH: %d\n", main_character.stats.STEALTH);
-    fprintf(save_file, "STAT_PRECEPTION: %d\n", main_character.stats.PRECEPTION);
+    fprintf(save_file, "STAT_PERCEPTION: %d\n", main_character.stats.PERCEPTION);
     fprintf(save_file, "STAT_WEAPON_USER: %d\n", main_character.stats.WEAPON_USER ? 1 : 0);
     fprintf(save_file, "STAT_DUAL_WIELD: %d\n", main_character.stats.DUAL_WILDING);
     fprintf(save_file, "STAT_MAGIC_USER: %d\n", main_character.stats.MAGIC_USER ? 1 : 0);
+
+    // DNA
+    fprintf(save_file, "DNA_Count: %d\n", main_character.DNA_ammount);
+    fprintf(save_file, "DNA:");
+    for (int i = 0; i < main_character.DNA_ammount; ++i) {
+        if (i) fprintf(save_file, ",");
+        fprintf(save_file, "%d", main_character.DNA[i]);
+    }
+    fprintf(save_file, "\n");
 
     // equipment
     fprintf(save_file, "Weapon: %d\n", main_character.weapon);
@@ -121,6 +153,24 @@ void save_game(Story story, Player main_character, int *chapter_npc_ids) {
     }
     fprintf(save_file, "\n");
 
+    // Team members
+    fprintf(save_file, "TeamSize: %d\n", main_character.team_size);
+    fprintf(save_file, "TeamMembers:");
+    for (int i = 0; i < main_character.team_size; ++i) {
+        if (i) fprintf(save_file, ",");
+        fprintf(save_file, "%d", main_character.team_memberIDs ? main_character.team_memberIDs[i] : -1);
+    }
+    fprintf(save_file, "\n");
+
+    // Active timed effects
+    fprintf(save_file, "ActiveEffectsCount: %d\n", main_character.active_effect_count);
+    fprintf(save_file, "ActiveEffects:");
+    for (int i = 0; i < main_character.active_effect_count; ++i) {
+        if (i) fprintf(save_file, ",");
+        fprintf(save_file, "%d:%d", main_character.active_effects[i].ability_id, main_character.active_effects[i].turns_remaining);
+    }
+    fprintf(save_file, "\n");
+
     // Save first NPC id if present (single slot)
     if (chapter_npc_ids) {
         fprintf(save_file, "NPC0: %d\n", chapter_npc_ids[0]);
@@ -148,7 +198,10 @@ int load_save(Story *story, Player *main_character, int *chapter_npc_ids) {
     if (main_character->inventoryIDs) { free(main_character->inventoryIDs); main_character->inventoryIDs = NULL; main_character->item_ammount = 0; }
     if (main_character->abilitiesIDs) { free(main_character->abilitiesIDs); main_character->abilitiesIDs = NULL; main_character->abilities_ammount = 0; }
     if (main_character->summonIDs) { free(main_character->summonIDs); main_character->summonIDs = NULL; main_character->summons_ammount = 0; }
-    if (main_character->mana_types) { free(main_character->mana_types); main_character->mana_types = NULL; main_character->mana_types_ammount = 0; }
+    if (main_character->mana_elements) { free(main_character->mana_elements); main_character->mana_elements = NULL; main_character->mana_elements_ammount = 0; }
+    if (main_character->DNA) { free(main_character->DNA); main_character->DNA = NULL; main_character->DNA_ammount = 0; }
+    if (main_character->team_memberIDs) { free(main_character->team_memberIDs); main_character->team_memberIDs = NULL; main_character->team_size = 0; }
+    main_character->active_effect_count = 0;
 
     // reset equipment to defaults before loading values
     main_character->weapon = -1;
@@ -195,7 +248,7 @@ int load_save(Story *story, Player *main_character, int *chapter_npc_ids) {
         } else if (strncmp(line, "GOODNESS: ", 11) == 0) {
             main_character->GOODNESS = atoi(line + 11);
         } else if (strncmp(line, "ManaTypesCount: ", 16) == 0) {
-            main_character->mana_types_ammount = atoi(line + 16);
+            main_character->mana_elements_ammount = atoi(line + 16);
         } else if (strncmp(line, "STAT_DEFENCE: ", 14) == 0) {
             main_character->stats.DEFENCE = atoi(line + 14);
         } else if (strncmp(line, "STAT_MAX_HP: ", 13) == 0) {
@@ -214,14 +267,21 @@ int load_save(Story *story, Player *main_character, int *chapter_npc_ids) {
             main_character->stats.SPEED = atoi(line + 12);
         } else if (strncmp(line, "STAT_STEALTH: ", 14) == 0) {
             main_character->stats.STEALTH = atoi(line + 14);
-        } else if (strncmp(line, "STAT_PRECEPTION: ", 18) == 0) {
-            main_character->stats.PRECEPTION = atoi(line + 18);
+        } else if (strncmp(line, "STAT_PERCEPTION: ", 18) == 0) {
+            main_character->stats.PERCEPTION = atoi(line + 18);
         } else if (strncmp(line, "STAT_WEAPON_USER: ", 18) == 0) {
             main_character->stats.WEAPON_USER = atoi(line + 18) ? true : false;
         } else if (strncmp(line, "STAT_DUAL_WIELD: ", 17) == 0) {
             main_character->stats.DUAL_WILDING = atoi(line + 17);
         } else if (strncmp(line, "STAT_MAGIC_USER: ", 17) == 0) {
             main_character->stats.MAGIC_USER = atoi(line + 17) ? true : false;
+        } else if (strncmp(line, "DNA_Count: ", 12) == 0) {
+            main_character->DNA_ammount = atoi(line + 12);
+        } else if (strncmp(line, "DNA:", 4) == 0) {
+            int *arr = NULL;
+            int count = parse_int_list(line + 4, &arr);
+            main_character->DNA = arr;
+            main_character->DNA_ammount = count;
         } else if (strncmp(line, "Weapon: ", 8) == 0) {
             main_character->weapon = atoi(line + 8);
         } else if (strncmp(line, "WeaponOff: ", 11) == 0) {
@@ -248,11 +308,25 @@ int load_save(Story *story, Player *main_character, int *chapter_npc_ids) {
             int count = parse_int_list(line + 8, &arr);
             main_character->summonIDs = arr;
             main_character->summons_ammount = count;
+        } else if (strncmp(line, "TeamSize: ", 11) == 0) {
+            main_character->team_size = atoi(line + 11);
+        } else if (strncmp(line, "TeamMembers:", 12) == 0) {
+            int *arr = NULL;
+            int count = parse_int_list(line + 12, &arr);
+            main_character->team_memberIDs = arr;
+            main_character->team_size = count;
+        } else if (strncmp(line, "ActiveEffectsCount: ", 21) == 0) {
+            main_character->active_effect_count = atoi(line + 21);
+            if (main_character->active_effect_count < 0) main_character->active_effect_count = 0;
+            if (main_character->active_effect_count > TOTAL_ABILITIES) main_character->active_effect_count = TOTAL_ABILITIES;
+        } else if (strncmp(line, "ActiveEffects:", 14) == 0) {
+            int parsed = parse_active_effects(line + 14, main_character->active_effects, TOTAL_ABILITIES);
+            main_character->active_effect_count = parsed;
         } else if (strncmp(line, "ManaTypes:", 10) == 0) {
             int *arr = NULL;
             int count = parse_int_list(line + 10, &arr);
-            main_character->mana_types = arr;
-            main_character->mana_types_ammount = count;
+            main_character->mana_elements = arr;
+            main_character->mana_elements_ammount = count;
         } else if (strncmp(line, "NPC0: ", 6) == 0) {
             if (chapter_npc_ids) chapter_npc_ids[0] = atoi(line + 6);
         }

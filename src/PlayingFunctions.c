@@ -26,15 +26,18 @@ Player character_creation() {
     main_character.hair_colour = get_input("What is your character's hair colour?\n");
     main_character.age = 15;
     main_character.RANK = E;
-    main_character.stats.PRECEPTION = 3;
+    main_character.stats.PERCEPTION = 3;
     main_character.team_memberIDs = malloc(1 * sizeof(int));
     main_character.inventoryIDs= malloc(1 * sizeof(int));
     main_character.abilitiesIDs= malloc(1 * sizeof(int));
     main_character.summonIDs= malloc(1 * sizeof(int));
     main_character.equipped_items = malloc(MAX_EQUIPPED_ITEMS * sizeof(int));
-    main_character.mana_types = malloc(1 * sizeof(int));
+    main_character.mana_elements = malloc(1 * sizeof(int));
     main_character = add_mana_type(main_character, BASE); // Start with Dorment mana type
-    main_character.mana_types_ammount = 1;
+    main_character.DNA = malloc(1 * sizeof(int));
+    main_character.DNA_ammount = 0;
+    main_character = add_DNA(main_character, Learned); //Learned means everyone can learn these abilities
+    main_character.mana_elements_ammount = 1;
     main_character.team_size = 0;
     main_character.item_ammount = 0;
     main_character.HUNGER = 0;
@@ -82,6 +85,7 @@ Player character_creation() {
     return main_character;
 }
 
+//TODO: Make the story more descriptive
 Player play_chapter(Player main_character, Story *story, int *chapter_npc_ids) {
     char *choice;
     const char* pronoun;
@@ -338,14 +342,8 @@ Player play_chapter(Player main_character, Story *story, int *chapter_npc_ids) {
         printf("Teacher-- Ok,now Marta and Laura,...,%s and %s, since you are the only 15 year-olds, you are going to fight each other!!\nI am being paired with a (kinda good looking... What am I thinking, focus!) student  and we start fighting each other.\n",main_character.name,main_character.name);
         sleep(4);
         main_character = fight(main_character, rival, story, NULL, false);
-
-        // If player died and we reloaded a save, return immediately to let the main loop restart from loaded state
-        if (fight_reloaded_from_death()) {
-            return main_character;
-        }
-        //TODO: If player died and we reloaded a save, we should probably also reset the chapter NPCs to their state at the start of the chapter, but for now we will just return to the main loop and let it reload everything from the save file which should include resetting the chapter NPCs as well.
         //TODO: Continue implementing the rest of the chapter after the fight, 
-
+        
         
         sleep(5);
         printf("-------------------------\nChapter 2 Completed\n-------------------------\n");
@@ -355,7 +353,28 @@ Player play_chapter(Player main_character, Story *story, int *chapter_npc_ids) {
         return main_character;
         break;
     }
+    case Chapter_3:{
+        printf("-------------------------\nChapter 3: To Be Continued...\n-------------------------\n");
+        sleep(1);
+        //Temporary fight to test the fight function and the chapter transition, will be replaced by the actual chapter content later
+        NPC rival;
+        int rival_id = (main_character.gender == Boy) ? 0 : 1;
+        chapter_npc_ids[0] = rival_id; // Store rival's ID for later reference
+        rival = get_npc_by_id(rival_id);
+        open_inventory(&main_character);
+        main_character = fight(main_character, rival, story, NULL, false);
+        main_character = lost_fight(main_character, story, chapter_npc_ids); // Check if player lost the fight and handle it
+        
+        sleep(5);
+        printf("-------------------------\nChapter 3 Completed\n-------------------------\n");
+        //story->Chapter = Chapter_4;
+        return main_character;
+        break;
+    }
     return main_character;
     }
+
+
+
     return main_character;
 }
