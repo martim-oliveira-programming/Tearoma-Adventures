@@ -5,10 +5,11 @@
 #include "menu.h"
 #include "save.h"
 #include "mechanics.h"
+#include "dialogue.h"
 #include <unistd.h> 
 
 char* get_input(char* prompt) {
-    printf("%s", prompt);
+    say("%s", prompt);
     char *choice = malloc(MAX_INPUT);
     if (!choice) return NULL;
     
@@ -46,7 +47,7 @@ GameState menu_selection() {
         result = QuitGame();
     }
     else {
-        printf("Invalid command. Please try again.\n\n");
+        say("Invalid command. Please try again.\n\n");
         result = menu_selection();
     }
     
@@ -55,7 +56,7 @@ GameState menu_selection() {
 }
 
 GameState Commands(){
-    printf("Quit: (Quit the game and go to Main Menu.\nThis will NOT save the game.\nThe game saves automatically after each Chapter.)\n\n");
+    say("Quit: (Quit the game and go to Main Menu.\nThis will NOT save the game.\nThe game saves automatically after each Chapter.)\n\n");
     return MENU;
 }
 
@@ -71,7 +72,7 @@ GameState NewGame() {
         if (strcmp(choice, "yes") == 0) {
             if(choice)free(choice);
             secure_wipe();
-            printf("Starting new game...\n");
+            say("Starting new game...\n");
             return PLAYING;
         }
         else if (strcmp(choice, "no") == 0) {
@@ -79,20 +80,20 @@ GameState NewGame() {
             return MENU;
         }
         else {
-            printf("Please answer with 'yes' or 'no'.\n");
+            say("Please answer with 'yes' or 'no'.\n");
             if(choice)free(choice);
             return MENU;
         }
     }
     else {
-        printf("No save file found. Starting new game...\n");
+        say("No save file found. Starting new game...\n");
         return PLAYING;
     }
 }
 
 GameState Continue(Story *out_story, Player *out_player, int *chapter_npc_ids) {
     char *choice;
-    printf("Loading your saved game...\n");
+    say("Loading your saved game...\n");
     
     Story loaded_story = {0};
     Player loaded_player = {0};
@@ -100,7 +101,7 @@ GameState Continue(Story *out_story, Player *out_player, int *chapter_npc_ids) {
     
     int load_status = load_save(&loaded_story, &loaded_player, loaded_npc_ids);
     if (!load_status) {
-        printf("Select NewGame to start a New Game.\nReturning to Menu...\n");
+        say("Select NewGame to start a New Game.\nReturning to Menu...\n");
         return MENU;
     }
 
@@ -122,15 +123,15 @@ GameState Continue(Story *out_story, Player *out_player, int *chapter_npc_ids) {
         if (chapter_npc_ids) chapter_npc_ids[0] = loaded_npc_ids[0];
 
         // show minimal info
-        printf("\n--- Loaded Game ---\n");
+        say("\n--- Loaded Game ---\n");
         usleep(200000);
-        printf("Player: %s\n", out_player->name ? out_player->name : "(unknown)");
+        say("Player: %s\n", out_player->name ? out_player->name : "(unknown)");
         usleep(200000);
-        printf("Age: %d\n", out_player->age);
+        say("Age: %d\n", out_player->age);
         usleep(200000);
-        printf("Chapter: %d\n", out_story->Chapter);
+        say("Chapter: %d\n", out_story->Chapter);
         usleep(200000);
-        printf("NPC ID: %d\n", (chapter_npc_ids) ? chapter_npc_ids[0] : -1);
+        say("NPC ID: %d\n", (chapter_npc_ids) ? chapter_npc_ids[0] : -1);
         usleep(1000000);
 
         if (out_story->Chapter != 0){if(choice)free(choice);}

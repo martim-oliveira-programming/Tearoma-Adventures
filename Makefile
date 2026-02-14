@@ -1,12 +1,27 @@
 CC ?= cc
 CPPFLAGS ?= -Iinclude
 CFLAGS ?= -Wall -Wextra -Wpedantic -std=c11 -g -Wno-newline-eof
+LDFLAGS ?=
+
+UNAME_S := $(shell uname -s)
+
+# Raylib flags (override if your install differs)
+ifeq ($(UNAME_S),Linux)
+RAYLIB_LIBS ?= -lraylib -lm -lpthread -ldl -lrt -lGL
+RAYLIB_LDFLAGS ?=
+RAYLIB_CFLAGS ?=
+else
+# macOS default (Homebrew raylib in /opt/homebrew)
+RAYLIB_LIBS ?= -lraylib -framework Cocoa -framework IOKit -framework CoreVideo -framework OpenGL
+RAYLIB_LDFLAGS ?= -L/opt/homebrew/lib
+RAYLIB_CFLAGS ?= -I/opt/homebrew/include
+endif
 
 SRC_DIR := src
 BUILD_DIR := build
 TARGET := tearoma
 
-SRC := $(wildcard $(SRC_DIR)/*.c)
+SRC := $(shell find $(SRC_DIR) -name '*.c')
 OBJ := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEP := $(OBJ:.o=.d)
 
@@ -15,13 +30,11 @@ DEP := $(OBJ:.o=.d)
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(OBJ)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(RAYLIB_CFLAGS) $(LDFLAGS) $(RAYLIB_LDFLAGS) -o $@ $(OBJ) $(RAYLIB_LIBS)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
-
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(RAYLIB_CFLAGS) -MMD -MP -c $< -o $@
 
 -include $(DEP)
 
@@ -30,4 +43,4 @@ run: $(TARGET)
 
 clean:
 	rm -f $(OBJ) $(DEP) $(TARGET)
-	rmdir $(BUILD_DIR) 2>/dev/null || true
+	rm -rf $(BUILD_DIR)

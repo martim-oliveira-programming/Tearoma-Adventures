@@ -7,6 +7,7 @@
 #include "save.h"
 #include "menu.h"
 #include "fights.h"
+#include "dialogue.h"
 #include <unistd.h> 
 
 void get_attributes(Player *main_character) {
@@ -216,7 +217,7 @@ static void apply_summon_effect(Player *main_character, const char *first) {
     int summon_id = first ? atoi(first) : -1;
     // Allow summoning if the ability is known; storage and duplicates are handled by add_team_member
     if (summon_id == -1) {
-        printf("Invalid summon id.\n");
+        say("Invalid summon id.\n");
         return;
     }
     *main_character = add_team_member(*main_character, summon_id, true);
@@ -319,7 +320,7 @@ void apply_ability_effect(Player *main_character, Abilities ability, NPC *target
             break;
         case SUMMON:
             if(main_character->stats.MAGIC_POWER < ability.MANA_COST/10) {
-                printf("Not enough MAGIC_POWER to summon this creature.\n");
+                say("Not enough MAGIC_POWER to summon this creature.\n");
                 break;
             }
 
@@ -343,12 +344,12 @@ void apply_ability_effect(Player *main_character, Abilities ability, NPC *target
 
 void apply_copy_ability(Player *main_character, NPC *target_npc) {
     if (!target_npc) {
-        printf("No target to copy ability from.\n");
+        say("No target to copy ability from.\n");
         return;
     }
     Abilities copied_ability = get_ability_by_id(target_npc->Ability_ids[target_npc->abilities_ammount - 1]); // Get the last ability used by the target
     if (copied_ability.ID == -1) {
-        printf("No ability to copy.\n");
+        say("No ability to copy.\n");
         return;
     }
     *main_character = add_ability(*main_character, copied_ability.ID);
@@ -481,7 +482,7 @@ Player add_inventory(Player main_character, int itemID, int amount){
 
 Player remove_inventory(Player main_character, int itemID, int amount){
     if (not_in(itemID,main_character.inventoryIDs,main_character.item_ammount)) {
-        printf("Item not found in inventory.\n");
+        say("Item not found in inventory.\n");
         return main_character;
     }
     int removed = 0;
@@ -507,11 +508,11 @@ Player remove_inventory(Player main_character, int itemID, int amount){
 Player add_ability(Player main_character, int abilityID){
     Abilities ability = get_ability_by_id(abilityID);
     if (ability.ID == -1) {
-        printf("Ability with ID %d not found.\n", abilityID);
+        say("Ability with ID %d not found.\n", abilityID);
         return main_character;
     }
     if(not_in(ability.DNA,main_character.DNA,main_character.DNA_ammount)) {
-        printf("Ability %s cannot be added due to DNA incompatibility.\n", get_ability_name(abilityID));
+        say("Ability %s cannot be added due to DNA incompatibility.\n", get_ability_name(abilityID));
         return main_character;
     }
 
@@ -530,7 +531,7 @@ Player add_ability(Player main_character, int abilityID){
 
 Player remove_ability(Player main_character, int abilityID){
     if(not_in(abilityID,main_character.abilitiesIDs,main_character.abilities_ammount)) {
-        printf("Ability not found in player's abilities.\n");
+        say("Ability not found in player's abilities.\n");
         return main_character;
     }
     for (int i = 0; i < main_character.abilities_ammount; i++) {
@@ -565,11 +566,11 @@ int is_weapon_item(int item_id) {
 Player equip_item(Player main_character, int itemID) {
     Weapon weapon = get_weapon(itemID);
     if (weapon.item_id == -1) {
-        printf("Item cannot be equipped.\n");
+        say("Item cannot be equipped.\n");
         return main_character;
     }
     if(!is_weapon_item(itemID)) {
-        printf("Item is not a weapon and cannot be equipped.\n");
+        say("Item is not a weapon and cannot be equipped.\n");
         return main_character;
     }
 
@@ -587,7 +588,7 @@ Player equip_item(Player main_character, int itemID) {
     } else if (slot >= HEAD && slot <= SHOES) {
         int armor_index = slot - HEAD; // map enum to 0-3 indices
         if (armor_index < 0 || armor_index >= 4) {
-            printf("Invalid armor slot.\n");
+            say("Invalid armor slot.\n");
             return main_character;
         }
         if (main_character.armor[armor_index] != -1) {
@@ -595,7 +596,7 @@ Player equip_item(Player main_character, int itemID) {
         }
         main_character.armor[armor_index] = itemID;
     } else {
-        printf("Invalid equip slot.\n");
+        say("Invalid equip slot.\n");
         return main_character;
     }
     main_character = apply_weapon_effects(main_character, weapon);
@@ -606,7 +607,7 @@ Player equip_item(Player main_character, int itemID) {
 Player unequip_item(Player main_character, int slot) {
     if (slot == MAIN_HAND) {
         if (main_character.weapon == -1) {
-            printf("No weapon equipped in main hand.\n");
+            say("No weapon equipped in main hand.\n");
             return main_character;
         }
         const Weapon w = get_weapon(main_character.weapon);
@@ -615,7 +616,7 @@ Player unequip_item(Player main_character, int slot) {
         main_character.weapon = -1;
     } else if (slot == OFF_HAND) {
         if (main_character.weapon_OFF_Hand == -1) {
-            printf("No weapon equipped in off hand.\n");
+            say("No weapon equipped in off hand.\n");
             return main_character;
         }
         const Weapon w = get_weapon(main_character.weapon_OFF_Hand);
@@ -625,11 +626,11 @@ Player unequip_item(Player main_character, int slot) {
     } else if (slot >= HEAD && slot <= SHOES) {
         int armor_index = slot - HEAD; // map enum to 0-3 indices
         if (armor_index < 0 || armor_index >= 4) {
-            printf("Invalid armor slot.\n");
+            say("Invalid armor slot.\n");
             return main_character;
         }
         if (main_character.armor[armor_index] == -1) {
-            printf("No armor equipped in this slot.\n");
+            say("No armor equipped in this slot.\n");
             return main_character;
         }
         Weapon w = get_weapon(main_character.armor[armor_index]);
@@ -637,7 +638,7 @@ Player unequip_item(Player main_character, int slot) {
         main_character = add_inventory(main_character, main_character.armor[armor_index], 1);
         main_character.armor[armor_index] = -1;
     } else {
-        printf("Invalid equip slot.\n");
+        say("Invalid equip slot.\n");
         return main_character;
     }
     return main_character;
@@ -645,7 +646,7 @@ Player unequip_item(Player main_character, int slot) {
 
 Player add_summon(Player main_character, int summonID){
     if (main_character.summons_ammount == main_character.stats.SUMMONS_STORAGE) {
-        printf("Cannot add more abilities, storage full.\n");
+        say("Cannot add more abilities, storage full.\n");
         return main_character;
     }
 
@@ -663,7 +664,7 @@ Player add_summon(Player main_character, int summonID){
 
 Player remove_summon(Player main_character, int summonID){
     if(not_in(summonID,main_character.summonIDs,main_character.summons_ammount)) {
-        printf("Summon not found in player's summons.\n");
+        say("Summon not found in player's summons.\n");
         return main_character;
     }
     for (int i = 0; i < main_character.summons_ammount; i++) {
@@ -718,7 +719,7 @@ Player add_team_member(Player main_character, int memberID, bool is_summon_membe
             }
         }
         if (summon_count >= main_character.stats.SUMMONS_STORAGE) {
-            printf("Summon storage full. Cannot add more summons.\n");
+            say("Summon storage full. Cannot add more summons.\n");
             return main_character;
         }
     }
@@ -868,9 +869,9 @@ static const char *equipped_item_name(int item_id) {
 
 void open_inventory(Player *main_character) {
     while (1) {
-    printf("---- Inventory ----\n");
+    say("---- Inventory ----\n");
     if (main_character->item_ammount == 0) {
-        printf("Inventory is empty.\n");
+        say("Inventory is empty.\n");
     } else {
         int index = 0;
         int printed = 0;
@@ -893,21 +894,21 @@ void open_inventory(Player *main_character) {
                         type_code = 2;
                     }
                 }
-                printf("%d. %dx %s (%s) ID(%d)\n", ++printed, count, item.name, item_type_to_string(type_code), item.ID);
+                say("%d. %dx %s (%s) ID(%d)\n", ++printed, count, item.name, item_type_to_string(type_code), item.ID);
             } else {
-                printf("%d. %dx Unknown Item (ID: %d)\n", ++printed, count, current_id);
+                say("%d. %dx Unknown Item (ID: %d)\n", ++printed, count, current_id);
             }
             index += count;
         }
     }
 
-        printf("---- Equipped ----\n");
-        printf("1. Main Hand: %s\n", equipped_item_name(main_character->weapon));
-        printf("2. Off Hand: %s\n", equipped_item_name(main_character->weapon_OFF_Hand));
-        printf("3. Head: %s\n", equipped_item_name(main_character->armor[0]));
-        printf("4. Chest: %s\n", equipped_item_name(main_character->armor[1]));
-        printf("5. Legs: %s\n", equipped_item_name(main_character->armor[2]));
-        printf("6. Shoes: %s\n", equipped_item_name(main_character->armor[3]));
+        say("---- Equipped ----\n");
+        say("1. Main Hand: %s\n", equipped_item_name(main_character->weapon));
+        say("2. Off Hand: %s\n", equipped_item_name(main_character->weapon_OFF_Hand));
+        say("3. Head: %s\n", equipped_item_name(main_character->armor[0]));
+        say("4. Chest: %s\n", equipped_item_name(main_character->armor[1]));
+        say("5. Legs: %s\n", equipped_item_name(main_character->armor[2]));
+        say("6. Shoes: %s\n", equipped_item_name(main_character->armor[3]));
 
         if (main_character->item_ammount == 0) {
             return;
@@ -929,12 +930,12 @@ void open_inventory(Player *main_character) {
 
 void use_item(Player *main_character, int item_id){
     if (not_in(item_id,main_character->inventoryIDs,main_character->item_ammount)) {
-        printf("Item not found in inventory.\n");
+        say("Item not found in inventory.\n");
         return;
     }
     Items item = get_items_by_id(item_id);
     if (item.ID < 0) {
-        printf("Invalid item.\n");
+        say("Invalid item.\n");
         return;
     }
     if (is_consumable_item(item_id)) {
@@ -942,13 +943,13 @@ void use_item(Player *main_character, int item_id){
         return;
     } else if (is_weapon_item(item_id)) {
         *main_character = equip_item(*main_character, item_id);
-        printf("You equipped %s.\n", item.name);
+        say("You equipped %s.\n", item.name);
         return;
     } else if (is_key_item(item_id)) {
-        printf("You can't use %s right now!!.\n", item.name);
+        say("You can't use %s right now!!.\n", item.name);
         return;
     } else {
-        printf("Item type not usable.\n");
+        say("Item type not usable.\n");
         return;
     }
 }
@@ -956,7 +957,7 @@ void use_item(Player *main_character, int item_id){
 void use_consumable(Player *main_character, int item_id) {
     Consumable consumable = get_consumable(item_id);
     if (consumable.item_id == -1) {
-        printf("Invalid consumable.\n");
+        say("Invalid consumable.\n");
         return;
     }
     Items item = get_items_by_id(item_id);
@@ -969,36 +970,36 @@ void use_consumable(Player *main_character, int item_id) {
     int mana_restore = consumable.mana_restoration;
     if (hp_heal > 0) {
         if (main_character->HP == (main_character->stats.MAX_HP*10)) {
-            printf("You are already at full health. Cannot use %s.\n", item_name);
+            say("You are already at full health. Cannot use %s.\n", item_name);
             return;
         }
         *main_character = heal_player(*main_character, hp_heal);
-        printf("You consumed %s and restored %d health.\n", item_name, main_character->HP - temp_hp);
+        say("You consumed %s and restored %d health.\n", item_name, main_character->HP - temp_hp);
         *main_character = remove_inventory(*main_character, item_id, 1);
         return;
     }
     if (hunger_restore > 0) {
         if (main_character->HUNGER == 0) {
-            printf("You are not hungry. Cannot use %s.\n", item_name);
+            say("You are not hungry. Cannot use %s.\n", item_name);
             return;
         }
         *main_character = decrease_hunger(*main_character, hunger_restore);
-        printf("You consumed %s and restored %d hunger.\n", item_name, temp_hunger - main_character->HUNGER);
+        say("You consumed %s and restored %d hunger.\n", item_name, temp_hunger - main_character->HUNGER);
         *main_character = remove_inventory(*main_character, item_id, 1);
         return;
     }
     if(mana_restore >0){
         if (main_character->MANA == (main_character->stats.MAX_MANA*10)){
-            printf("You are already at full mana. Cannot use %s.\n", item_name);
+            say("You are already at full mana. Cannot use %s.\n", item_name);
             return;
         }
         *main_character = add_Mana(*main_character, mana_restore);
-        printf("You consumed %s and restored %d mana.\n", item_name, main_character->MANA - temp_mana);
+        say("You consumed %s and restored %d mana.\n", item_name, main_character->MANA - temp_mana);
         *main_character = remove_inventory(*main_character, item_id, 1);
         return;
     }
 
-    printf("This consumable has no effect right now.\n");
+    say("This consumable has no effect right now.\n");
     return;
 }
 
@@ -1017,7 +1018,7 @@ int choose_ability(Player *main_character) {
         free(choice);
 
         if (not_in(ability_id, main_character->abilitiesIDs, main_character->abilities_ammount)) {
-            printf("Ability not found.\n");
+            say("Ability not found.\n");
             continue;
         }
         return ability_id;
@@ -1026,9 +1027,9 @@ int choose_ability(Player *main_character) {
 }
 
 void open_abilities(Player *main_character) {
-    printf("---- Abilities ----\n");
+    say("---- Abilities ----\n");
         if (main_character->abilities_ammount == 0) {
-            printf("No abilities learned yet.\n");
+            say("No abilities learned yet.\n");
             return;
         }
         for (int i = 0; i < main_character->abilities_ammount; i++) {
@@ -1036,20 +1037,20 @@ void open_abilities(Player *main_character) {
             if (ability.ID >= 0) {
                 int ability_damage = get_ability_damage_value(ability.ID);
                 int ability_heal = get_ability_healing_value(ability.ID);
-                printf("%d. ID: %d - %s - %d MANA - dmg:%d heal:%d - %s\n", i + 1, ability.ID, ability.NAME, ability.MANA_COST, ability_damage, ability_heal, ability.DESCRIPTION);
+                say("%d. ID: %d - %s - %d MANA - dmg:%d heal:%d - %s\n", i + 1, ability.ID, ability.NAME, ability.MANA_COST, ability_damage, ability_heal, ability.DESCRIPTION);
             } else {
-                printf("%d. Unknown Ability (ID: %d)\n", i + 1, main_character->abilitiesIDs[i]);
+                say("%d. Unknown Ability (ID: %d)\n", i + 1, main_character->abilitiesIDs[i]);
             }
         }
 }
 
 void open_player_menu(Player *main_character) {
     while (1) {
-        printf("---- Player Menu ----\n");
-        printf("1. View Stats\n");
-        printf("2. Open Inventory\n");
-        printf("3. See Abilities\n");
-        printf("4. Exit Menu\n");
+        say("---- Player Menu ----\n");
+        say("1. View Stats\n");
+        say("2. Open Inventory\n");
+        say("3. See Abilities\n");
+        say("4. Exit Menu\n");
 
         char *choice = get_input("Enter your choice: ");
         if (!choice) {
@@ -1074,28 +1075,28 @@ void open_player_menu(Player *main_character) {
                 break;
             }
             default:
-                printf("Invalid option. Please try again.\n");
+                say("Invalid option. Please try again.\n");
                 break;
         }
     }
 }
 
 void print_player_info(Player main_character) {
-    printf("You have %d€.\n", main_character.money);
-    printf("Hunger: %d/100\n\n", main_character.HUNGER);
-    printf("You have %d Skill Points to use.\n", main_character.Skill_Points);
+    say("You have %d€.\n", main_character.money);
+    say("Hunger: %d/100\n\n", main_character.HUNGER);
+    say("You have %d Skill Points to use.\n", main_character.Skill_Points);
     
-    printf("---- Player Stats ----\n");
-    printf("1. HP: %d/%d\n", main_character.HP, main_character.stats.MAX_HP);
-    printf("2. Mana: %d/%d\n", main_character.MANA, main_character.stats.MAX_MANA);
-    printf("3. Damage: %d\n", main_character.stats.DAMAGE);
-    printf("4. Magic Power: %d\n", main_character.stats.MAGIC_POWER);
-    printf("5. Defence: %d\n", main_character.stats.DEFENCE);
-    printf("6. Speed: %d\n", main_character.stats.SPEED);
-    printf("7. Stealth: %d\n", main_character.stats.STEALTH);
-    printf("8. Weapon Damage: %d\n", main_character.stats.WEAPON_DAMAGE);
-    printf("9. Preception: %d\n", main_character.stats.PERCEPTION);
-    printf("Press 'q' to exit stats menu.\n");
+    say("---- Player Stats ----\n");
+    say("1. HP: %d/%d\n", main_character.HP, main_character.stats.MAX_HP);
+    say("2. Mana: %d/%d\n", main_character.MANA, main_character.stats.MAX_MANA);
+    say("3. Damage: %d\n", main_character.stats.DAMAGE);
+    say("4. Magic Power: %d\n", main_character.stats.MAGIC_POWER);
+    say("5. Defence: %d\n", main_character.stats.DEFENCE);
+    say("6. Speed: %d\n", main_character.stats.SPEED);
+    say("7. Stealth: %d\n", main_character.stats.STEALTH);
+    say("8. Weapon Damage: %d\n", main_character.stats.WEAPON_DAMAGE);
+    say("9. Preception: %d\n", main_character.stats.PERCEPTION);
+    say("Press 'q' to exit stats menu.\n");
 }
 
 int player_stats(Player main_character) {
@@ -1115,7 +1116,7 @@ int player_stats(Player main_character) {
         int stat_choice = atoi(choice);
         free(choice);
         if (stat_choice < 1 || stat_choice > 8) {
-            printf("Invalid choice.\n");
+            say("Invalid choice.\n");
         }
         switch (stat_choice)
         {
@@ -1214,33 +1215,33 @@ Player remove_weapon_effects(Player main_character, Weapon weapon) {
 
 Player check_hunger(Player main_character) {
     if (main_character.HUNGER >= 100) {
-        printf("You are starving! Find food quickly!\n");
+        say("You are starving! Find food quickly!\n");
         main_character.HP -= 10; // Lose health due to starvation
     } else if (main_character.HUNGER >= 75) {
-        printf("You are very hungry.\n");
+        say("You are very hungry.\n");
     } else if (main_character.HUNGER >= 50) {
-        printf("You are getting hungry.\n");
+        say("You are getting hungry.\n");
     } else if (main_character.HUNGER >= 25) {
-        printf("You feel a bit hungry.\n");
+        say("You feel a bit hungry.\n");
     } else {
-        printf("You are well fed.\n");
+        say("You are well fed.\n");
     }
     return main_character;
     }
 
 Player check_MANA(Player main_character) {
     if (main_character.MANA <= 0) {
-        printf("You are out of mana! You cannot use abilities until you restore it. It hurts!!\n");
+        say("You are out of mana! You cannot use abilities until you restore it. It hurts!!\n");
         main_character.HP -= 5; // Lose health due to mana depletion
         main_character.MANA = 0; // Ensure mana doesn't go negative
     } else if (main_character.MANA <= main_character.stats.MAX_MANA * 0.25) {
-        printf("Your mana is low.\n");
+        say("Your mana is low.\n");
     } else if (main_character.MANA <= main_character.stats.MAX_MANA * 0.5) {
-        printf("Your mana is getting low.\n");
+        say("Your mana is getting low.\n");
     } else if (main_character.MANA <= main_character.stats.MAX_MANA * 0.75) {
-        printf("Your mana is at a decent level.\n");
+        say("Your mana is at a decent level.\n");
     } else {
-        printf("Your mana is full.\n");
+        say("Your mana is full.\n");
     }
     return main_character;
 }
@@ -1274,7 +1275,7 @@ Player heal_player(Player main_character, int heal_amount) {
 
 Player add_Mana(Player main_character, int mana_ammount){
     if(main_character.MANA == main_character.stats.MAX_MANA*10){
-        printf("Your mana is already full.\n");
+        say("Your mana is already full.\n");
         return main_character;
     }
     main_character.MANA += mana_ammount;
@@ -1327,24 +1328,24 @@ NPC heal_npc(NPC npc, int heal_amount) {
 
 Player use_ability(Player main_character, NPC *target_npc, int abilityID) {
     if (not_in(abilityID, main_character.abilitiesIDs, main_character.abilities_ammount)) {
-        printf("Ability not found in player's abilities.\n");
+        say("Ability not found in player's abilities.\n");
         return main_character;
     }
 
     Abilities ability = get_ability_by_id(abilityID);
     if (ability.ID < 0) {
-        printf("Invalid ability.\n");
+        say("Invalid ability.\n");
         return main_character;
     }
 
     int mana_type = get_ability_mana_type(ability.ID);
     if (mana_type != BASE && not_in(mana_type, main_character.mana_elements, main_character.mana_elements_ammount)) {
-        printf("You can't mold your MANA into that element yet.\n");
+        say("You can't mold your MANA into that element yet.\n");
         return main_character;
     }
 
     if (main_character.MANA < ability.MANA_COST) {
-        printf("Not enough mana to use %s.\n", ability.NAME);
+        say("Not enough mana to use %s.\n", ability.NAME);
         return main_character;
     }
     main_character.MANA -= ability.MANA_COST;
@@ -1356,16 +1357,16 @@ Player use_ability(Player main_character, NPC *target_npc, int abilityID) {
 
     apply_ability_effect(&main_character, ability, target_npc);
     register_active_ability(&main_character, ability);
-    printf("You used %s.\n", ability.NAME);
+    say("You used %s.\n", ability.NAME);
     
     if (target_npc && ability_damage > 0) {
         int damage = damage_calculation_with_ability(main_character, *target_npc, ability_damage, ability_class, mana_type);
         *target_npc = damage_npc(*target_npc, damage);
-        printf("You dealt %d damage to %s.\n", damage, target_npc->name);
+        say("You dealt %d damage to %s.\n", damage, target_npc->name);
     }
     if (ability_heal > 0 && effect_type != HEAL && effect_type != GROUP) {
         main_character = heal_player(main_character, ability_heal);
-        printf("You healed yourself for %d HP.\n", ability_heal);
+        say("You healed yourself for %d HP.\n", ability_heal);
     }
 
     return main_character;
@@ -1374,17 +1375,17 @@ Player use_ability(Player main_character, NPC *target_npc, int abilityID) {
 Player npc_use_ability(Player main_character, NPC target_npc, int abilityID) {
     Abilities ability = get_ability_by_id(abilityID);
     if (ability.ID < 0) {
-        printf("Invalid ability.\n");
+        say("Invalid ability.\n");
         return main_character;
     }
     int ability_id = ability.ID;
     target_npc = npc_apply_ability(target_npc, ability_id);
-    printf("%s used %s.\n", target_npc.name, ability.NAME);
+    say("%s used %s.\n", target_npc.name, ability.NAME);
     int ability_damage = get_ability_damage_value(ability_id);
     if(ability_damage > 0){
         int damage = npc_damage_calculation_with_ability(target_npc, ability_damage, main_character);
         main_character = damage_player(main_character, damage);
-        printf("%s dealt %d damage to you.\n", target_npc.name, damage);
+        say("%s dealt %d damage to you.\n", target_npc.name, damage);
     }
     return main_character;
 }
@@ -1475,7 +1476,7 @@ Player level_up(Player main_character) {
         main_character.HP = main_character.stats.MAX_HP * 10;
         main_character.MANA = main_character.stats.MAX_MANA;
 
-        printf("Congratulations! You've reached level %d!\n", main_character.LEVEL);
+        say("Congratulations! You've reached level %d!\n", main_character.LEVEL);
     }
     return main_character;
 }
@@ -1516,7 +1517,7 @@ Player add_mana_type(Player main_character, int mana_type) {
 
 Player remove_mana_type(Player main_character, int mana_type) {
     if (not_in(mana_type, main_character.mana_elements, main_character.mana_elements_ammount)) {
-        printf("Mana type not found in player's mana types.\n");
+        say("Mana type not found in player's mana types.\n");
         return main_character;
     }
     for (int i = 0; i < main_character.mana_elements_ammount; i++) {
@@ -1557,7 +1558,7 @@ Player add_DNA(Player main_character, int dna_id) {
 
 Player remove_DNA(Player main_character, int dna_id) {
     if (not_in(dna_id, main_character.DNA, main_character.DNA_ammount)) {
-        printf("DNA not found in player's DNA.\n");
+        say("DNA not found in player's DNA.\n");
         return main_character;
     }
     for (int i = 0; i < main_character.DNA_ammount; i++) {

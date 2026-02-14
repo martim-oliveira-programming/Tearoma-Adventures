@@ -2,42 +2,42 @@ PlayerName: Martim
 Hair: Black
 Gender: 0
 Age: 15
-Build: 6
+Build: 3
 Chapter: 2
-Path: 1
+Path: 0
 Money: 0
-HUNGER: 17
+HUNGER: 8
 RANK: 0
 SkillPoints: 0
 LEVEL: 0
-EXP: 144
-HP: 100
-MANA: 54
+EXP: 36
+HP: 79
+MANA: 30
 GOODNESS: 0
 ManaTypesCount: 1
 ManaTypes:0
-STAT_DEFENCE: 7
-STAT_MAX_HP: 10
-STAT_MAX_MANA: 18
+STAT_DEFENCE: 16
+STAT_MAX_HP: 8
+STAT_MAX_MANA: 10
 STAT_SUMMONS_STORAGE: 0
-STAT_MAGIC_POWER: 15
-STAT_WEAPON_DAMAGE: 4
-STAT_DAMAGE: 6
-STAT_SPEED: 6
-STAT_STEALTH: 8
+STAT_MAGIC_POWER: 6
+STAT_WEAPON_DAMAGE: 18
+STAT_DAMAGE: 8
+STAT_SPEED: 16
+STAT_STEALTH: 16
 STAT_PERCEPTION: 0
 STAT_WEAPON_USER: 1
 STAT_DUAL_WIELD: 0
 STAT_MAGIC_USER: 1
 DNA_Count: 1
 DNA:1
-Weapon: 11
-WeaponOff: -1
-Armor:6,-1,-1,-1
-InventoryCount: 1
-Inventory:1
+Weapon: 14
+WeaponOff: 15
+Armor:6,16,17,18
+InventoryCount: 0
+Inventory:
 AbilitiesCount: 2
-Abilities:6,11
+Abilities:4,1
 SummonsCount: 0
 Summons:
 TeamSize: 0

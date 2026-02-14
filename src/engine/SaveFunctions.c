@@ -6,6 +6,7 @@
 #include "mechanics.h"
 #include "menu.h"
 #include "save.h"
+#include "dialogue.h"
 #include <unistd.h>
 
 /* helper: parse comma separated ints into allocated array */
@@ -344,7 +345,7 @@ int load_save(Story *story, Player *main_character, int *chapter_npc_ids) {
 void secure_wipe() {
     const char* filename = "save.txt";
     if (!file_exists(filename)) {
-        printf("No save file to wipe.\n");
+        say("No save file to wipe.\n");
         return;
     }
     FILE* file = fopen(filename, "r+b");
