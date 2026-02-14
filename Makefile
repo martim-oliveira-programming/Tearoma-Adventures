@@ -25,7 +25,7 @@ SRC := $(shell find $(SRC_DIR) -name '*.c')
 OBJ := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEP := $(OBJ:.o=.d)
 
-.PHONY: all run clean
+.PHONY: all run clean game
 
 all: $(TARGET)
 
@@ -44,3 +44,14 @@ run: $(TARGET)
 clean:
 	rm -f $(OBJ) $(DEP) $(TARGET)
 	rm -rf $(BUILD_DIR)
+
+# Standalone build of main.c only (macOS 26.3 ARM, Homebrew raylib)
+game:
+	gcc src/main.c -o game \
+		-L/opt/homebrew/lib \
+		-I/opt/homebrew/include \
+		-lraylib \
+		-framework OpenGL \
+		-framework Cocoa \
+		-framework IOKit \
+		-framework CoreVideo

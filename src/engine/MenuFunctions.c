@@ -21,7 +21,7 @@ char* get_input(char* prompt) {
     return choice;
 }
 //Base Menu
-GameState menu_selection() {
+GameState menu_selection(void) {
     char* command = get_input(
         "\nNewGame: Start a new game.\n"
         "Continue: Continue from last save\n"
@@ -55,12 +55,12 @@ GameState menu_selection() {
     return result;
 }
 
-GameState Commands(){
+GameState Commands(void){
     say("Quit: (Quit the game and go to Main Menu.\nThis will NOT save the game.\nThe game saves automatically after each Chapter.)\n\n");
     return MENU;
 }
 
-GameState NewGame() {
+GameState NewGame(void) {
     if(file_exists("save.txt")) {
         char* choice = get_input(
             "Are you sure you want to start a new game? "
@@ -148,7 +148,7 @@ GameState Continue(Story *out_story, Player *out_player, int *chapter_npc_ids) {
     }
 }
 
-GameState QuitGame(){
+GameState QuitGame(void){
     return QUIT; //Quit the game (end program)
 }
 

@@ -258,7 +258,7 @@ typedef struct player {
 } Player;
 
 //Build Character Functions
-Player character_creation();
+Player character_creation(void);
 Builds parse_build(const char *s);
 void get_attributes(Player *main_character);
 const char *gender_to_string(Gender g);

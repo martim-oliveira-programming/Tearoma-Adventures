@@ -342,7 +342,7 @@ int load_save(Story *story, Player *main_character, int *chapter_npc_ids) {
     return 1;
 }
 
-void secure_wipe() {
+void secure_wipe(void) {
     const char* filename = "save.txt";
     if (!file_exists(filename)) {
         say("No save file to wipe.\n");

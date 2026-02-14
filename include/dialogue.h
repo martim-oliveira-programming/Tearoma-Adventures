@@ -11,6 +11,6 @@ void say(const char *format, ...);
 int ask(const char *prompt, ...);
 
 // Clear dialogue / UI
-void clear_dialogue();
+void clear_dialogue(void);
 
 #endif

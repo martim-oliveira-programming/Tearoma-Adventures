@@ -45,6 +45,6 @@ int ask(const char *prompt, ...) {
     return (int)(choice - 1);
 }
 
-void clear_dialogue() {
+void clear_dialogue(void) {
     fputs("\n\n", stdout);
 }

@@ -10,7 +10,7 @@
 #include "dialogue.h"
 #include <unistd.h> 
 
-Player character_creation() {
+Player character_creation(void) {
     Player main_character = {0}; // Zero-initialize first
     //char *gender= get_input("Are you a boy or a girl?\n");
     int gender_choice = ask("Are you a boy or a girl?", "Boy", "Girl",NULL);

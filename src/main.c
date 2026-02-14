@@ -10,7 +10,7 @@
 #include <unistd.h> 
 #include <time.h>
 
-int main() {
+int main(void) {
     InitWindow(800, 600, "Tearoma Adventures");
     SetTargetFPS(60);
 
