@@ -1,8 +1,8 @@
 #ifndef MENU_H
 #define MENU_H
 #include <stdbool.h>
-#include "story.h"
-#include "mechanics.h"
+
+typedef struct player Player;
  
  
 #define MAX_INPUT 20

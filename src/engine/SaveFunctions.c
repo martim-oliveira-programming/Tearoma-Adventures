@@ -4,13 +4,16 @@
 #include <time.h>
 #include "story.h"
 #include "mechanics.h"
+#include "items.h"
+#include "abilities.h"
+#include "npc.h"
 #include "menu.h"
 #include "save.h"
 #include "dialogue.h"
 #include <unistd.h>
 
 /* helper: parse comma separated ints into allocated array */
-static int parse_int_list(const char *src, int **out_arr) {
+int parse_int_list(const char *src, int **out_arr) {
     if (!src || *src == '\0') {
         *out_arr = NULL;
         return 0;
@@ -32,7 +35,7 @@ static int parse_int_list(const char *src, int **out_arr) {
     return idx;
 }
 
-static int parse_active_effects(const char *src, ActiveAbilityEffect *out_arr, int max_count) {
+int parse_active_effects(const char *src, ActiveAbilityEffect *out_arr, int max_count) {
     if (!src || !out_arr || max_count <= 0) return 0;
     char *copy = strdup(src);
     if (!copy) return 0;
@@ -345,7 +348,7 @@ int load_save(Story *story, Player *main_character, int *chapter_npc_ids) {
 void secure_wipe(void) {
     const char* filename = "save.txt";
     if (!file_exists(filename)) {
-        say("No save file to wipe.\n");
+        say(0,"No save file to wipe.\n");
         return;
     }
     FILE* file = fopen(filename, "r+b");

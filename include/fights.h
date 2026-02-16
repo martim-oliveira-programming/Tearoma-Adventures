@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include "story.h"
 #include "mechanics.h"
+#include "menu.h"
+
 
 // Main fight function that handles the entire fight loop and logic, returns the updated player state after the fight concludes
 Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids,bool can_run);

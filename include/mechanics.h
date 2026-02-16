@@ -1,7 +1,7 @@
 #ifndef MECHANICS_H
 #define MECHANICS_H
 #include <stdbool.h>
-#include "story.h"
+#include "menu.h"
 
 #define TOTAL_ABILITIES 16
 #define TOTAL_MAGIC 9
@@ -13,6 +13,9 @@
 #define TOTAL_SUMMONS 2
 #define TOTAL_NPC 10
 #define MAX_EQUIPPED_ITEMS 5
+#define MAX_START_ITEMS    8
+#define MAX_START_ABILITIES 4
+#define MAX_START_SUMMONS  2
 
 typedef enum gender{
     Boy,
@@ -37,6 +40,7 @@ typedef enum{
     Healer,
     Summoner,
     Balanced,
+    BUILD_COUNT, // Keep this as the last element to track the count of builds
 }Builds;
 
 typedef enum{
@@ -96,6 +100,20 @@ typedef struct initial_build_attributes{
     bool DUAL_WILDING;
     bool MAGIC_USER;
 }Attributes;
+
+typedef struct {
+    Attributes stats;
+    int items[MAX_START_ITEMS];      // item IDs, -1 terminated
+    int abilities[MAX_START_ABILITIES]; // ability IDs, -1 terminated
+    int summons[MAX_START_SUMMONS];  // summon IDs, -1 terminated
+} BuildDef;
+
+typedef struct {
+    int *stat;
+    int hp_bonus;
+    int mana_bonus;
+} StatUpgrade;
+
 
 typedef struct player_abilities{
     int ID;
@@ -259,68 +277,71 @@ typedef struct player {
 
 //Build Character Functions
 Player character_creation(void);
-Builds parse_build(const char *s);
+Player set_mc_build(Player main_character,int build_id);
+Player set_mc_stats(Player main_character, Attributes new_stats);
 void get_attributes(Player *main_character);
 const char *gender_to_string(Gender g);
 
-//Inventory Management
-Player add_inventory(Player main_character, int itemID, int amount);
-Player remove_inventory(Player main_character, int itemID, int amount);
+//Getters for player attributes
+int get_mc_build(Player main_character);
+int get_mc_max_hp(Player main_character);
+int get_mc_max_mana(Player main_character);
+int get_mc_summons_storage(Player main_character);
+int get_mc_speed(Player main_character);
+int get_mc_stealth(Player main_character);
+int get_mc_weapon_damage(Player main_character);
+bool is_weapon_user(Player main_character);
+bool is_dual_wielding(Player main_character);
+bool is_magic_user(Player main_character);
+char *get_mc_name(Player main_character);
+char *get_mc_hair_colour(Player main_character);
+int get_mc_age(Player main_character);
+int get_mc_gender(Player main_character);
+int get_mc_money(Player main_character);
+int get_mc_hp(Player main_character);
+int get_mc_mana(Player main_character);
+int get_mc_hunger(Player main_character);
+int get_mc_skill_points(Player main_character);
+int get_mc_level(Player main_character);
+int get_mc_exp(Player main_character);
+int get_mc_goodness(Player main_character);
+int get_mc_rank(Player main_character);
+int get_mc_team_size(Player main_character);
+int* get_mc_team_memberIDs(Player main_character);
+int* get_mc_team_member_hp(Player main_character);
+int* get_mc_team_member_mana(Player main_character);
+int* get_mc_inventoryIDs(Player main_character);
+int* get_mc_abilitiesIDs(Player main_character);
+int* get_mc_summonIDs(Player main_character);
+int *get_mc_equipped_items(Player main_character);
+int* get_mc_mana_elements(Player main_character);
+int get_mc_mana_elements_ammount(Player main_character);
+int* get_mc_DNA(Player main_character);
+int get_mc_DNA_ammount(Player main_character);
+int get_mc_summons_ammount(Player main_character);
+int get_mc_item_ammount(Player main_character);
+int get_mc_abilities_ammount(Player main_character);
+Attributes get_mc_attributes(Player main_character);
 
-//Abilities 
-Player add_ability(Player main_character, int abilityID);
-Player remove_ability(Player main_character, int abilityID);
-char* get_ability_name(int ability_id);
-
-// Items
-Player equip_item(Player main_character, int itemID);
-Player unequip_item(Player main_character, int slot);
-
-// Summons
-Player add_summon(Player main_character, int summonID);
-Player remove_summon(Player main_character, int summonID);
+//Setters/increasers for player attributes
+Player increase_mc_stealth(Player main_character, int amount);
+Player increase_mc_speed(Player main_character, int amount);
+Player increase_mc_summons_storage(Player main_character, int amount);
+Player increase_mc_magic_power(Player main_character, int amount);
+Player increase_mc_weapon_damage(Player main_character, int amount);
+Player increase_mc_defence(Player main_character, int amount);
+Player increase_mc_damage(Player main_character, int amount);
+Player increase_mc_perception(Player main_character, int amount);
+Player set_mc_stats(Player main_character, Attributes new_stats);
+Player set_mc_build(Player main_character, int build_id);
+Player set_mc_level(Player main_character, int new_level);
+Player set_mc_exp(Player main_character, int new_exp);
+Player set_mc_skill_points(Player main_character, int sp);
+Player set_mc_stats(Player main_character, Attributes new_stats);
 
 //DNA
 Player add_DNA(Player main_character, int DNA_ID);
 Player remove_DNA(Player main_character, int DNA_ID);
-
-// Team management
-char* team_names(Player main_character);
-Player add_team_member(Player main_character, int memberID, bool is_summon_member);
-Player remove_team_member(Player main_character, int memberID, bool is_summon_member);
-int is_team_member(Player main_character, int memberID);
-int is_team_member_summon(Player main_character, int memberID);
-int is_summon(int memberID);
-void free_team(Player *main_character);
-
-// Active ability effects management
-void apply_ability_effect(Player *main_character, Abilities ability, NPC *target_npc);
-void apply_copy_ability(Player *main_character, NPC *target_npc);
-void register_active_ability(Player *main_character, Abilities ability);
-void refresh_active_ability_effects(Player *main_character, Attributes base_stats, NPC *current_enemy);
-void clear_active_ability_effects(Player *main_character);
-
-// Inventory and abilities menu functions
-void open_inventory(Player *main_character);
-void open_abilities(Player *main_character);
-int choose_ability(Player *main_character);
-int player_stats(Player main_character);
-void open_player_menu(Player *main_character);
-
-// Item functions
-void use_item(Player *main_character, int item_id);
-void use_consumable(Player *main_character, int item_id);
-Player apply_weapon_effects(Player main_character, Weapon weapon);
-Player remove_weapon_effects(Player main_character, Weapon weapon);
-Player sort_items(Player main_character);
-
-int is_consumable_item(int item_id);
-int is_key_item(int item_id);
-int is_weapon_item(int item_id);
-
-// Ability usage functions
-Player use_ability(Player main_character, NPC *target_npc, int abilityID);
-NPC npc_apply_ability(NPC npc, int abilityID);
 
 // Mana type functions
 Player add_mana_type(Player main_character, int mana_type);
@@ -328,7 +349,6 @@ Player remove_mana_type(Player main_character, int mana_type);
 int has_mana_type(Player main_character, int mana_type);
 
 //Hunger
-Player check_hunger(Player main_character);
 Player increase_hunger(Player main_character, int amount);
 Player decrease_hunger(Player main_character, int amount);
 
@@ -336,6 +356,7 @@ Player decrease_hunger(Player main_character, int amount);
 Player heal_player(Player main_character, int amount);
 Player add_Mana(Player main_character, int amount);
 Player restore_mana(Player main_character);
+Player change_mc_goodness(Player main_character, int change);
 
 //Leveling and experience
 int exp_reward_for_npc(NPC npc);
@@ -350,6 +371,7 @@ Items get_items_by_id(int id);
 NPC get_summon_by_id(int id);
 Weapon get_weapon(int id);
 Consumable get_consumable(int id);
+char* get_ability_name(int ability_id);
 
 //Getters for ability attributes
 int get_ability_by_summon(int summonID);
@@ -363,7 +385,7 @@ int get_ability_mana_cost(int ability_id);
 int get_ability_rank(int ability_id);
 int get_ability_by_summon_id(int summon_id);
 
-//Object arrays ND Element chart
+//Object arrays and Element chart
 extern const Abilities ALL_abilities[TOTAL_ABILITIES];
 extern const NPC ALL_summons[TOTAL_SUMMONS];
 extern const NPC ALL_npc[TOTAL_NPC];
@@ -373,6 +395,9 @@ extern const Consumable ALL_consumables[TOTAL_CONSUMABLES];
 extern const Key_Item ALL_key_items[TOTAL_KEY_ITEMS];
 extern const float elemental_chart[ELEMENTAL_AFFINITY_COUNT][ELEMENTAL_AFFINITY_COUNT];
 
+//Player menu and stats
+Player player_stats(Player main_character);
+void open_player_menu(Player *main_character);
 
 //Playing Functions
 Player play_chapter(Player main_character, Story *story, int *chapter_npc_ids);

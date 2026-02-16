@@ -3,9 +3,8 @@
 
 #include <stdarg.h>
 
-// Print text character by character (like "say").
 // Can later change the implementation to wait for input.
-void say(const char *format, ...);
+void say(int wait_seconds,const char *format, ...);
 
 // Ask player a choice, return the selected option index
 int ask(const char *prompt, ...);

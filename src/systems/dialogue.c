@@ -6,17 +6,19 @@
 #include <string.h>
 #include <unistd.h>
 
-void say(const char *format, ...) {
+//use: say(2, "Hello %s, welcome to the game!", player.name); to print text with a delay of 2 seconds after it.
+void say(int wait_seconds,const char *format, ...) {
     va_list args;
     va_start(args, format);
     vprintf(format, args);
     va_end(args);
     printf("\n");
-    usleep(300000);
+    usleep(wait_seconds * 1000000); // Convert seconds to microseconds
 }
 
+//use: int choice = ask("What do you want to do?", "Option 1", "Option 2", "Option 3", NULL); to ask the player a question with multiple options. The function will return the index of the selected option (starting from 0).
 int ask(const char *prompt, ...) {
-    say("%s", prompt);
+    say(2,"%s", prompt);
 
     va_list args;
     va_start(args, prompt);
@@ -31,7 +33,7 @@ int ask(const char *prompt, ...) {
     va_end(args);
 
     for (int i = 0; i < count; i++) {
-        say("%d) %s", i + 1, options[i]);
+        say(0,"%d) %s", i + 1, options[i]);
     }
 
     char line[32];

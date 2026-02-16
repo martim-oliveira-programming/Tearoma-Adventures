@@ -5,11 +5,14 @@
 #include "menu.h"
 #include "save.h"
 #include "mechanics.h"
+#include "items.h"
+#include "abilities.h"
+#include "npc.h"
 #include "dialogue.h"
 #include <unistd.h> 
 
 char* get_input(char* prompt) {
-    say("%s", prompt);
+    say(0,"%s", prompt);
     char *choice = malloc(MAX_INPUT);
     if (!choice) return NULL;
     
@@ -47,7 +50,7 @@ GameState menu_selection(void) {
         result = QuitGame();
     }
     else {
-        say("Invalid command. Please try again.\n\n");
+        say(0,"Invalid command. Please try again.\n\n");
         result = menu_selection();
     }
     
@@ -56,44 +59,39 @@ GameState menu_selection(void) {
 }
 
 GameState Commands(void){
-    say("Quit: (Quit the game and go to Main Menu.\nThis will NOT save the game.\nThe game saves automatically after each Chapter.)\n\n");
+    say(0,"Quit: (Quit the game and go to Main Menu.\nThis will NOT save the game.\nThe game saves automatically after each Chapter.)\n\n");
     return MENU;
 }
 
 GameState NewGame(void) {
     if(file_exists("save.txt")) {
-        char* choice = get_input(
-            "Are you sure you want to start a new game? "
-            "The old save file will be deleted forever. (yes/no)\n"
-        );
+        int choice = ask("Are you sure you want to start a new game? "
+            "The old save file will be deleted forever.\n", "Yes", "No", NULL);
         
-        if (!choice) return MENU;
+        if (choice<0||choice >1) return MENU;
 
-        if (strcmp(choice, "yes") == 0) {
-            if(choice)free(choice);
+        if (choice == 0) {
             secure_wipe();
-            say("Starting new game...\n");
+            say(0,"Starting new game...\n");
             return PLAYING;
         }
-        else if (strcmp(choice, "no") == 0) {
-            if(choice)free(choice);
-            return MENU;
+        else if (choice == 1) {
+             return MENU;
         }
         else {
-            say("Please answer with 'yes' or 'no'.\n");
-            if(choice)free(choice);
+            say(0,"Please answer with 1 or 2.\n");
             return MENU;
         }
     }
     else {
-        say("No save file found. Starting new game...\n");
+        say(0,"No save file found. Starting new game...\n");
         return PLAYING;
     }
 }
 
 GameState Continue(Story *out_story, Player *out_player, int *chapter_npc_ids) {
-    char *choice;
-    say("Loading your saved game...\n");
+    int choice;
+    say(0,"Loading your saved game...\n");
     
     Story loaded_story = {0};
     Player loaded_player = {0};
@@ -101,18 +99,19 @@ GameState Continue(Story *out_story, Player *out_player, int *chapter_npc_ids) {
     
     int load_status = load_save(&loaded_story, &loaded_player, loaded_npc_ids);
     if (!load_status) {
-        say("Select NewGame to start a New Game.\nReturning to Menu...\n");
+        say(0,"Select NewGame to start a New Game.\nReturning to Menu...\n");
         return MENU;
     }
 
     if (out_story->Chapter == 0){
-        choice = "yes"; // auto-continue if no current game
+        choice = 0; // auto-continue if no current game
     }else{
-        choice = get_input("Found save file. Do you wish to proceed to the next Chapter? (yes/no)\n");
+        choice = ask("Found save file. Do you wish to proceed to the next Chapter?\n", "Yes", "No", NULL);
     }
-    if (!choice) return MENU;
+    if (choice <0) 
+    {return MENU;}
 
-    if (strcmp(choice, "yes") == 0) {
+    if (choice == 0) {
         // copy loaded into caller-provided structures
         // free any existing dynamic fields in out_player if needed before overwrite
         if (out_player->name) { free(out_player->name); out_player->name = NULL; }
@@ -123,21 +122,13 @@ GameState Continue(Story *out_story, Player *out_player, int *chapter_npc_ids) {
         if (chapter_npc_ids) chapter_npc_ids[0] = loaded_npc_ids[0];
 
         // show minimal info
-        say("\n--- Loaded Game ---\n");
-        usleep(200000);
-        say("Player: %s\n", out_player->name ? out_player->name : "(unknown)");
-        usleep(200000);
-        say("Age: %d\n", out_player->age);
-        usleep(200000);
-        say("Chapter: %d\n", out_story->Chapter);
-        usleep(200000);
-        say("NPC ID: %d\n", (chapter_npc_ids) ? chapter_npc_ids[0] : -1);
-        usleep(1000000);
-
-        if (out_story->Chapter != 0){if(choice)free(choice);}
+        say(2,"\n--- Loaded Game ---\n");
+        say(2,"Player: %s\n", out_player->name ? out_player->name : "(unknown)");
+        say(2,"Age: %d\n", out_player->age);
+        say(2,"Chapter: %d\n", out_story->Chapter);
+        say(2,"NPC ID: %d\n", (chapter_npc_ids) ? chapter_npc_ids[0] : -1);
         return PLAYING;
     } else {
-        if(choice)free(choice);
         // free loaded allocations because user declined
         if (loaded_player.name) free(loaded_player.name);
         if (loaded_player.hair_colour) free(loaded_player.hair_colour);
