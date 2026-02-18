@@ -40,8 +40,9 @@ void ensure_team_arrays(Player *player) {
 }
 
 Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids,bool can_run) {
-
+    int npc_ids_size = sizeof(&chapter_npc_ids) / sizeof(&chapter_npc_ids[0]);
     Attributes pre_fight_stats = main_character.stats; // snapshot to clear temporary ability buffs at fight end
+    NPC enemy_base = enemy; // snapshot to restore enemy stats when debuffs expire
     clear_active_ability_effects(&main_character);
     ensure_team_arrays(&main_character);
     int turn = 1;
@@ -54,7 +55,7 @@ Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids
     while(main_character.HP > 0 && !check_win(enemy, &main_character)) {
 
         main_character = increase_hunger(main_character, 2);
-        refresh_active_ability_effects(&main_character, pre_fight_stats, &enemy);
+        refresh_active_ability_effects(&main_character, pre_fight_stats, &enemy, enemy_base);
         
         print_fight_info(main_character, enemy);
 
@@ -89,7 +90,12 @@ Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids
             }
 
             say(1,"\nIt's %s's turn!\n", enemy.name);
+            
+            if(priority != 3){
             main_character = enemy_turn(main_character, enemy);
+            }else{
+                say(1,"%s's is frozen and can't move!\n", enemy.name);
+            }
         } 
     } else { // NPC goes first or ties favor the NPC on even turns
             say(1,"\n%s is faster and takes the first turn!\n", enemy.name);
@@ -114,6 +120,7 @@ Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids
     main_character = restore_mana(main_character); // Regenerate some mana after the fight
     clear_active_ability_effects(&main_character); // Clear any remaining active effects
     free_team(&main_character); // Free team member arrays to clear any defeated members and reset for next fight
+    main_character = build_team(main_character, chapter_npc_ids, npc_ids_size); // Rebuild team based on current chapter's NPCs (some may have been defeated and removed)
     return main_character; // Return the updated player state after combat
 }
 
@@ -310,9 +317,11 @@ Player enemy_turn(Player main_character, NPC enemy) {
 }
 
 int priority_calculation(Player main_character, NPC npc,int turn) {
-    int player_speed = main_character.stats.SPEED;
-    int player_stealth = main_character.stats.STEALTH;
+    int player_speed = get_mc_speed(main_character);
+    int player_stealth = get_mc_stealth(main_character);
     int npc_speed = npc.SPEED;
+    if (npc_speed == 0){return 3;} // NPC is frozen and can't move, player automatically goes first without needing to check speed
+    
     if (turn == 1){
         player_speed += player_stealth / 1.5; // Stealth gives a significant boost to speed on the first turn
     }

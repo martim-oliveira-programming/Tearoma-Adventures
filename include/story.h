@@ -26,6 +26,7 @@ void set_story_chapter(Story *story, int chapter);
 
 //Chapter functions
 Player chapter1(Player main_character, Story *story);
+Player chapter_2(Player main_character, Story *story, int *chapter_npc_ids);
 
 // Paths
 Player path_1(Player main_character,Story *story);

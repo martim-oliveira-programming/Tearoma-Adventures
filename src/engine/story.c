@@ -41,8 +41,8 @@ Player chapter1(Player main_character, Story *story) {
     say(5,"It's a cold and rainy night.\nYou are at home when you hear someone calling you.\n");
     say(6,"\?\?\?-- %s!!! Let's eat, dinner's ready.\nOK Mom, I'm going! - %s\n",main_character.name,main_character.name);
     say(7,"Mom-- Your dad is missing and No one knows where he is...\nYou seem lost in thought and then you finnaly say:\n");
-    say(8,"-- What do you mean Dad's missing? where did he go?!\nHe said he whould only finish some things at work.?\nYou get up in shock.\n");
-    say(10,"Mom-- ... I'm ... Sorry I .. I don't know ...\n- Your Mom mumbles while she starts to cry which makes you calm down and say:\n-- Hey Mom, don't worry I'm going to find Dad and bring him back OK?\n");
+    say(6,"-- What do you mean Dad's missing? where did he go?!\nHe said he whould only finish some things at work.?\nYou get up in shock.\n");
+    say(7,"Mom-- ... I'm ... Sorry I .. I don't know ...\n- Your Mom mumbles while she starts to cry which makes you calm down and say:\n-- Hey Mom, don't worry I'm going to find Dad and bring him back OK?\n");
     say(8,"Mom-- No, where are you going?\nLet's wait for the police to find him.\nYou're only %i.\nYou can't go around town loocking for him.\n",main_character.age);
     say(7,"%s-- I can't wait for the police!!\nI'm only going to Dad's work and then I will come back wether I find him or not. Deal??\n",main_character.name);
     say(5,"Mom-- Please ... don't go. I can't loose you too! - Your Mom begs\n\n");
@@ -59,6 +59,84 @@ Player chapter1(Player main_character, Story *story) {
     set_story_chapter(story,Chapter_2);
     return main_character;
 }
+
+Player chapter_2(Player main_character, Story *story, int *chapter_npc_ids) {
+    char *mc_name = get_mc_name(main_character);
+    int rival_id = chapter_npc_ids[0];
+    NPC rival = get_npc_by_id(rival_id);
+    int ability_id = get_mc_abilitiesIDs(main_character)[0]; 
+    char *rival_name = get_ability_name(ability_id);
+    char *pronoun = choose_pronoun(main_character);
+    say(1,"-------------------------\nChapter 2: A New World!\n-------------------------\n");
+    say(5,"%s-- Where am I? This place looks... strange.\nYou look around and see that you are in a huge grassy field.\n",mc_name);
+    say(5,"You see some strange plants and creatures around you.\nThe sky is a weird shade of purple and there are two suns in the sky.\n");
+    say(5,"%s --What... is this place?\nYou start to walk around trying to find any sign of civilization or your Dad.\n",mc_name);
+    say(5,"You start to feel a bit uneasy.\nYou check your backpack\n");
+    say(5,"***This is the inventory.***\n");
+    say(5,"When inside the inventory you can use an item by typing its id number.\n");
+    say(2,"If the item is consumable it will be eaten lowering your hunger imediatly.\nIf it's equippable you will equip it.\nIf you alredy have an item equiped on that slot you will switch them.\n");
+    open_inventory(&main_character);
+    say(5,"You keep walking and exploring the area hoping to find some clue about where you are.\n");
+    say(4,"There are some small caves, trees, boars, pigs etc...\nYou shout:");
+    int path = get_story_path(*story);
+    if (path == 1){
+        say(2,"%s-- Dad? Where are you?\nYou call out for your Dad but there's no answer.\n",mc_name);
+
+    }
+    else if(path ==2){
+        say(2,"%s-- Mom? Are you here?\nMOM!!\nYou call out for your Mom but there's no answer.\n",mc_name);
+        say(2,"--How can we not be toguether if we went through the portal basicly at the same time?\n");
+
+    }
+    say(4,"??? -- Hello there!\nYou look behind you and find a girl, not taller than 1.60, brown hair, big smile and a fit body.\nShe seems to be around your age and is wearing some kind of kymono uniform.\n");
+    say(5,"%s-- Who are you? Do you know where we are?\nStranger-- I am Lillian, my friends call me Lilly and we are on the outskirts of Volution!!\n",mc_name);
+    say(5,"??? -- Hello there!\nYou turn around and see a strange person looking at you.\n");
+    say(5,"%s-- Who are you? Do you know where we are?\nStranger-- I am Lilly and we are on the outskirts of Volution!!\n",mc_name);
+    say(5,"%s-- Volution? What is that?\nLilly-- It's the capital of Thearoma??\nHow do you not know that?\nDid you hit your head or something?",mc_name);
+    say(5,"%s-- I don't know how I got here. I'm looking for someone but I don't even know where to start looking.\nLilly-- Who are you looking for? Maybe I can help.\n",mc_name);
+    say(5,"%s-- Did someone else seem to be new here too?\nLilly-- I don't think so... But if you're new here or don't remember how to live here I can show you around and help you get used to it.\n",mc_name);
+    say(5,"%s-- That would be great! Thank you so much!\nLilly-- No problem! Follow me!\n",mc_name);
+    say(5,"Lilly-- Have you graduated from the academy yet?\n%s-- No, I don't even know what that is.\nLilly-- Oh, you really are new here aren't you? The academy is where everyone goes to learn how to survive in this world and get a job.\n",mc_name);
+    say(5,"Lilly-- Do you know what city you're from?\n%s-- Lisbon, Portugal.\nLilly-- Where's that and how are you a teenager and haven't heard of the academy?\n", mc_name);
+    say(5,"%s-- Well, where I come from, we don't have an academy like this. We have schools but they are nothing like this place.\nLilly-- What do you mean?.\n",mc_name);
+    say(5,"%s-- We don't have gear like what you do. We don't fight a lot anymore. Schools are just for learning and we don't have to worry about surviving or fighting monsters.\nLilly-- Wow, that sounds like you came from a different world or something hahaha. I can't even imagine what it's like to live there.\n",mc_name);
+    say(5,"***You aproach Volution! Massive gates and a giant wall all around the capital.***\n");
+    say(5,"Lilly-- Hello!!\nPlease open the gates!!\nI brought a visitor!!\nThe gates open and you enter the city of Volution for the first time.\n");
+    say(5,"%s-- Wow, this place is huge!!\nLilly-- Yeah, it's pretty big. We have a lot of shops and diffrent places.\n%s-- I can't wait to see everything!!\n",mc_name,mc_name);
+    say(5,"??? -- Hey Lilly!! Who's your friend??\nLilly-- Oh hey Mark!! This is %s, my new friend. %s just got here and doesn't know much about this place yet.\nMark-- Oh cool! Welcome to Volution %s!!\n",mc_name,pronoun,mc_name);
+    say(5,"*** Mark is tall, fit and has a strong presence.***\n");
+    say(5,"%s-- Hey, nice to meet you! and thanks!\nMark-- No problem! If you need any help just ask for me or Lilly, we are pretty well known here so we can get you almost anything you need.\n",mc_name);
+    say(5,"Lilly-- Are you going to the academy?\nMark-- Yeah, there's the introduction class in 15 minutes.\nYou should bring %s with you, it's a good way to meet people and get used to the place.\n",mc_name);
+    say(5,"Lilly-- Great idea! Come on %s, let's go to the academy with Mark!\n",mc_name);
+    say(5,"%s-- Sure!\nYou go to the academy with Mark and Lilly and attend the introduction class.\n", mc_name);
+    say(4,"*** The academy is a huge building with a big courtyard in the middle. There are a lot of students and teachers walking around.\nThe teacher is a middle aged man with a beard and glasses. He seems to be the one in charge of the class.***\n");
+    say(5,"The teacher explains how the academy works and what you can expect from it.\n");
+    say(5,"Teacher-- I see we have a new student here today!! Welcome to the academy!!\n%s-- Thank you!\n",mc_name);
+    say(5,"Teacher-- We have a lot of different classes and activities here at the academy.\nWe have combat classes, magic classes, survival classes, crafting classes and a lot more.\n");
+    say(5,"Teacher-- So, you have any experience with fighting and magic or right?\n%s-- No, not really.\nTeacher-- Oh, really weird since the academy starts at 10 yo and you seem way older than that. But don't worry, we will help you get used to this place and teach you everything you need to know.\n",mc_name);
+    say(5,"Teacher-- For now, we are going to start with some basic combat training.\nWe will have some demonstrations and then you will get to practice with each other.\n");
+    say(5,"Teacher-- Now I'm going to call Lilly and Mark to demonstrate combat and then I will choose pairs of students to try some combat.\nLilly and Mark go to the center of the room and start demonstrating some basic combat techniques.\n");
+    say(4,"Teacher-- Ok,now Marta and Laura,...,%s and %s, since you are the only 15 year-olds, you are going to fight each other!!\nI am being paired with a (really good looking... What am I thinking, focus!) student  and we start fighting each other.\n",mc_name,mc_name);
+    
+    
+    if(main_character.gender == 0)say(4,"***%s is 1.68 m tall, a finee body with all the right proportions long brunette hair and a focused look on her face with those deep blue eyes.\n",rival_name);
+    else say(4,"***%s is 1.88m tall, muscular body, great smell, sharp jaw, perfect dark brown hair and emerald green eyes with a focudes look.***\n",rival_name);
+
+    main_character = fight(main_character, rival, story, chapter_npc_ids, false);
+    say(5,"Teacher-- Wow, that was a great fight!! You both did really well for your first time!!\n%s-- Thanks, I guess...\nYou are a bit confused since you didn't really know how to fight and you don't understand how you did so well but you are happy with the compliment.\n",mc_name);
+    say(4,"My body feels different... I feel stronger and faster than before. I don't know how to explain it but I feel like I can do things I couldn't do before.\n");
+    say(2,"Not to talk about how I just used %s\n",rival_name);
+    say(3,"%s -- Good match %s!!",mc_name,rival_name);
+    say(2,"%s -- Sure...\n***You see %s leave the class probably anoyed that they lost***\n",rival_name,rival_name);
+    say(3,"%s -- I hope %s is ok...\n");//TODO: Continue from here!! Treat unused variables and make sure the story makes sense with the choices and the fight outcome. Also add more dialogue and interactions with the rival and other characters in the academy. Maybe add some side quests or activities in the academy to make it more interesting. Also, make sure to update the chapter npc ids and the story path accordingly.
+    
+
+    say(3,"-------------------------\nChapter 2 Completed\n-------------------------\n");
+    set_story_chapter(story,Chapter_3);
+    return main_character;
+}
+
+
 
 
 Player path_1_help(Player main_character){

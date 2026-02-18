@@ -3,8 +3,8 @@
 #include <stdbool.h>
 #include "menu.h"
 
-#define TOTAL_ABILITIES 16
-#define TOTAL_MAGIC 9
+#define TOTAL_ABILITIES 21
+#define TOTAL_MAGIC 14
 #define TOTAL_Melle 2
 #define TOTAL_ITEMS 21
 #define TOTAL_WEAPONS 17
@@ -82,7 +82,11 @@ typedef enum{
     PLUS,
     HEAL,
     COPY, 
-    //TODO: Implement Freeze, Burn, Poison, Paralises temporary debuffs, and other interesting effects
+    REVEAL,
+    POISON,
+    BURN,
+    FREEZE,
+    PARALYSE,
 }EFFECT_TYPE;
 
 typedef struct initial_build_attributes{
@@ -165,7 +169,7 @@ typedef struct support{
 
 typedef enum{
     Inate, // Unique to the character no one else can learn it
-    Learned, // Can be learned by any other characters
+    All, // Can be learned by any other characters
     Minamoto, // Only learned by Minamoto Clan members (Shadow Dog)
     Sharingan, // Only learned by Sharingan users 
     MS_1,//(Amaterasu)
@@ -372,6 +376,8 @@ NPC get_summon_by_id(int id);
 Weapon get_weapon(int id);
 Consumable get_consumable(int id);
 char* get_ability_name(int ability_id);
+int get_ability_id(Abilities ability);
+int get_ability_effect_duration(int ability_id);
 
 //Getters for ability attributes
 int get_ability_by_summon(int summonID);
@@ -384,6 +390,7 @@ const char *get_ability_effects(int ability_id);
 int get_ability_mana_cost(int ability_id);
 int get_ability_rank(int ability_id);
 int get_ability_by_summon_id(int summon_id);
+int get_ability_dna(int ability_id);
 
 //Object arrays and Element chart
 extern const Abilities ALL_abilities[TOTAL_ABILITIES];

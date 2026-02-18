@@ -13,70 +13,69 @@
 #include "dialogue.h"
 #include <unistd.h> 
 
-//TODO: Balance builds
 static const BuildDef build_table[BUILD_COUNT] = {
     [Assassin] = {
-        .stats = { .DEFENCE=4, .DAMAGE=10, .MAGIC_POWER=2, .MAX_HP=8, .MAX_MANA=10,
-                    .SUMMONS_STORAGE=0, .SPEED=18, .STEALTH=12, .WEAPON_DAMAGE=6,
-                    .WEAPON_USER=true, .DUAL_WILDING=true, .MAGIC_USER=true }, //Total:70
+        .stats = { .DEFENCE=3, .DAMAGE=10, .MAGIC_POWER=3, .MAX_HP=7, .MAX_MANA=8,
+                    .SUMMONS_STORAGE=0, .SPEED=18, .STEALTH=14, .WEAPON_DAMAGE=7,
+                    .WEAPON_USER=true, .DUAL_WILDING=true, .MAGIC_USER=true }, //Total:70 | Glass cannon, fastest, stealthy, dual daggers
         .items     = { 2, 3, -1 },         // Basic Dagger, Secondary Dagger
         .abilities = { 1, 4, -1 },         // Speed Boost, Disguise
         .summons   = { -1 },
     },
     [Tank] = {
-        .stats = { .DEFENCE=16, .DAMAGE=6, .MAGIC_POWER=2, .MAX_HP=16, .MAX_MANA=6,
-                    .SUMMONS_STORAGE=0, .SPEED=6, .STEALTH=4, .WEAPON_DAMAGE=14,
-                    .WEAPON_USER=true, .DUAL_WILDING=false, .MAGIC_USER=true }, //Total:70
-        .items     = { 4, 5, 6, 7, 8, 9, -1 }, // Sword, Shield, Headband, Leather set
+        .stats = { .DEFENCE=18, .DAMAGE=5, .MAGIC_POWER=2, .MAX_HP=18, .MAX_MANA=4,
+                    .SUMMONS_STORAGE=0, .SPEED=4, .STEALTH=2, .WEAPON_DAMAGE=12,
+                    .WEAPON_USER=true, .DUAL_WILDING=false, .MAGIC_USER=true }, //Total:65+bools | Walls of defence and HP, slow but hits hard with weapon
+        .items     = { 4, 5, 6, 7, 8, 9, -1 }, // Sword, Shield, Leather full set
         .abilities = { 2, -1 },             // Shield Bash
         .summons   = { -1 },
     },
     [Monk] = {
-        .stats = { .DEFENCE=6, .DAMAGE=20, .MAGIC_POWER=0, .MAX_HP=14, .MAX_MANA=0,
-                    .SUMMONS_STORAGE=0, .SPEED=18, .STEALTH=12, .WEAPON_DAMAGE=0,
-                    .WEAPON_USER=false, .DUAL_WILDING=false, .MAGIC_USER=false }, //Total:70
-        .items     = { 6, -1 },             // Headband
+        .stats = { .DEFENCE=8, .DAMAGE=24, .MAGIC_POWER=0, .MAX_HP=16, .MAX_MANA=0,
+                    .SUMMONS_STORAGE=0, .SPEED=20, .STEALTH=8, .WEAPON_DAMAGE=14,
+                    .WEAPON_USER=true, .DUAL_WILDING=false, .MAGIC_USER=false }, //Total:90 | Heavenly Restriction: no magic but far superior physical stats
+        .items     = { 4, 6, -1 },          // Basic Sword, Headband
         .abilities = { 3, -1 },             // Lethal Punch Barrage
         .summons   = { -1 },
     },
     [Ninja] = {
-        .stats = { .DEFENCE=6, .DAMAGE=8, .MAGIC_POWER=6, .MAX_HP=8, .MAX_MANA=10,
-                    .SUMMONS_STORAGE=0, .SPEED=16, .STEALTH=16, .WEAPON_DAMAGE=10,
-                    .WEAPON_USER=true, .DUAL_WILDING=false, .MAGIC_USER=true }, //Total:70
+        .stats = { .DEFENCE=5, .DAMAGE=8, .MAGIC_POWER=6, .MAX_HP=8, .MAX_MANA=10,
+                    .SUMMONS_STORAGE=0, .SPEED=16, .STEALTH=18, .WEAPON_DAMAGE=9,
+                    .WEAPON_USER=true, .DUAL_WILDING=false, .MAGIC_USER=true }, //Total:80 | Stealth king, fast, versatile with both weapons and ninjutsu
         .items     = { 14, 15, 6, 16, 17, 18, -1 }, // Katana, Shuriken, Headband, Ninja armor
         .abilities = { 4, 1, -1 },          // Disguise, Speed Boost
         .summons   = { -1 },
     },
     [Mage] = {
-        .stats = { .DEFENCE=4, .DAMAGE=4, .MAGIC_POWER=20, .MAX_HP=6, .MAX_MANA=16,
-                    .SUMMONS_STORAGE=0, .SPEED=6, .STEALTH=4, .WEAPON_DAMAGE=10,
-                    .WEAPON_USER=true, .DUAL_WILDING=false, .MAGIC_USER=true }, //Total:70
+        .stats = { .DEFENCE=3, .DAMAGE=3, .MAGIC_POWER=20, .MAX_HP=6, .MAX_MANA=18,
+                    .SUMMONS_STORAGE=0, .SPEED=6, .STEALTH=4, .WEAPON_DAMAGE=4,
+                    .WEAPON_USER=true, .DUAL_WILDING=false, .MAGIC_USER=true }, //Total:64 | Pure caster, devastating magic damage, fragile, grimoire user
         .items     = { 11, 13, -1 },        // Basic Grimoire, Mage Robe
         .abilities = { 5, 6, -1 },          // Fire Bolt, Basic Healing
         .summons   = { -1 },
     },
     [Healer] = {
-        .stats = { .DEFENCE=6, .DAMAGE=2, .MAGIC_POWER=14, .MAX_HP=8, .MAX_MANA=18,
-                    .SUMMONS_STORAGE=0, .SPEED=6, .STEALTH=10, .WEAPON_DAMAGE=6,
-                    .WEAPON_USER=true, .DUAL_WILDING=false, .MAGIC_USER=true }, //Total:70
+        .stats = { .DEFENCE=6, .DAMAGE=2, .MAGIC_POWER=16, .MAX_HP=10, .MAX_MANA=20,
+                    .SUMMONS_STORAGE=0, .SPEED=6, .STEALTH=8, .WEAPON_DAMAGE=2,
+                    .WEAPON_USER=true, .DUAL_WILDING=false, .MAGIC_USER=true }, //Total:70 | Largest mana pool, strong healing, weak offence
         .items     = { 6, 12, -1 },         // Headband, Healer's Glove
         .abilities = { 6, 7, -1 },          // Basic Healing, Group Healing
         .summons   = { -1 },
     },
     [Summoner] = {
-        .stats = { .DEFENCE=6, .DAMAGE=6, .MAGIC_POWER=12, .MAX_HP=10, .MAX_MANA=18,
-                    .SUMMONS_STORAGE=3, .SPEED=6, .STEALTH=8, .WEAPON_DAMAGE=4,
-                    .WEAPON_USER=true, .DUAL_WILDING=false, .MAGIC_USER=true }, //Total:70
+        .stats = { .DEFENCE=5, .DAMAGE=4, .MAGIC_POWER=14, .MAX_HP=8, .MAX_MANA=16,
+                    .SUMMONS_STORAGE=3, .SPEED=6, .STEALTH=7, .WEAPON_DAMAGE=3,
+                    .WEAPON_USER=true, .DUAL_WILDING=false, .MAGIC_USER=true }, //Total:63+summons | Relies on summons, decent magic, grimoire user, weak solo
         .items     = { 6, 11, -1 },         // Headband, Basic Grimoire
         .abilities = { 6, 11, -1 },         // Basic Healing, Fire Spirit Summon
         .summons   = { 0, -1 },             // Fire Spirit
     },
     [Balanced] = {
-        .stats = { .DEFENCE=8, .DAMAGE=8, .MAGIC_POWER=8, .MAX_HP=8, .MAX_MANA=8,
-                    .SUMMONS_STORAGE=2, .SPEED=8, .STEALTH=8, .WEAPON_DAMAGE=8,
-                    .WEAPON_USER=true, .DUAL_WILDING=true, .MAGIC_USER=true }, //Total:72
+        .stats = { .DEFENCE=8, .DAMAGE=8, .MAGIC_POWER=8, .MAX_HP=9, .MAX_MANA=9,
+                    .SUMMONS_STORAGE=1, .SPEED=8, .STEALTH=8, .WEAPON_DAMAGE=7,
+                    .WEAPON_USER=true, .DUAL_WILDING=true, .MAGIC_USER=true }, //Total:74 | Jack of all trades, master of none, but can do anything
         .items     = { 4, 6, 7, 8, -1 },    // Sword, Headband, Leather Chest, Leather Pants
-        .abilities = { 5, 9, -1 },          // Fire Bolt, ???
+        .abilities = { 5, 9, -1 },          // Fire Bolt, Strength Boost
         .summons   = { -1 },
     },
 };

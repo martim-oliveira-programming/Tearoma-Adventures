@@ -37,6 +37,20 @@ void apply_summon_effect(Player *main_character, const char *first) {
     *main_character = add_team_member(*main_character, summon_id, true);
 }
 
+void apply_reveal_effect(Player *main_character, const char *first) {
+    int mana_restore = first ? atoi(first) : 0;
+    if (mana_restore > 0) {
+        main_character->MANA += mana_restore;
+        if (main_character->MANA > main_character->stats.MAX_MANA) {
+            main_character->MANA = main_character->stats.MAX_MANA;
+        }
+    }
+    int magic_boost = first ? atoi(first) : 0;
+    if (magic_boost > 0) {
+        *main_character = increase_mc_magic_power(*main_character, magic_boost);
+    }
+}
+
 void apply_plus_effect(Player *main_character, const char *first, const char *second, NPC *target_npc) {
     int boost = first ? atoi(first) : 0;
     const char *attr = second;
@@ -142,11 +156,62 @@ void apply_ability_effect(Player *main_character, Abilities ability, NPC *target
         case HEAL:
             apply_heal_effect(main_character, ability.ID);
             break;
+        case REVEAL:
+            apply_reveal_effect(main_character, first);
+            break;
+        case POISON:
+            apply_poison_effect(main_character, target_npc, ability.ID);
+            break;
+        case BURN:
+            apply_burn_effect(main_character, target_npc, ability.ID);
+            break;
+        case FREEZE:
+            apply_freeze_effect(main_character, target_npc, ability.ID);
+            break;
+        case PARALYSE:
+            apply_paralysis_effect(main_character, target_npc, ability.ID);
+            break;
         case NONE:
+            break;
         default:
             break;
     }
     if (copy) free(copy);
+}
+
+void apply_poison_effect(Player *main_character,NPC *target_npc ,int ability_id) {
+    int damage_per_turn = target_npc->MAX_HP / 8; // Poison deals 12.5% of max HP as damage each turn
+    *target_npc = damage_npc(*target_npc, damage_per_turn);
+    say(0,"The enemy is poisoned and takes %d damage.\n", damage_per_turn);
+}
+
+void apply_burn_effect(Player *main_character,NPC *target_npc ,int ability_id) {
+    int damage_per_turn = target_npc->MAX_HP / 12; // Burn deals ~8.3% of max HP as damage each turn
+    *target_npc = damage_npc(*target_npc, damage_per_turn);
+
+    bool already_active = false;
+    for (int i = 0; i < main_character->active_effect_count; i++) {
+        if (main_character->active_effects[i].ability_id == ability_id) {
+            already_active = true;
+            break;
+        }
+    }
+    if (!already_active) {
+        target_npc->DAMAGE -= target_npc->DAMAGE / 3; // Burn reduces damage output by 33% on first tick
+        say(0,"The enemy is burned! Damage reduced by 33%%.\n");
+    }
+
+    say(0,"The enemy burns and takes %d damage.\n", damage_per_turn);
+}
+
+void apply_paralysis_effect(Player *main_character,NPC *target_npc ,int ability_id) {
+        target_npc->SPEED /= 2;
+        say(0,"The enemy is paralysed and its speed is greatly reduced.\n");
+}
+
+void apply_freeze_effect(Player *main_character,NPC *target_npc ,int ability_id) {
+        target_npc->SPEED = 0;
+        say(0,"The enemy is frozen and can't move.\n");
 }
 
 void apply_copy_ability(Player *main_character, NPC *target_npc) {
@@ -187,11 +252,15 @@ void register_active_ability(Player *main_character, Abilities ability) {
     }
 }
 
-void refresh_active_ability_effects(Player *main_character, Attributes base_stats, NPC *current_enemy) {
+void refresh_active_ability_effects(Player *main_character, Attributes base_stats, NPC *current_enemy, NPC enemy_base) {
     if (main_character->active_effect_count < 0 || main_character->active_effect_count > TOTAL_ABILITIES) {
         clear_active_ability_effects(main_character);
     }
     main_character->stats = base_stats; // Reset to baseline before reapplying temporary effects
+    // Reset enemy combat stats to baseline before reapplying active debuffs
+    current_enemy->DAMAGE = enemy_base.DAMAGE;
+    current_enemy->SPEED = enemy_base.SPEED;
+    current_enemy->DEFENCE = enemy_base.DEFENCE;
     int write_index = 0;
     for (int i = 0; i < main_character->active_effect_count; i++) {
         ActiveAbilityEffect effect = main_character->active_effects[i];
@@ -277,7 +346,7 @@ int choose_ability(Player *main_character) {
 void open_abilities(Player *main_character) {
     say(0,"---- Abilities ----\n");
         if (main_character->abilities_ammount == 0) {
-            say(0,"No abilities learned yet.\n");
+            say(0,"No abilities All yet.\n");
             return;
         }
         for (int i = 0; i < main_character->abilities_ammount; i++) {
@@ -406,4 +475,14 @@ NPC npc_apply_ability(NPC npc, int abilityID) {
     if (copy) free(copy);
 
     return npc;
+}
+int inate_ability(Player main_character){
+    int mc_ability_ammount = get_mc_abilities_ammount(main_character);
+    int* ability_ids = get_mc_abilitiesIDs(main_character);
+    for(int i = 0;i<mc_ability_ammount;i++){
+        int ability_id = ability_ids[i];
+        int ability_dna = get_ability_dna(ability_id);
+        if(ability_dna == Inate){return ability_id;}
+    } 
+    return -1;
 }

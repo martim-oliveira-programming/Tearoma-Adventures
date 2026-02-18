@@ -14,6 +14,7 @@ int is_team_member(Player main_character, int memberID);
 int is_team_member_summon(Player main_character, int memberID);
 int is_summon(int memberID);
 void free_team(Player *main_character);
+Player build_team(Player main_character, int* chapter_team_ids, int team_size);
 
 //NPC helpers
 NPC heal_npc(NPC npc, int heal_amount);
