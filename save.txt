@@ -3,39 +3,39 @@ Hair: Black
 Gender: 0
 Age: 15
 Build: 3
-Chapter: 1
+Chapter: 2
 Path: 1
 Money: 0
-HUNGER: 13
+HUNGER: 22
 RANK: 0
 SkillPoints: 0
 LEVEL: 0
-EXP: 0
+EXP: 36
 HP: 80
 MANA: 100
-GOODNESS: 3
+GOODNESS: 0
 ManaTypesCount: 1
 ManaTypes:0
-STAT_DEFENCE: 6
+STAT_DEFENCE: 5
 STAT_MAX_HP: 8
 STAT_MAX_MANA: 10
 STAT_SUMMONS_STORAGE: 0
 STAT_MAGIC_POWER: 6
-STAT_WEAPON_DAMAGE: 10
+STAT_WEAPON_DAMAGE: 9
 STAT_DAMAGE: 8
 STAT_SPEED: 16
-STAT_STEALTH: 16
-STAT_PERCEPTION: 2
+STAT_STEALTH: 18
+STAT_PERCEPTION: 0
 STAT_WEAPON_USER: 1
 STAT_DUAL_WIELD: 0
 STAT_MAGIC_USER: 1
 DNA_Count: 1
 DNA:1
-Weapon: -1
-WeaponOff: -1
-Armor:-1,-1,-1,-1
-InventoryCount: 9
-Inventory:0,0,1,6,14,15,16,17,18
+Weapon: 14
+WeaponOff: 15
+Armor:6,16,17,18
+InventoryCount: 2
+Inventory:0,0
 AbilitiesCount: 2
 Abilities:4,1
 SummonsCount: 0
@@ -44,4 +44,4 @@ TeamSize: 0
 TeamMembers:
 ActiveEffectsCount: 0
 ActiveEffects:
-NPC0: -1
+NPC0: 0

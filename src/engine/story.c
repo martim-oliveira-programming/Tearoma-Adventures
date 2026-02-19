@@ -128,8 +128,7 @@ Player chapter_2(Player main_character, Story *story, int *chapter_npc_ids) {
     say(2,"Not to talk about how I just used %s\n",rival_name);
     say(3,"%s -- Good match %s!!",mc_name,rival_name);
     say(2,"%s -- Sure...\n***You see %s leave the class probably anoyed that they lost***\n",rival_name,rival_name);
-    say(3,"%s -- I hope %s is ok...\n");//TODO: Continue from here!! Treat unused variables and make sure the story makes sense with the choices and the fight outcome. Also add more dialogue and interactions with the rival and other characters in the academy. Maybe add some side quests or activities in the academy to make it more interesting. Also, make sure to update the chapter npc ids and the story path accordingly.
-    
+    say(3,"%s -- I hope %s is ok...\n");//TODO: Continue from here!! 
 
     say(3,"-------------------------\nChapter 2 Completed\n-------------------------\n");
     set_story_chapter(story,Chapter_3);

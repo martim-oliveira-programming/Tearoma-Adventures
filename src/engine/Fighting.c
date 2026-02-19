@@ -40,7 +40,7 @@ void ensure_team_arrays(Player *player) {
 }
 
 Player fight(Player main_character, NPC enemy, Story *story,int* chapter_npc_ids,bool can_run) {
-    int npc_ids_size = sizeof(&chapter_npc_ids) / sizeof(&chapter_npc_ids[0]);
+    int npc_ids_size = chapter_npc_ids ? 1 : 0; // chapter_npc_ids is always a single-element array from main.c
     Attributes pre_fight_stats = main_character.stats; // snapshot to clear temporary ability buffs at fight end
     NPC enemy_base = enemy; // snapshot to restore enemy stats when debuffs expire
     clear_active_ability_effects(&main_character);

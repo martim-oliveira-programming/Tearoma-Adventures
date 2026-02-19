@@ -206,6 +206,7 @@ NPC heal_npc(NPC npc, int heal_amount) {
 }
 
 Player build_team(Player main_character, int* chapter_team_ids, int team_size) {
+    if (!chapter_team_ids || team_size <= 0) return main_character;
     for (int i = 0; i < team_size; i++) {
     int memberID = chapter_team_ids[i];
         if (!is_team_member(main_character, memberID)) {

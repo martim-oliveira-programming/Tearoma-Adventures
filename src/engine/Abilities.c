@@ -160,16 +160,16 @@ void apply_ability_effect(Player *main_character, Abilities ability, NPC *target
             apply_reveal_effect(main_character, first);
             break;
         case POISON:
-            apply_poison_effect(main_character, target_npc, ability.ID);
+            apply_poison_effect(target_npc);
             break;
         case BURN:
             apply_burn_effect(main_character, target_npc, ability.ID);
             break;
         case FREEZE:
-            apply_freeze_effect(main_character, target_npc, ability.ID);
+            apply_freeze_effect(target_npc);
             break;
         case PARALYSE:
-            apply_paralysis_effect(main_character, target_npc, ability.ID);
+            apply_paralysis_effect(target_npc);
             break;
         case NONE:
             break;
@@ -179,7 +179,7 @@ void apply_ability_effect(Player *main_character, Abilities ability, NPC *target
     if (copy) free(copy);
 }
 
-void apply_poison_effect(Player *main_character,NPC *target_npc ,int ability_id) {
+void apply_poison_effect(NPC *target_npc) {
     int damage_per_turn = target_npc->MAX_HP / 8; // Poison deals 12.5% of max HP as damage each turn
     *target_npc = damage_npc(*target_npc, damage_per_turn);
     say(0,"The enemy is poisoned and takes %d damage.\n", damage_per_turn);
@@ -204,12 +204,12 @@ void apply_burn_effect(Player *main_character,NPC *target_npc ,int ability_id) {
     say(0,"The enemy burns and takes %d damage.\n", damage_per_turn);
 }
 
-void apply_paralysis_effect(Player *main_character,NPC *target_npc ,int ability_id) {
+void apply_paralysis_effect(NPC *target_npc) {
         target_npc->SPEED /= 2;
         say(0,"The enemy is paralysed and its speed is greatly reduced.\n");
 }
 
-void apply_freeze_effect(Player *main_character,NPC *target_npc ,int ability_id) {
+void apply_freeze_effect(NPC *target_npc) {
         target_npc->SPEED = 0;
         say(0,"The enemy is frozen and can't move.\n");
 }

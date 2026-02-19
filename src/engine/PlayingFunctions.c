@@ -77,10 +77,7 @@ Player character_creation(void) {
     return main_character;
 }
 
-//TODO: Make the story more descriptive
 Player play_chapter(Player main_character, Story *story, int *chapter_npc_ids) {
-    const char* pronoun = choose_pronoun(main_character);
-
     switch (story->Chapter)
     {
     case Chapter_1:{
@@ -111,7 +108,6 @@ Player play_chapter(Player main_character, Story *story, int *chapter_npc_ids) {
         main_character = fight(main_character, rival, story, NULL, false);
         main_character = lost_fight(main_character, story, chapter_npc_ids); // Check if player lost the fight and handle it
         
-        sleep(5);
         say(0,"-------------------------\nChapter 3 Completed\n-------------------------\n");
         //story->Chapter = Chapter_4;
         return main_character;
