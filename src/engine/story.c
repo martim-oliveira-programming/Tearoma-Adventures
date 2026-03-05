@@ -67,6 +67,8 @@ Player chapter_2(Player main_character, Story *story, int *chapter_npc_ids) {
     int ability_id = get_mc_abilitiesIDs(main_character)[0]; 
     char *rival_name = get_ability_name(ability_id);
     char *pronoun = choose_pronoun(main_character);
+    bool can_run = true;
+
     say(1,"-------------------------\nChapter 2: A New World!\n-------------------------\n");
     say(5,"%s-- Where am I? This place looks... strange.\nYou look around and see that you are in a huge grassy field.\n",mc_name);
     say(5,"You see some strange plants and creatures around you.\nThe sky is a weird shade of purple and there are two suns in the sky.\n");
@@ -119,13 +121,13 @@ Player chapter_2(Player main_character, Story *story, int *chapter_npc_ids) {
     say(4,"Teacher-- Ok,now Marta and Laura,...,%s and %s, since you are the only 15 year-olds, you are going to fight each other!!\nI am being paired with a (really good looking... What am I thinking, focus!) student  and we start fighting each other.\n",mc_name,mc_name);
     
     
-    if(main_character.gender == 0)say(4,"***%s is 1.68 m tall, a finee body with all the right proportions long brunette hair and a focused look on her face with those deep blue eyes.\n",rival_name);
-    else say(4,"***%s is 1.88m tall, muscular body, great smell, sharp jaw, perfect dark brown hair and emerald green eyes with a focudes look.***\n",rival_name);
+    if(main_character.gender == 0)say(4,"***%s is 1.68 m tall, a fine body with all the right proportions long brunette hair and a focused look on her face with those deep blue eyes.\n",rival_name);
+    else say(4,"***%s is 1.88m tall, muscular body, great smell, sharp jaw, perfect dark brown hair and emerald green eyes with a focused look.***\n",rival_name);
 
-    main_character = fight(main_character, rival, story, chapter_npc_ids, false);
+    main_character = fight(main_character, rival, story, chapter_npc_ids, !can_run);
     say(5,"Teacher-- Wow, that was a great fight!! You both did really well for your first time!!\n%s-- Thanks, I guess...\nYou are a bit confused since you didn't really know how to fight and you don't understand how you did so well but you are happy with the compliment.\n",mc_name);
     say(4,"My body feels different... I feel stronger and faster than before. I don't know how to explain it but I feel like I can do things I couldn't do before.\n");
-    say(2,"Not to talk about how I just used %s\n",rival_name);
+    say(2,"Not to talk about how I just beat %s\n",rival_name);
     say(3,"%s -- Good match %s!!",mc_name,rival_name);
     say(2,"%s -- Sure...\n***You see %s leave the class probably anoyed that they lost***\n",rival_name,rival_name);
     say(3,"%s -- I hope %s is ok...\n");//TODO: Continue from here!! 
