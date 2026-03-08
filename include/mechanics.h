@@ -257,6 +257,7 @@ typedef struct player {
     int abilities_ammount;
     int summons_ammount;
     // Combat attributes
+    
     int armor[4];  // Array for armor slots (head, chest, legs, boots)
     int weapon;
     int weapon_OFF_Hand;
